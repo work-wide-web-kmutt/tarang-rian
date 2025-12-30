@@ -1,0 +1,18 @@
+{
+  "name": "@tarang-rian/env",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./web": "./src/web.ts"
+  },
+  "dependencies": {
+    "zod": "catalog:",
+    "@t3-oss/env-core": "^0.13.1",
+    "dotenv": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@tarang-rian/config": "workspace:*"
+  }
+}
