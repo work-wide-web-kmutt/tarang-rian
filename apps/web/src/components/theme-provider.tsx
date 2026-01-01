@@ -1,5 +1,5 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import * as React from "react";
+import type * as React from "react";
 
 export function ThemeProvider({
   children,
@@ -8,4 +8,5 @@ export function ThemeProvider({
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
+// biome-ignore lint/performance/noBarrelFile: Create T Stack auth generted
 export { useTheme } from "next-themes";
