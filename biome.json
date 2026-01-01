@@ -22,5 +22,20 @@
       "!**/convex/_generated"
     ]
   },
-  "extends": ["ultracite/core", "ultracite/react"]
+  "extends": ["ultracite/core", "ultracite/react"],
+  "linter": {
+    "rules": {
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "./**": "Use absolute imports with @/ prefix instead of relative imports",
+              "../**": "Use absolute imports with @/ prefix instead of relative imports"
+            }
+          }
+        }
+      }
+    }
+  }
 }
