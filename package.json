@@ -20,7 +20,8 @@
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
-    "dev:web": "turbo -F web dev"
+    "dev:web": "turbo -F web dev",
+    "deploy:web": "turbo run deploy -F web"
   },
   "dependencies": {
     "dotenv": "catalog:",
@@ -36,7 +37,8 @@
     "lint-staged": "^16.1.2",
     "turbo": "^2.6.3",
     "typescript": "catalog:",
-    "ultracite": "6.5.0"
+    "ultracite": "6.5.0",
+    "wrangler": "^4.54.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
