@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "www-tarang-rian",
+  "compatibility_date": "2025-12-10",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "dist"
+  }
+}
