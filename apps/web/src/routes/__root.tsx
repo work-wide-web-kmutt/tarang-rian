@@ -46,12 +46,14 @@ function RootComponent() {
         enableSystem
         storageKey="vite-ui-theme"
       >
-        <div className="flex flex-col overflow-x-hidden">
-          <div className="min-h-screen">
-            <Header />
-            <Outlet />
-          </div>
-          <Footer />
+        <div className="flex flex-col">
+          <Header />
+          <main className="flex-1">
+            <div className="min-h-screen">
+              <Outlet />
+            </div>
+            <Footer />
+          </main>
         </div>
       </ThemeProvider>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
