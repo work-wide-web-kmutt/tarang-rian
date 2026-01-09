@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { allCourses } from "content-collections";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
+import { formatDayShort } from "@/lib/formatter/day-short";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/(public)/courses/")({
 
 function AllCoursesPage() {
   const selected = useSelectedGenElectives();
-  const { add, removeByCode } = useSelectedGenElectivesActions();
+  const { add, remove } = useSelectedGenElectivesActions();
 
   const sortedCourses = [...allCourses].sort((a, b) => {
     if (a.year === b.year) {
@@ -42,8 +43,6 @@ function AllCoursesPage() {
 
       <div className="space-y-4">
         {sortedCourses.map((course) => {
-          const isSelected = selected.some((c) => c.code === course.code);
-
           return (
             <section
               className="rounded-lg border p-4 shadow-sm"
@@ -65,41 +64,49 @@ function AllCoursesPage() {
 
               <div className="mt-2">
                 <p className="font-medium text-sm">Classes</p>
-                <ul className="mt-1 grid gap-1 text-sm">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {course.class.map(
-                    (cls: GenElectiveOption["class"][number]) => (
-                      <li
-                        className="flex items-center justify-between rounded border px-2 py-1"
-                        key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                      >
-                        <span>
-                          Group {cls.group} · {cls.day}
-                        </span>
-                        <span>
-                          {cls.start}–{cls.end}
-                        </span>
-                      </li>
-                    )
+                    (cls: GenElectiveOption["class"][number]) => {
+                      const isClassSelected = selected.some(
+                        (s) =>
+                          s.courseCode === course.code &&
+                          s.group === cls.group &&
+                          s.day === cls.day &&
+                          s.start === cls.start &&
+                          s.end === cls.end
+                      );
+
+                      return (
+                        <Button
+                          key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                          onClick={() => {
+                            if (isClassSelected) {
+                              remove(
+                                course.code,
+                                cls.group,
+                                cls.day,
+                                cls.start,
+                                cls.end
+                              );
+                            } else {
+                              add(course, cls);
+                            }
+                          }}
+                          size="sm"
+                          variant={isClassSelected ? "secondary" : "outline"}
+                        >
+                          {formatDayShort(cls.day)} {cls.start} - {cls.end}
+                        </Button>
+                      );
+                    }
                   )}
-                </ul>
+                </div>
               </div>
 
               <div className="mt-4 flex justify-end gap-2">
                 <Link params={{ id: course.slug }} to="/courses/$id">
                   <Button variant="outline">View</Button>
                 </Link>
-                <Button
-                  onClick={() => {
-                    if (isSelected) {
-                      removeByCode(course.code);
-                    } else {
-                      add(course);
-                    }
-                  }}
-                  variant={isSelected ? "secondary" : "outline"}
-                >
-                  {isSelected ? "Selected" : "Select"}
-                </Button>
               </div>
             </section>
           );

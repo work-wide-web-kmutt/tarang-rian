@@ -34,6 +34,7 @@
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "tw-animate-css": "^1.2.5",
+    "vaul-base": "^1.0.0",
     "wrangler": "^4.54.0",
     "zod": "catalog:",
     "zustand": "^5.0.9"
