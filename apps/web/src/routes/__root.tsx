@@ -44,7 +44,7 @@ function RootComponent() {
         enableSystem
         storageKey="vite-ui-theme"
       >
-        <div className="grid h-svh grid-rows-[auto_1fr]">
+        <div className="grid h-svh grid-rows-[auto_1fr] overflow-x-hidden">
           <Outlet />
         </div>
       </ThemeProvider>

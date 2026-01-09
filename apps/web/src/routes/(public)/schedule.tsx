@@ -23,7 +23,7 @@ function SelectedCoursesPage() {
       </div>
 
       <div className="space-y-6">
-        <div className="border bg-card p-4 shadow-sm">
+        <div className="min-w-0 border bg-card p-4 shadow-sm">
           <Schedule sessions={selected} />
         </div>
       </div>
