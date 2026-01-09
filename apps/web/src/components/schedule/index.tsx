@@ -12,44 +12,29 @@ interface ScheduleProps {
   sessions: SelectedClassSession[];
 }
 
-interface ScheduleClass {
-  day: string;
-  start: string;
-  end: string;
-  group: string;
-  courseCode: string;
-  courseName: string;
-}
-
-function getClassKey(cls: ScheduleClass): string {
-  return `${cls.courseCode}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`;
+function getClassKey(session: SelectedClassSession): string {
+  return `${session.courseCode}-${session.group}-${session.day}-${session.start}-${session.end}`;
 }
 
 export function Schedule({ sessions }: ScheduleProps) {
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
 
-  const scheduleData: ScheduleClass[] = sessions.map((session) => ({
-    day: session.day,
-    start: session.start,
-    end: session.end,
-    group: session.group,
-    courseCode: session.courseCode,
-    courseName: session.courseName,
-  }));
-
   const getClassesForCell = (day: string, timeColIndex: number) => {
-    return scheduleData.filter((cls) => {
-      if (cls.day !== day) {
+    return sessions.filter((session) => {
+      if (session.day !== day) {
         return false;
       }
-      const { startCol, span } = getTimeSlotPosition(cls.start, cls.end);
+      const { startCol, span } = getTimeSlotPosition(
+        session.start,
+        session.end
+      );
       const endCol = startCol + span;
       return timeColIndex >= startCol && timeColIndex < Math.ceil(endCol);
     });
   };
 
-  const isFirstCol = (cls: ScheduleClass, timeColIndex: number) => {
-    const { startCol } = getTimeSlotPosition(cls.start, cls.end);
+  const isFirstCol = (session: SelectedClassSession, timeColIndex: number) => {
+    const { startCol } = getTimeSlotPosition(session.start, session.end);
     return timeColIndex === startCol;
   };
 
@@ -88,8 +73,8 @@ export function Schedule({ sessions }: ScheduleProps) {
             </div>
             {TIME_SLOTS.map((time, timeColIndex) => {
               const cellClasses = getClassesForCell(day, timeColIndex);
-              const firstColClasses = cellClasses.filter((cls) =>
-                isFirstCol(cls, timeColIndex)
+              const firstColClasses = cellClasses.filter((session) =>
+                isFirstCol(session, timeColIndex)
               );
 
               return (
@@ -97,12 +82,12 @@ export function Schedule({ sessions }: ScheduleProps) {
                   className="relative min-h-[80px] border-border border-r bg-background last:border-r-0"
                   key={`${day}-${time}`}
                 >
-                  {firstColClasses.map((cls) => {
+                  {firstColClasses.map((session) => {
                     const { startOffset, span } = getTimeSlotPosition(
-                      cls.start,
-                      cls.end
+                      session.start,
+                      session.end
                     );
-                    const classKey = getClassKey(cls);
+                    const classKey = getClassKey(session);
                     const isHighlighted = openClassKey === classKey;
 
                     return (
@@ -113,19 +98,20 @@ export function Schedule({ sessions }: ScheduleProps) {
                         onOpenChange={(open) => {
                           setOpenClassKey(open ? classKey : null);
                         }}
+                        session={session}
                         style={{
                           left: `${startOffset * 100}%`,
                           width: `calc(${span * 100}% - 0.25rem)`,
                         }}
                       >
                         <div className="font-medium text-primary-foreground">
-                          {cls.courseCode}
+                          {session.courseCode}
                         </div>
                         <div className="text-[10px] text-primary-foreground/80">
-                          {cls.start}–{cls.end}
+                          {session.start}–{session.end}
                         </div>
                         <div className="text-[10px] text-primary-foreground/80">
-                          Group {cls.group}
+                          Group {session.group}
                         </div>
                       </CourseVaul>
                     );
