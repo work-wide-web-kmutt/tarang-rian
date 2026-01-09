@@ -9,9 +9,9 @@ export function getTimeSlotPosition(
 } {
   const startMinutes = parseTime(start);
   const endMinutes = parseTime(end);
-  const baseMinutes = 480;
-  const startSlot = Math.floor((startMinutes - baseMinutes) / 60);
-  const duration = (endMinutes - startMinutes) / 60;
+  const baseMinutes = 510;
+  const startSlot = Math.floor((startMinutes - baseMinutes) / 30);
+  const duration = (endMinutes - startMinutes) / 30;
   return {
     startCol: Math.max(0, startSlot),
     span: Math.max(1, Math.ceil(duration)),

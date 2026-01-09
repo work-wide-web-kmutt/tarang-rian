@@ -51,7 +51,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
             gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
           }}
         >
-          <div className="sticky left-0 z-10 border-border border-r bg-muted/50 p-2 text-center font-medium text-muted-foreground text-xs">
+          <div className="sticky left-0 z-30 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
             Day
           </div>
           {TIME_SLOTS.map((time) => (
@@ -73,7 +73,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                 gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
               }}
             >
-              <div className="sticky left-0 z-10 border-border border-r bg-background p-2 text-center font-medium text-muted-foreground text-xs">
+              <div className="sticky left-0 z-30 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
                 {day}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
@@ -91,20 +91,20 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                       const { span } = getTimeSlotPosition(cls.start, cls.end);
                       return (
                         <div
-                          className="absolute inset-y-0 z-20 m-0.5 rounded border border-primary/20 bg-primary/10 p-1.5 text-xs"
+                          className="absolute inset-y-0 z-20 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
                           key={`${cls.courseCode}-${cls.group}-${cls.day}-${cls.start}`}
                           style={{
                             left: "0.125rem",
                             width: `calc(${span * 100}% - 0.25rem)`,
                           }}
                         >
-                          <div className="font-medium text-primary">
+                          <div className="font-medium text-primary-foreground">
                             {cls.courseCode}
                           </div>
-                          <div className="text-[10px] text-muted-foreground">
+                          <div className="text-[10px] text-primary-foreground/80">
                             {cls.start}–{cls.end}
                           </div>
-                          <div className="text-[10px] text-muted-foreground">
+                          <div className="text-[10px] text-primary-foreground/80">
                             Group {cls.group}
                           </div>
                         </div>
