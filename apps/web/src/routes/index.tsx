@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   component: HomeComponent,
@@ -6,12 +7,15 @@ export const Route = createFileRoute("/")({
 
 function HomeComponent() {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">Welcome to tarang-rian</h2>
-          <p className="text-muted-foreground">Let's Plan your the schedule</p>
-        </section>
+    <div className="container mx-auto max-w-4xl px-4 py-2">
+      <h1 className="font-bold text-2xl">TARANG RIAN KMUTT</h1>
+      <div className="flex gap-2 pt-2">
+        <Link to="/courses">
+          <Button variant="outline">All courses</Button>
+        </Link>
+        <Link to="/schedule">
+          <Button variant="outline">Already selected</Button>
+        </Link>
       </div>
     </div>
   );
