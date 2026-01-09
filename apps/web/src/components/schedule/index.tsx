@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CourseVaul from "@/components/course/vaul";
+import { SessionBlock } from "@/components/schedule/block";
 import { getTimeSlotPosition } from "@/components/schedule/utils";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { SelectedClassSession } from "@/stores/selected";
@@ -83,37 +83,15 @@ export function Schedule({ sessions }: ScheduleProps) {
                   key={`${day}-${time}`}
                 >
                   {firstColClasses.map((session) => {
-                    const { startOffset, span } = getTimeSlotPosition(
-                      session.start,
-                      session.end
-                    );
                     const classKey = getClassKey(session);
-                    const isHighlighted = openClassKey === classKey;
-
                     return (
-                      <CourseVaul
-                        className="absolute inset-y-0 z-20 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
-                        isHighlighted={isHighlighted}
+                      <SessionBlock
+                        allSessions={sessions}
                         key={classKey}
-                        onOpenChange={(open) => {
-                          setOpenClassKey(open ? classKey : null);
-                        }}
+                        onOpenChange={setOpenClassKey}
+                        openClassKey={openClassKey}
                         session={session}
-                        style={{
-                          left: `${startOffset * 100}%`,
-                          width: `calc(${span * 100}% - 0.25rem)`,
-                        }}
-                      >
-                        <div className="font-medium text-primary-foreground">
-                          {session.courseCode}
-                        </div>
-                        <div className="text-[10px] text-primary-foreground/80">
-                          {session.start}–{session.end}
-                        </div>
-                        <div className="text-[10px] text-primary-foreground/80">
-                          Group {session.group}
-                        </div>
-                      </CourseVaul>
+                      />
                     );
                   })}
                 </div>

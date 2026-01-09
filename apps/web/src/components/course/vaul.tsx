@@ -1,5 +1,5 @@
 import { Trash2Icon } from "lucide-react";
-import { type CSSProperties, type ReactNode, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 import { Drawer } from "vaul-base";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,8 @@ interface CourseVaulType {
   isHighlighted?: boolean;
   onOpenChange?: (open: boolean) => void;
   session?: SelectedClassSession;
+  overlappingSessions?: SelectedClassSession[];
+  onOpenOtherCourse?: (classKey: string) => void;
 }
 
 function CourseVaul({
@@ -22,14 +24,24 @@ function CourseVaul({
   isHighlighted = false,
   onOpenChange,
   session,
+  overlappingSessions = [],
+  onOpenOtherCourse,
 }: CourseVaulType) {
   const [open, setOpen] = useState(false);
   const { remove } = useSelectedGenElectivesActions();
+
+  useEffect(() => {
+    if (isHighlighted) {
+      setOpen(true);
+    }
+  }, [isHighlighted]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     onOpenChange?.(newOpen);
   };
+
+  const openState = isHighlighted || open;
 
   const handleRemove = () => {
     if (!session) {
@@ -47,7 +59,11 @@ function CourseVaul({
   };
 
   return (
-    <Drawer.Root direction="right" onOpenChange={handleOpenChange} open={open}>
+    <Drawer.Root
+      direction="right"
+      onOpenChange={handleOpenChange}
+      open={openState}
+    >
       <Drawer.Trigger
         render={(props) => {
           return (
@@ -94,6 +110,29 @@ function CourseVaul({
                   <span className="font-medium">Group:</span> {session.group}
                 </div>
               </div>
+              {overlappingSessions.length > 0 && (
+                <div className="space-y-2">
+                  <div className="font-medium text-sm">Overlaps:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {overlappingSessions.map((overlapSession) => {
+                      const overlapKey = `${overlapSession.courseCode}-${overlapSession.group}-${overlapSession.day}-${overlapSession.start}-${overlapSession.end}`;
+                      return (
+                        <Button
+                          key={overlapKey}
+                          onClick={() => {
+                            setOpen(false);
+                            onOpenChange?.(false);
+                            onOpenOtherCourse?.(overlapKey);
+                          }}
+                          variant="outline"
+                        >
+                          {overlapSession.courseCode}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div className="flex">
                 <Button onClick={handleRemove} variant="destructive">
                   <Trash2Icon className="mr-2 h-4 w-4" />
