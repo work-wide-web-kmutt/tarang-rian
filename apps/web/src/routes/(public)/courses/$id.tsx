@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
@@ -27,11 +27,6 @@ function CourseDetailPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4">
-        <Link to="..">
-          <Button className="mb-2" variant="outline">
-            Go Back
-          </Button>
-        </Link>
         <h1 className="font-semibold text-2xl">
           {course.code} — {course.name}
         </h1>
