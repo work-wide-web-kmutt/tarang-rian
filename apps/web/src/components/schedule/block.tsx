@@ -1,49 +1,11 @@
 import CourseVaul from "@/components/course/vaul";
-import { getTimeSlotPosition } from "@/components/schedule/utils";
-import { parseTime } from "@/lib/parser/time";
+import {
+  getClassKey,
+  getOverlappingSessions,
+  getTimeSlotPosition,
+  hasOverlap,
+} from "@/components/schedule/utils";
 import type { SelectedClassSession } from "@/stores/selected";
-
-function getClassKey(session: SelectedClassSession): string {
-  return `${session.courseCode}-${session.group}-${session.day}-${session.start}-${session.end}`;
-}
-
-function doSessionsOverlap(
-  session1: SelectedClassSession,
-  session2: SelectedClassSession
-): boolean {
-  if (session1.day !== session2.day) {
-    return false;
-  }
-
-  const start1 = parseTime(session1.start);
-  const end1 = parseTime(session1.end);
-  const start2 = parseTime(session2.start);
-  const end2 = parseTime(session2.end);
-
-  return start1 < end2 && start2 < end1;
-}
-
-function hasOverlap(
-  session: SelectedClassSession,
-  allSessions: SelectedClassSession[]
-): boolean {
-  return allSessions.some(
-    (other) =>
-      getClassKey(session) !== getClassKey(other) &&
-      doSessionsOverlap(session, other)
-  );
-}
-
-function getOverlappingSessions(
-  session: SelectedClassSession,
-  allSessions: SelectedClassSession[]
-): SelectedClassSession[] {
-  return allSessions.filter(
-    (other) =>
-      getClassKey(session) !== getClassKey(other) &&
-      doSessionsOverlap(session, other)
-  );
-}
 
 interface SessionBlockProps {
   session: SelectedClassSession;

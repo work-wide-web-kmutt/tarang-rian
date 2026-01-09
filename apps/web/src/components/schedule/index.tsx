@@ -1,19 +1,12 @@
 import { useState } from "react";
 import { SessionBlock } from "@/components/schedule/block";
-import { getTimeSlotPosition } from "@/components/schedule/utils";
+import { getClassKey, getTimeSlotPosition } from "@/components/schedule/utils";
+import { CELL_SIZE, DAY_COLUMN_WIDTH, MIN_WIDTH } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { SelectedClassSession } from "@/stores/selected";
 
-const CELL_SIZE = 100;
-const DAY_COLUMN_WIDTH = 120;
-const MIN_WIDTH = DAY_COLUMN_WIDTH + TIME_SLOTS.length * CELL_SIZE + 2;
-
 interface ScheduleProps {
   sessions: SelectedClassSession[];
-}
-
-function getClassKey(session: SelectedClassSession): string {
-  return `${session.courseCode}-${session.group}-${session.day}-${session.start}-${session.end}`;
 }
 
 export function Schedule({ sessions }: ScheduleProps) {
