@@ -53,7 +53,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
             gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
           }}
         >
-          <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
+          <div className="sticky left-0 z-0 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
             Day
           </div>
           {TIME_SLOTS.map((time) => (
@@ -75,7 +75,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                 gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
               }}
             >
-              <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
+              <div className="sticky left-0 z-0 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
                 {day}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
