@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
 import { BreakpointIndicator } from "@/components/breakpoint-indicator";
+import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 
 // biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
@@ -45,9 +46,10 @@ function RootComponent() {
         enableSystem
         storageKey="vite-ui-theme"
       >
-        <div className="grid h-svh grid-rows-[auto_1fr] overflow-x-hidden">
+        <div className="grid h-svh grid-rows-[auto_1fr_auto] overflow-x-hidden">
           <Header />
           <Outlet />
+          <Footer />
         </div>
       </ThemeProvider>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
