@@ -8,6 +8,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
+import { BreakpointIndicator } from "@/components/breakpoint-indicator";
 
 // biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
 export interface RouterAppContext {}
@@ -49,6 +50,7 @@ function RootComponent() {
         </div>
       </ThemeProvider>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
+      {import.meta.env.DEV && <BreakpointIndicator />}
     </>
   );
 }
