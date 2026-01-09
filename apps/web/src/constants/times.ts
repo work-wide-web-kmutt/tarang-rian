@@ -5,7 +5,6 @@ export const DAYS = [
   "Thursday",
   "Friday",
   "Saturday",
-  "Sunday",
 ] as const;
 
 export const TIME_SLOTS = [
