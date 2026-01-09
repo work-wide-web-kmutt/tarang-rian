@@ -83,7 +83,7 @@ function CourseVaul({
       />
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-50 bg-black/80" />
-        <Drawer.Content className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw]">
+        <Drawer.Content className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]">
           {session ? (
             <div className="flex h-full flex-col space-y-6 overflow-y-auto">
               <div>
