@@ -3,6 +3,8 @@ import { z } from "zod";
 export const GenElectiveOptionSchema = z.object({
   code: z.string(),
   name: z.string(),
+  year: z.string(),
+  semester: z.enum(["1", "2", "S"]),
   class: z.array(
     z.object({
       group: z.string(),
