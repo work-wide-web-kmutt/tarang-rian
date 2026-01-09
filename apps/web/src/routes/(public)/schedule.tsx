@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Schedule } from "@/components/schedule";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { useSelectedGenElectives } from "@/stores/selected";
 
@@ -18,6 +19,7 @@ function SelectedCoursesPage() {
             Go Back
           </Button>
         </Link>
+        <ThemeSwitcher />
       </div>
 
       <div className="space-y-6">
