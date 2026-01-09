@@ -9,72 +9,58 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SelectedRouteImport } from './routes/selected'
-import { Route as AllRouteImport } from './routes/all'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as publicSelectedRouteImport } from './routes/(public)/selected'
+import { Route as publicCoursesRouteImport } from './routes/(public)/courses'
 
-const SelectedRoute = SelectedRouteImport.update({
-  id: '/selected',
-  path: '/selected',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AllRoute = AllRouteImport.update({
-  id: '/all',
-  path: '/all',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const publicSelectedRoute = publicSelectedRouteImport.update({
+  id: '/(public)/selected',
+  path: '/selected',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicCoursesRoute = publicCoursesRouteImport.update({
+  id: '/(public)/courses',
+  path: '/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/all': typeof AllRoute
-  '/selected': typeof SelectedRoute
+  '/courses': typeof publicCoursesRoute
+  '/selected': typeof publicSelectedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/all': typeof AllRoute
-  '/selected': typeof SelectedRoute
+  '/courses': typeof publicCoursesRoute
+  '/selected': typeof publicSelectedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/all': typeof AllRoute
-  '/selected': typeof SelectedRoute
+  '/(public)/courses': typeof publicCoursesRoute
+  '/(public)/selected': typeof publicSelectedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/all' | '/selected'
+  fullPaths: '/' | '/courses' | '/selected'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/all' | '/selected'
-  id: '__root__' | '/' | '/all' | '/selected'
+  to: '/' | '/courses' | '/selected'
+  id: '__root__' | '/' | '/(public)/courses' | '/(public)/selected'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AllRoute: typeof AllRoute
-  SelectedRoute: typeof SelectedRoute
+  publicCoursesRoute: typeof publicCoursesRoute
+  publicSelectedRoute: typeof publicSelectedRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/selected': {
-      id: '/selected'
-      path: '/selected'
-      fullPath: '/selected'
-      preLoaderRoute: typeof SelectedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/all': {
-      id: '/all'
-      path: '/all'
-      fullPath: '/all'
-      preLoaderRoute: typeof AllRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -82,13 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(public)/selected': {
+      id: '/(public)/selected'
+      path: '/selected'
+      fullPath: '/selected'
+      preLoaderRoute: typeof publicSelectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(public)/courses': {
+      id: '/(public)/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof publicCoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AllRoute: AllRoute,
-  SelectedRoute: SelectedRoute,
+  publicCoursesRoute: publicCoursesRoute,
+  publicSelectedRoute: publicSelectedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

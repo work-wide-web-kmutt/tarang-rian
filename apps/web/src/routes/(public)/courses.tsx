@@ -6,7 +6,7 @@ import {
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
 
-export const Route = createFileRoute("/all")({
+export const Route = createFileRoute("/(public)/courses")({
   component: AllCoursesPage,
 });
 
