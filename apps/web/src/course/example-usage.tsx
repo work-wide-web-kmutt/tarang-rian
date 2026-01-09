@@ -13,8 +13,8 @@ export function CoursesList() {
             <div>
               <p>Classes:</p>
               <ul>
-                {course.class.map((cls, index) => (
-                  <li key={index}>
+                {course.class.map((cls) => (
+                  <li key={`${cls.group}-${cls.start}-${cls.end}`}>
                     Group {cls.group}: {cls.start} - {cls.end}
                   </li>
                 ))}
@@ -41,8 +41,8 @@ export function CourseByCode({ code }: { code: string }) {
       <div>
         <p>Classes:</p>
         <ul>
-          {course.class.map((cls, index) => (
-            <li key={index}>
+          {course.class.map((cls) => (
+            <li key={`${cls.group}-${cls.start}-${cls.end}`}>
               Group {cls.group}: {cls.start} - {cls.end}
             </li>
           ))}
