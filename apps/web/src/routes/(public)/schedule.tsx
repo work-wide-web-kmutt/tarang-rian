@@ -22,8 +22,10 @@ function SelectedCoursesPage() {
         <ThemeSwitcher />
       </div>
 
-      <div className="w-full min-w-0 overflow-x-auto">
-        <Schedule sessions={selected} />
+      <div className="flex w-full items-center justify-center">
+        <div className="w-fit min-w-0 overflow-x-auto">
+          <Schedule sessions={selected} />
+        </div>
       </div>
     </div>
   );
