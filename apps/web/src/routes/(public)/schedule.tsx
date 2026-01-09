@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Schedule } from "@/components/schedule";
 import { Button } from "@/components/ui/button";
 import { useSelectedGenElectives } from "@/stores/selected";
 
@@ -36,46 +37,54 @@ function SelectedCoursesPage() {
       </div>
 
       {hasSelected ? (
-        <div className="space-y-4">
-          {sortedSelected.map((course) => (
-            <section
-              className="rounded-lg border p-4 shadow-sm"
-              key={course.code}
-            >
-              <header className="mb-2 flex items-baseline justify-between gap-2">
-                <div>
-                  <h2 className="font-medium text-lg">
-                    {course.code} — {course.name}
-                  </h2>
-                  <p className="text-muted-foreground text-sm">
-                    Year {course.year}, Semester {course.semester}
-                  </p>
-                </div>
-                <p className="font-medium text-muted-foreground text-sm">
-                  {course.instructor}
-                </p>
-              </header>
+        <div className="space-y-6">
+          <div className="rounded-lg border bg-card p-4 shadow-sm">
+            <h2 className="mb-4 font-medium text-lg">Weekly Schedule</h2>
+            <Schedule courses={sortedSelected} />
+          </div>
 
-              <div className="mt-2">
-                <p className="font-medium text-sm">Classes</p>
-                <ul className="mt-1 grid gap-1 text-sm">
-                  {course.class.map((cls) => (
-                    <li
-                      className="flex items-center justify-between rounded border px-2 py-1"
-                      key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                    >
-                      <span>
-                        Group {cls.group} · {cls.day}
-                      </span>
-                      <span>
-                        {cls.start}–{cls.end}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-          ))}
+          <div className="space-y-4">
+            <h2 className="font-medium text-lg">Course Details</h2>
+            {sortedSelected.map((course) => (
+              <section
+                className="rounded-lg border p-4 shadow-sm"
+                key={course.code}
+              >
+                <header className="mb-2 flex items-baseline justify-between gap-2">
+                  <div>
+                    <h2 className="font-medium text-lg">
+                      {course.code} — {course.name}
+                    </h2>
+                    <p className="text-muted-foreground text-sm">
+                      Year {course.year}, Semester {course.semester}
+                    </p>
+                  </div>
+                  <p className="font-medium text-muted-foreground text-sm">
+                    {course.instructor}
+                  </p>
+                </header>
+
+                <div className="mt-2">
+                  <p className="font-medium text-sm">Classes</p>
+                  <ul className="mt-1 grid gap-1 text-sm">
+                    {course.class.map((cls) => (
+                      <li
+                        className="flex items-center justify-between rounded border px-2 py-1"
+                        key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                      >
+                        <span>
+                          Group {cls.group} · {cls.day}
+                        </span>
+                        <span>
+                          {cls.start}–{cls.end}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">
