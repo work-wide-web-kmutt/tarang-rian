@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useSelectedGenElectives } from "@/stores/selected";
 
-export const Route = createFileRoute("/(public)/selected")({
+export const Route = createFileRoute("/(public)/schedule")({
   component: SelectedCoursesPage,
 });
 

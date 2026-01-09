@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as publicSelectedRouteImport } from './routes/(public)/selected'
+import { Route as publicScheduleRouteImport } from './routes/(public)/schedule'
 import { Route as publicCoursesIndexRouteImport } from './routes/(public)/courses/index'
 import { Route as publicCoursesIdRouteImport } from './routes/(public)/courses/$id'
 
@@ -19,9 +19,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const publicSelectedRoute = publicSelectedRouteImport.update({
-  id: '/(public)/selected',
-  path: '/selected',
+const publicScheduleRoute = publicScheduleRouteImport.update({
+  id: '/(public)/schedule',
+  path: '/schedule',
   getParentRoute: () => rootRouteImport,
 } as any)
 const publicCoursesIndexRoute = publicCoursesIndexRouteImport.update({
@@ -37,39 +37,39 @@ const publicCoursesIdRoute = publicCoursesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/selected': typeof publicSelectedRoute
+  '/schedule': typeof publicScheduleRoute
   '/courses/$id': typeof publicCoursesIdRoute
   '/courses': typeof publicCoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/selected': typeof publicSelectedRoute
+  '/schedule': typeof publicScheduleRoute
   '/courses/$id': typeof publicCoursesIdRoute
   '/courses': typeof publicCoursesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/(public)/selected': typeof publicSelectedRoute
+  '/(public)/schedule': typeof publicScheduleRoute
   '/(public)/courses/$id': typeof publicCoursesIdRoute
   '/(public)/courses/': typeof publicCoursesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/selected' | '/courses/$id' | '/courses'
+  fullPaths: '/' | '/schedule' | '/courses/$id' | '/courses'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/selected' | '/courses/$id' | '/courses'
+  to: '/' | '/schedule' | '/courses/$id' | '/courses'
   id:
     | '__root__'
     | '/'
-    | '/(public)/selected'
+    | '/(public)/schedule'
     | '/(public)/courses/$id'
     | '/(public)/courses/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  publicSelectedRoute: typeof publicSelectedRoute
+  publicScheduleRoute: typeof publicScheduleRoute
   publicCoursesIdRoute: typeof publicCoursesIdRoute
   publicCoursesIndexRoute: typeof publicCoursesIndexRoute
 }
@@ -83,11 +83,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(public)/selected': {
-      id: '/(public)/selected'
-      path: '/selected'
-      fullPath: '/selected'
-      preLoaderRoute: typeof publicSelectedRouteImport
+    '/(public)/schedule': {
+      id: '/(public)/schedule'
+      path: '/schedule'
+      fullPath: '/schedule'
+      preLoaderRoute: typeof publicScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(public)/courses/': {
@@ -109,7 +109,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  publicSelectedRoute: publicSelectedRoute,
+  publicScheduleRoute: publicScheduleRoute,
   publicCoursesIdRoute: publicCoursesIdRoute,
   publicCoursesIndexRoute: publicCoursesIndexRoute,
 }

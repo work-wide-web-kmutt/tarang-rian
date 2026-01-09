@@ -13,7 +13,7 @@ function HomeComponent() {
         <Link to="/courses">
           <Button variant="outline">All courses</Button>
         </Link>
-        <Link to="/selected">
+        <Link to="/schedule">
           <Button variant="outline">Already selected</Button>
         </Link>
       </div>
