@@ -4,11 +4,12 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
 import { BreakpointIndicator } from "@/components/breakpoint-indicator";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 
 // biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
 export interface RouterAppContext {}
@@ -45,8 +46,14 @@ function RootComponent() {
         enableSystem
         storageKey="vite-ui-theme"
       >
-        <div className="grid h-svh grid-rows-[auto_1fr] overflow-x-hidden">
-          <Outlet />
+        <div className="flex flex-col">
+          <Header />
+          <main className="flex-1">
+            <div className="min-h-screen">
+              <Outlet />
+            </div>
+            <Footer />
+          </main>
         </div>
       </ThemeProvider>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
