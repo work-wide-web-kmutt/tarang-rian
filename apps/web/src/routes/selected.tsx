@@ -1,20 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { allCourses } from "content-collections";
-import { Button } from "@/components/ui/button";
-import {
-  useSelectedGenElectives,
-  useSelectedGenElectivesActions,
-} from "@/stores/selected";
 
-export const Route = createFileRoute("/all")({
-  component: AllCoursesPage,
+import { useSelectedGenElectives } from "@/stores/selected";
+
+export const Route = createFileRoute("/selected")({
+  component: SelectedCoursesPage,
 });
 
-function AllCoursesPage() {
+function SelectedCoursesPage() {
   const selected = useSelectedGenElectives();
-  const { add, removeByCode } = useSelectedGenElectivesActions();
 
-  const sortedCourses = [...allCourses].sort((a, b) => {
+  const sortedSelected = [...selected].sort((a, b) => {
     if (a.year === b.year) {
       if (a.semester === b.semester) {
         return a.code.localeCompare(b.code);
@@ -24,24 +19,23 @@ function AllCoursesPage() {
     return a.year.localeCompare(b.year);
   });
 
+  const hasSelected = sortedSelected.length > 0;
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4">
-        <h1 className="font-semibold text-2xl">All GEN Courses</h1>
+        <h1 className="font-semibold text-2xl">Selected GEN Courses</h1>
         <p className="text-muted-foreground">
-          Listing all General Education elective courses from content
-          collections.
+          Showing only courses you&apos;ve added to your selected list.
         </p>
       </div>
 
-      <div className="space-y-4">
-        {sortedCourses.map((course) => {
-          const isSelected = selected.some((c) => c.code === course.code);
-
-          return (
+      {hasSelected ? (
+        <div className="space-y-4">
+          {sortedSelected.map((course) => (
             <section
               className="rounded-lg border p-4 shadow-sm"
-              key={course.slug}
+              key={course.code}
             >
               <header className="mb-2 flex items-baseline justify-between gap-2">
                 <div>
@@ -75,25 +69,14 @@ function AllCoursesPage() {
                   ))}
                 </ul>
               </div>
-
-              <div className="mt-4 flex justify-end">
-                <Button
-                  onClick={() => {
-                    if (isSelected) {
-                      removeByCode(course.code);
-                    } else {
-                      add(course);
-                    }
-                  }}
-                  variant={isSelected ? "secondary" : "outline"}
-                >
-                  {isSelected ? "Selected" : "Select"}
-                </Button>
-              </div>
             </section>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          You have not selected any courses yet.
+        </p>
+      )}
     </div>
   );
 }

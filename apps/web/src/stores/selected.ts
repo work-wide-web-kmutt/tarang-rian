@@ -11,10 +11,35 @@ interface SelectedGenElectivesState {
   };
 }
 
+const STORAGE_KEY = "selected-gen-electives-storage";
+
+const getStoredSelected = (): GenElectiveOption[] => {
+  if (typeof window === "undefined") {
+    return [];
+  }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveToStorage = (selected: GenElectiveOption[]) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(selected));
+  } catch {
+    // Ignore storage errors
+  }
+};
+
 const selectedGenElectivesStoreCreator: StateCreator<
   SelectedGenElectivesState
 > = (set) => ({
-  selected: [],
+  selected: getStoredSelected(),
   actions: {
     add: (option: GenElectiveOption) =>
       set((state) => {
@@ -26,15 +51,22 @@ const selectedGenElectivesStoreCreator: StateCreator<
           return state;
         }
 
-        return { selected: [...state.selected, option] };
+        const updated = [...state.selected, option];
+        saveToStorage(updated);
+        return { selected: updated };
       }),
     removeByCode: (code: string) =>
-      set((state) => ({
-        selected: state.selected.filter(
+      set((state) => {
+        const updated = state.selected.filter(
           (option: GenElectiveOption) => option.code !== code
-        ),
-      })),
-    clear: () => set({ selected: [] }),
+        );
+        saveToStorage(updated);
+        return { selected: updated };
+      }),
+    clear: () => {
+      saveToStorage([]);
+      set({ selected: [] });
+    },
   },
 });
 

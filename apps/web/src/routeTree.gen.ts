@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SelectedRouteImport } from './routes/selected'
 import { Route as AllRouteImport } from './routes/all'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SelectedRoute = SelectedRouteImport.update({
+  id: '/selected',
+  path: '/selected',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AllRoute = AllRouteImport.update({
   id: '/all',
   path: '/all',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/all': typeof AllRoute
+  '/selected': typeof SelectedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/all': typeof AllRoute
+  '/selected': typeof SelectedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/all': typeof AllRoute
+  '/selected': typeof SelectedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/all'
+  fullPaths: '/' | '/all' | '/selected'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/all'
-  id: '__root__' | '/' | '/all'
+  to: '/' | '/all' | '/selected'
+  id: '__root__' | '/' | '/all' | '/selected'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AllRoute: typeof AllRoute
+  SelectedRoute: typeof SelectedRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/selected': {
+      id: '/selected'
+      path: '/selected'
+      fullPath: '/selected'
+      preLoaderRoute: typeof SelectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/all': {
       id: '/all'
       path: '/all'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AllRoute: AllRoute,
+  SelectedRoute: SelectedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
