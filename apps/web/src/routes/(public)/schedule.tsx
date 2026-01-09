@@ -12,7 +12,7 @@ function SelectedCoursesPage() {
   const selected = useSelectedGenElectives();
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-4">
+    <div className="container mx-auto min-w-0 max-w-7xl px-4 py-4">
       <div className="mb-4 flex justify-between">
         <Link to="..">
           <Button className="mb-2" variant="outline">
@@ -22,10 +22,8 @@ function SelectedCoursesPage() {
         <ThemeSwitcher />
       </div>
 
-      <div className="space-y-6">
-        <div className="min-w-0 border bg-card p-4 shadow-sm">
-          <Schedule sessions={selected} />
-        </div>
+      <div className="w-full min-w-0 overflow-x-auto">
+        <Schedule sessions={selected} />
       </div>
     </div>
   );
