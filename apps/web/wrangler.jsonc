@@ -3,9 +3,10 @@
   "name": "www-tarang-rian",
   "compatibility_date": "2025-12-10",
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "assets": {
-    "directory": "dist"
-  }
+    "directory": "dist",
+    "not_found_handling": "single-page-application",
+  },
 }
