@@ -2,18 +2,39 @@ import { create, type StateCreator } from "zustand";
 
 import type { GenElectiveOption } from "../course/schema";
 
+export interface SelectedClassSession {
+  courseCode: string;
+  courseName: string;
+  year: string;
+  semester: GenElectiveOption["semester"];
+  instructor: string;
+  group: string;
+  day: GenElectiveOption["class"][number]["day"];
+  start: string;
+  end: string;
+}
+
 interface SelectedGenElectivesState {
-  selected: GenElectiveOption[];
+  selected: SelectedClassSession[];
   actions: {
-    add: (option: GenElectiveOption) => void;
-    removeByCode: (code: string) => void;
+    add: (
+      course: GenElectiveOption,
+      classSession: GenElectiveOption["class"][number]
+    ) => void;
+    remove: (
+      courseCode: string,
+      group: string,
+      day: string,
+      start: string,
+      end: string
+    ) => void;
     clear: () => void;
   };
 }
 
 const STORAGE_KEY = "selected-gen-electives-storage";
 
-const getStoredSelected = (): GenElectiveOption[] => {
+const getStoredSelected = (): SelectedClassSession[] => {
   if (typeof window === "undefined") {
     return [];
   }
@@ -25,7 +46,7 @@ const getStoredSelected = (): GenElectiveOption[] => {
   }
 };
 
-const saveToStorage = (selected: GenElectiveOption[]) => {
+const saveToStorage = (selected: SelectedClassSession[]) => {
   if (typeof window === "undefined") {
     return;
   }
@@ -41,24 +62,57 @@ const selectedGenElectivesStoreCreator: StateCreator<
 > = (set) => ({
   selected: getStoredSelected(),
   actions: {
-    add: (option: GenElectiveOption) =>
+    add: (
+      course: GenElectiveOption,
+      classSession: GenElectiveOption["class"][number]
+    ) =>
       set((state) => {
         const exists = state.selected.some(
-          (current: GenElectiveOption) => current.code === option.code
+          (current) =>
+            current.courseCode === course.code &&
+            current.group === classSession.group &&
+            current.day === classSession.day &&
+            current.start === classSession.start &&
+            current.end === classSession.end
         );
 
         if (exists) {
           return state;
         }
 
-        const updated = [...state.selected, option];
+        const newSession: SelectedClassSession = {
+          courseCode: course.code,
+          courseName: course.name,
+          year: course.year,
+          semester: course.semester,
+          instructor: course.instructor,
+          group: classSession.group,
+          day: classSession.day,
+          start: classSession.start,
+          end: classSession.end,
+        };
+
+        const updated = [...state.selected, newSession];
         saveToStorage(updated);
         return { selected: updated };
       }),
-    removeByCode: (code: string) =>
+    remove: (
+      courseCode: string,
+      group: string,
+      day: string,
+      start: string,
+      end: string
+    ) =>
       set((state) => {
         const updated = state.selected.filter(
-          (option: GenElectiveOption) => option.code !== code
+          (session) =>
+            !(
+              session.courseCode === courseCode &&
+              session.group === group &&
+              session.day === day &&
+              session.start === start &&
+              session.end === end
+            )
         );
         saveToStorage(updated);
         return { selected: updated };

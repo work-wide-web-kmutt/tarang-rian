@@ -1,62 +1,15 @@
-import type { GenElectiveOption } from "@/course/schema";
+import { getTimeSlotPosition } from "@/components/schedule/utils";
+import { DAYS, TIME_SLOTS } from "@/constants/times";
 import { cn } from "@/lib/utils";
+import type { SelectedClassSession } from "@/stores/selected";
 
 interface ScheduleProps {
-  courses: GenElectiveOption[];
+  sessions: SelectedClassSession[];
   className?: string;
 }
 
-const DAYS = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-] as const;
-
-const TIME_SLOTS = [
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-  "20:00",
-] as const;
-
-function parseTime(time: string): number {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
-}
-
-function getTimeSlotPosition(
-  start: string,
-  end: string
-): {
-  startCol: number;
-  span: number;
-} {
-  const startMinutes = parseTime(start);
-  const endMinutes = parseTime(end);
-  const baseMinutes = 480;
-  const startSlot = Math.floor((startMinutes - baseMinutes) / 60);
-  const duration = (endMinutes - startMinutes) / 60;
-  return {
-    startCol: Math.max(0, startSlot),
-    span: Math.max(1, Math.ceil(duration)),
-  };
-}
-
 interface ScheduleClass {
-  day: (typeof DAYS)[number];
+  day: string;
   start: string;
   end: string;
   group: string;
@@ -64,14 +17,15 @@ interface ScheduleClass {
   courseName: string;
 }
 
-export function Schedule({ courses, className }: ScheduleProps) {
-  const scheduleData: ScheduleClass[] = courses.flatMap((course) =>
-    course.class.map((cls) => ({
-      ...cls,
-      courseCode: course.code,
-      courseName: course.name,
-    }))
-  );
+export function Schedule({ sessions, className }: ScheduleProps) {
+  const scheduleData: ScheduleClass[] = sessions.map((session) => ({
+    day: session.day,
+    start: session.start,
+    end: session.end,
+    group: session.group,
+    courseCode: session.courseCode,
+    courseName: session.courseName,
+  }));
 
   const getClassesForCell = (day: string, timeColIndex: number) => {
     return scheduleData.filter((cls) => {

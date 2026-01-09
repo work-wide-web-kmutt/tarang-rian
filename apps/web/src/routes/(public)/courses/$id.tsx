@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
+import { formatDayShort } from "@/lib/formatter/day-short";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -21,9 +22,7 @@ export const Route = createFileRoute("/(public)/courses/$id")({
 function CourseDetailPage() {
   const { course } = Route.useLoaderData();
   const selected = useSelectedGenElectives();
-  const { add, removeByCode } = useSelectedGenElectivesActions();
-
-  const isSelected = selected.some((c) => c.code === course.code);
+  const { add, remove } = useSelectedGenElectivesActions();
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
@@ -52,36 +51,41 @@ function CourseDetailPage() {
 
           <div className="mt-2">
             <p className="font-medium text-sm">Classes</p>
-            <ul className="mt-1 grid gap-1 text-sm">
-              {course.class.map((cls: GenElectiveOption["class"][number]) => (
-                <li
-                  className="flex items-center justify-between rounded border px-2 py-1"
-                  key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                >
-                  <span>
-                    Group {cls.group} · {cls.day}
-                  </span>
-                  <span>
-                    {cls.start}–{cls.end}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {course.class.map((cls: GenElectiveOption["class"][number]) => {
+                const isClassSelected = selected.some(
+                  (s) =>
+                    s.courseCode === course.code &&
+                    s.group === cls.group &&
+                    s.day === cls.day &&
+                    s.start === cls.start &&
+                    s.end === cls.end
+                );
 
-          <div className="mt-4 flex justify-end">
-            <Button
-              onClick={() => {
-                if (isSelected) {
-                  removeByCode(course.code);
-                } else {
-                  add(course);
-                }
-              }}
-              variant={isSelected ? "secondary" : "outline"}
-            >
-              {isSelected ? "Selected" : "Select"}
-            </Button>
+                return (
+                  <Button
+                    key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                    onClick={() => {
+                      if (isClassSelected) {
+                        remove(
+                          course.code,
+                          cls.group,
+                          cls.day,
+                          cls.start,
+                          cls.end
+                        );
+                      } else {
+                        add(course, cls);
+                      }
+                    }}
+                    size="sm"
+                    variant={isClassSelected ? "secondary" : "outline"}
+                  >
+                    {formatDayShort(cls.day)} {cls.start} - {cls.end}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </section>
       </div>
