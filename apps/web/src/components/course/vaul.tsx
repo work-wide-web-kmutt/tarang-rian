@@ -1,7 +1,10 @@
+import { Trash2Icon } from "lucide-react";
 import { type CSSProperties, type ReactNode, useState } from "react";
 import { Drawer } from "vaul-base";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SelectedClassSession } from "@/stores/selected";
+import { useSelectedGenElectivesActions } from "@/stores/selected";
 
 interface CourseVaulType {
   children: ReactNode;
@@ -21,10 +24,26 @@ function CourseVaul({
   session,
 }: CourseVaulType) {
   const [open, setOpen] = useState(false);
+  const { remove } = useSelectedGenElectivesActions();
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     onOpenChange?.(newOpen);
+  };
+
+  const handleRemove = () => {
+    if (!session) {
+      return;
+    }
+    remove(
+      session.courseCode,
+      session.group,
+      session.day,
+      session.start,
+      session.end
+    );
+    setOpen(false);
+    onOpenChange?.(false);
   };
 
   return (
@@ -74,6 +93,12 @@ function CourseVaul({
                 <div>
                   <span className="font-medium">Group:</span> {session.group}
                 </div>
+              </div>
+              <div className="flex">
+                <Button onClick={handleRemove} variant="destructive">
+                  <Trash2Icon className="mr-2 h-4 w-4" />
+                  Remove from selected
+                </Button>
               </div>
             </div>
           ) : (
