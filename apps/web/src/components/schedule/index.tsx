@@ -1,3 +1,4 @@
+import CourseVaul from "@/components/course/vaul";
 import { getTimeSlotPosition } from "@/components/schedule/utils";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import { cn } from "@/lib/utils";
@@ -52,7 +53,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
             gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
           }}
         >
-          <div className="sticky left-0 z-30 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
+          <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
             Day
           </div>
           {TIME_SLOTS.map((time) => (
@@ -74,7 +75,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                 gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
               }}
             >
-              <div className="sticky left-0 z-30 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
+              <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
                 {day}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
@@ -94,7 +95,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                         cls.end
                       );
                       return (
-                        <div
+                        <CourseVaul
                           className="absolute inset-y-0 z-20 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
                           key={`${cls.courseCode}-${cls.group}-${cls.day}-${cls.start}`}
                           style={{
@@ -111,7 +112,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                           <div className="text-[10px] text-primary-foreground/80">
                             Group {cls.group}
                           </div>
-                        </div>
+                        </CourseVaul>
                       );
                     })}
                   </div>
