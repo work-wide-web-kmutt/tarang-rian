@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -16,6 +17,9 @@ function HomeComponent() {
         <Link to="/schedule">
           <Button variant="outline">Already selected</Button>
         </Link>
+      </div>
+      <div className="pt-2">
+        <ThemeSwitcher />
       </div>
     </div>
   );
