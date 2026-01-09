@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CoursesList } from "@/course/example-usage";
 
 export const Route = createFileRoute("/")({
   component: HomeComponent,
@@ -14,7 +13,6 @@ function HomeComponent() {
           <p className="text-muted-foreground">Let's Plan your the schedule</p>
         </section>
       </div>
-      <CoursesList />
     </div>
   );
 }
