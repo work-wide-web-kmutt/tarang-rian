@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { allCourses } from "content-collections";
 import { Button } from "@/components/ui/button";
+import type { GenElectiveOption } from "@/course/schema";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -65,19 +66,21 @@ function AllCoursesPage() {
               <div className="mt-2">
                 <p className="font-medium text-sm">Classes</p>
                 <ul className="mt-1 grid gap-1 text-sm">
-                  {course.class.map((cls) => (
-                    <li
-                      className="flex items-center justify-between rounded border px-2 py-1"
-                      key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                    >
-                      <span>
-                        Group {cls.group} · {cls.day}
-                      </span>
-                      <span>
-                        {cls.start}–{cls.end}
-                      </span>
-                    </li>
-                  ))}
+                  {course.class.map(
+                    (cls: GenElectiveOption["class"][number]) => (
+                      <li
+                        className="flex items-center justify-between rounded border px-2 py-1"
+                        key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                      >
+                        <span>
+                          Group {cls.group} · {cls.day}
+                        </span>
+                        <span>
+                          {cls.start}–{cls.end}
+                        </span>
+                      </li>
+                    )
+                  )}
                 </ul>
               </div>
 

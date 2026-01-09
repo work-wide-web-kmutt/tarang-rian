@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { allCourses } from "content-collections";
+import { allCourses, type Course } from "content-collections";
 import { Button } from "@/components/ui/button";
+import type { GenElectiveOption } from "@/course/schema";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -9,7 +10,7 @@ import {
 export const Route = createFileRoute("/(public)/courses/$id")({
   component: CourseDetailPage,
   loader: ({ params }) => {
-    const course = allCourses.find((c) => c.slug === params.id);
+    const course = allCourses.find((c: Course) => c.slug === params.id);
     if (!course) {
       throw notFound();
     }
@@ -52,7 +53,7 @@ function CourseDetailPage() {
           <div className="mt-2">
             <p className="font-medium text-sm">Classes</p>
             <ul className="mt-1 grid gap-1 text-sm">
-              {course.class.map((cls) => (
+              {course.class.map((cls: GenElectiveOption["class"][number]) => (
                 <li
                   className="flex items-center justify-between rounded border px-2 py-1"
                   key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}

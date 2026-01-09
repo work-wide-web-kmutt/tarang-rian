@@ -8,7 +8,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "start": "vite",
-    "check-types": "tsc --noEmit",
+    "generate-content-collections": "bun run scripts/generate-content-collections.ts",
+    "check-types": "bun run generate-content-collections && tsc --noEmit",
     "deploy": "bun run build && wrangler deploy",
     "preview": "bun run build && wrangler dev"
   },
