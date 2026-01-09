@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { allCourses } from "content-collections";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,7 +6,7 @@ import {
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
 
-export const Route = createFileRoute("/(public)/courses")({
+export const Route = createFileRoute("/(public)/courses/")({
   component: AllCoursesPage,
 });
 
@@ -27,6 +27,11 @@ function AllCoursesPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4">
+        <Link className="" to="..">
+          <Button className="mb-2" variant="outline">
+            Go Back
+          </Button>
+        </Link>
         <h1 className="font-semibold text-2xl">All GEN Courses</h1>
         <p className="text-muted-foreground">
           Listing all General Education elective courses from content
@@ -76,7 +81,10 @@ function AllCoursesPage() {
                 </ul>
               </div>
 
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex justify-end gap-2">
+                <Link params={{ id: course.slug }} to="/courses/$id">
+                  <Button variant="outline">View</Button>
+                </Link>
                 <Button
                   onClick={() => {
                     if (isSelected) {

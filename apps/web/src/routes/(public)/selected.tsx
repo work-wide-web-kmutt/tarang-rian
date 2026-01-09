@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { useSelectedGenElectives } from "@/stores/selected";
 
 export const Route = createFileRoute("/(public)/selected")({
@@ -24,6 +24,11 @@ function SelectedCoursesPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
       <div className="mb-4">
+        <Link to="..">
+          <Button className="mb-2" variant="outline">
+            Go Back
+          </Button>
+        </Link>
         <h1 className="font-semibold text-2xl">Selected GEN Courses</h1>
         <p className="text-muted-foreground">
           Showing only courses you&apos;ve added to your selected list.

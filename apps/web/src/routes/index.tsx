@@ -11,7 +11,10 @@ function HomeComponent() {
       <h1 className="font-bold text-2xl">TARANG RIAN KMUTT</h1>
       <div className="flex gap-2 pt-2">
         <Link to="/courses">
-          <Button variant="outline">All</Button>
+          <Button variant="outline">All courses</Button>
+        </Link>
+        <Link to="/selected">
+          <Button variant="outline">Already selected</Button>
         </Link>
       </div>
     </div>

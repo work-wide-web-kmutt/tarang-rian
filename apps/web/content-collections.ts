@@ -9,7 +9,9 @@ const courses = defineCollection({
   include: "**/*.md",
   schema: GenElectiveOptionSchema,
   transform: (data) => {
-    const slug = data._meta.path.replace(MD_FILE_EXTENSION_REGEX, "");
+    const slug = data._meta.path
+      .replace(MD_FILE_EXTENSION_REGEX, "")
+      .replace(/\//g, "-");
     return {
       ...data,
       slug,
