@@ -33,7 +33,8 @@ export function Schedule({ sessions, className }: ScheduleProps) {
         return false;
       }
       const { startCol, span } = getTimeSlotPosition(cls.start, cls.end);
-      return timeColIndex >= startCol && timeColIndex < startCol + span;
+      const endCol = startCol + span;
+      return timeColIndex >= startCol && timeColIndex < Math.ceil(endCol);
     });
   };
 
@@ -88,13 +89,16 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                     key={`${day}-${time}`}
                   >
                     {firstColClasses.map((cls) => {
-                      const { span } = getTimeSlotPosition(cls.start, cls.end);
+                      const { startOffset, span } = getTimeSlotPosition(
+                        cls.start,
+                        cls.end
+                      );
                       return (
                         <div
                           className="absolute inset-y-0 z-20 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
                           key={`${cls.courseCode}-${cls.group}-${cls.day}-${cls.start}`}
                           style={{
-                            left: "0.125rem",
+                            left: `${startOffset * 100}%`,
                             width: `calc(${span * 100}% - 0.25rem)`,
                           }}
                         >

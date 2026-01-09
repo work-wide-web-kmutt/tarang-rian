@@ -5,15 +5,26 @@ export function getTimeSlotPosition(
   end: string
 ): {
   startCol: number;
+  startOffset: number;
   span: number;
+  endOffset: number;
 } {
   const startMinutes = parseTime(start);
   const endMinutes = parseTime(end);
-  const baseMinutes = 510;
-  const startSlot = Math.floor((startMinutes - baseMinutes) / 30);
-  const duration = (endMinutes - startMinutes) / 30;
+  const baseMinutes = 480;
+
+  const startCol = Math.floor((startMinutes - baseMinutes) / 60);
+  const startOffset = ((startMinutes - baseMinutes) % 60) / 60;
+
+  const endCol = Math.floor((endMinutes - baseMinutes) / 60);
+  const endOffset = ((endMinutes - baseMinutes) % 60) / 60;
+
+  const span = endCol - startCol + (endOffset - startOffset);
+
   return {
-    startCol: Math.max(0, startSlot),
-    span: Math.max(1, Math.ceil(duration)),
+    startCol: Math.max(0, startCol),
+    startOffset,
+    span: Math.max(0.5, span),
+    endOffset,
   };
 }
