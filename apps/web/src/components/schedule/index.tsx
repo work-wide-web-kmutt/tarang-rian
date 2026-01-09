@@ -53,11 +53,11 @@ export function Schedule({ sessions, className }: ScheduleProps) {
 
   return (
     <div className={cn("w-full min-w-0 overflow-x-auto", className)}>
-      <div className="min-w-[1000px]">
+      <div className="min-w-[1000px]" style={{ width: "max(100%, 1000px)" }}>
         <div
           className="grid border border-border"
           style={{
-            gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, 80px)`,
+            gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
           }}
         >
           <div className="sticky left-0 z-0 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
@@ -79,7 +79,7 @@ export function Schedule({ sessions, className }: ScheduleProps) {
               className="grid border-border border-b last:border-b-0"
               key={day}
               style={{
-                gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, 80px)`,
+                gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, minmax(80px, 1fr))`,
               }}
             >
               <div className="sticky left-0 z-0 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
