@@ -1,3 +1,4 @@
+import { useState } from "react";
 import CourseVaul from "@/components/course/vaul";
 import { getTimeSlotPosition } from "@/components/schedule/utils";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
@@ -18,7 +19,13 @@ interface ScheduleClass {
   courseName: string;
 }
 
+function getClassKey(cls: ScheduleClass): string {
+  return `${cls.courseCode}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`;
+}
+
 export function Schedule({ sessions, className }: ScheduleProps) {
+  const [openClassKey, setOpenClassKey] = useState<string | null>(null);
+
   const scheduleData: ScheduleClass[] = sessions.map((session) => ({
     day: session.day,
     start: session.start,
@@ -94,10 +101,17 @@ export function Schedule({ sessions, className }: ScheduleProps) {
                         cls.start,
                         cls.end
                       );
+                      const classKey = getClassKey(cls);
+                      const isHighlighted = openClassKey === classKey;
+
                       return (
                         <CourseVaul
                           className="absolute inset-y-0 z-20 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
-                          key={`${cls.courseCode}-${cls.group}-${cls.day}-${cls.start}`}
+                          isHighlighted={isHighlighted}
+                          key={classKey}
+                          onOpenChange={(open) => {
+                            setOpenClassKey(open ? classKey : null);
+                          }}
                           style={{
                             left: `${startOffset * 100}%`,
                             width: `calc(${span * 100}% - 0.25rem)`,
