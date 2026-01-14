@@ -12,6 +12,7 @@ export interface SelectedClassSession {
   day: GenElectiveOption["class"][number]["day"];
   start: string;
   end: string;
+  type: "fixed" | "custom";
 }
 
 interface SelectedGenElectivesState {
@@ -40,7 +41,14 @@ const getStoredSelected = (): SelectedClassSession[] => {
   }
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) {
+      return [];
+    }
+    const parsed = JSON.parse(stored) as SelectedClassSession[];
+    return parsed.map((session) => ({
+      ...session,
+      type: session.type ?? "fixed",
+    }));
   } catch {
     return [];
   }
@@ -90,6 +98,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
           day: classSession.day,
           start: classSession.start,
           end: classSession.end,
+          type: "fixed",
         };
 
         const updated = [...state.selected, newSession];
