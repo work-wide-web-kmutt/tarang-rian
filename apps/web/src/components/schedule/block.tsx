@@ -33,6 +33,7 @@ export function SessionBlock({
           ? "border-destructive bg-destructive/40"
           : "border-primary bg-primary"
       }`}
+      data-session-block
       isHighlighted={isHighlighted}
       key={classKey}
       onOpenChange={(open) => {

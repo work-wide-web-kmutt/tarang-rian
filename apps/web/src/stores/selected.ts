@@ -22,6 +22,11 @@ interface SelectedGenElectivesState {
       course: GenElectiveOption,
       classSession: GenElectiveOption["class"][number]
     ) => void;
+    addCustom: (
+      day: GenElectiveOption["class"][number]["day"],
+      start: string,
+      end: string
+    ) => void;
     remove: (
       courseCode: string,
       group: string,
@@ -99,6 +104,41 @@ const selectedGenElectivesStoreCreator: StateCreator<
           start: classSession.start,
           end: classSession.end,
           type: "fixed",
+        };
+
+        const updated = [...state.selected, newSession];
+        saveToStorage(updated);
+        return { selected: updated };
+      }),
+    addCustom: (
+      day: GenElectiveOption["class"][number]["day"],
+      start: string,
+      end: string
+    ) =>
+      set((state) => {
+        const exists = state.selected.some(
+          (current) =>
+            current.courseCode === "CUSTOM" &&
+            current.day === day &&
+            current.start === start &&
+            current.end === end
+        );
+
+        if (exists) {
+          return state;
+        }
+
+        const newSession: SelectedClassSession = {
+          courseCode: "CUSTOM",
+          courseName: "Custom Class",
+          year: "2025",
+          semester: "1",
+          instructor: "TBA",
+          group: "1",
+          day,
+          start,
+          end,
+          type: "custom",
         };
 
         const updated = [...state.selected, newSession];

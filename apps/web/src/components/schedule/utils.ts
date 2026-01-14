@@ -71,3 +71,28 @@ export function getOverlappingSessions(
       doSessionsOverlap(session, other)
   );
 }
+
+const BASE_MINUTES = 480;
+
+export function get30MinuteSlotFromPosition(
+  x: number,
+  cellWidth: number,
+  timeColIndex: number
+): { slotIndex: number; time: string } {
+  const xPercent = x / cellWidth;
+  const halfSlot = xPercent < 0.5 ? 0 : 1;
+  const slotIndex = timeColIndex * 2 + halfSlot;
+  const time = getTimeFrom30MinuteSlot(slotIndex);
+  return { slotIndex, time };
+}
+
+export function getTimeFrom30MinuteSlot(slotIndex: number): string {
+  const totalMinutes = BASE_MINUTES + slotIndex * 30;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+}
+
+export function formatTimeRange(start: string, end: string): string {
+  return `${start}–${end}`;
+}
