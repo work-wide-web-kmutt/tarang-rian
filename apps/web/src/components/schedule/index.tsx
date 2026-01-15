@@ -9,7 +9,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SessionBlock } from "@/components/schedule/block";
 import { DraggableBlock } from "@/components/schedule/draggable-block";
 import {
@@ -65,6 +65,50 @@ function DroppableCell({
   );
 }
 
+function findDayRowFromMousePosition(
+  mouseEvent: MouseEvent
+): { day: string; timeColIndex: number; cellX: number } | null {
+  for (const day of DAYS) {
+    const dayRowElement = document.querySelector(
+      `[data-day-row="${day}"]`
+    ) as HTMLElement;
+
+    if (!dayRowElement) {
+      continue;
+    }
+
+    const rect = dayRowElement.getBoundingClientRect();
+    const { clientX: mouseX, clientY: mouseY } = mouseEvent;
+
+    const isWithinBounds =
+      mouseY >= rect.top &&
+      mouseY <= rect.bottom &&
+      mouseX >= rect.left &&
+      mouseX <= rect.right;
+
+    if (!isWithinBounds) {
+      continue;
+    }
+
+    const x = mouseX - rect.left - DAY_COLUMN_WIDTH;
+
+    if (x < 0) {
+      continue;
+    }
+
+    const timeColIndex = Math.floor(x / CELL_SIZE);
+
+    if (timeColIndex < 0 || timeColIndex >= TIME_SLOTS.length) {
+      continue;
+    }
+
+    const cellX = x - timeColIndex * CELL_SIZE;
+    return { day, timeColIndex, cellX };
+  }
+
+  return null;
+}
+
 export function Schedule({ sessions }: ScheduleProps) {
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -91,6 +135,56 @@ export function Schedule({ sessions }: ScheduleProps) {
       },
     })
   );
+
+  useEffect(() => {
+    if (!activeSession) {
+      return;
+    }
+
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      const dayRowInfo = findDayRowFromMousePosition(e);
+
+      if (!dayRowInfo) {
+        setSnappedPreview(null);
+        setDragOverPosition({ x: e.clientX, y: e.clientY });
+        return;
+      }
+
+      const { day, timeColIndex, cellX } = dayRowInfo;
+      const { slotIndex } = get30MinuteSlotFromPosition(
+        cellX,
+        CELL_SIZE,
+        timeColIndex
+      );
+
+      const { newStart, newEnd } = calculateSnappedPreview(
+        activeSession,
+        day as GenElectiveOption["class"][number]["day"],
+        slotIndex
+      );
+
+      const { startCol, startOffset, span } = getTimeSlotPosition(
+        newStart,
+        newEnd
+      );
+
+      setSnappedPreview({
+        day: day as GenElectiveOption["class"][number]["day"],
+        start: newStart,
+        end: newEnd,
+        startCol,
+        startOffset,
+        span,
+      });
+      setDragOverPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    document.addEventListener("mousemove", handleGlobalMouseMove);
+
+    return () => {
+      document.removeEventListener("mousemove", handleGlobalMouseMove);
+    };
+  }, [activeSession]);
 
   const getClassesForCell = (day: string, timeColIndex: number) => {
     return sessions.filter((session) => {
