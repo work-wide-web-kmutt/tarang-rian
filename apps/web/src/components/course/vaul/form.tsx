@@ -134,29 +134,7 @@ export function CourseVaulForm() {
           }}
           name="courseName"
         />
-        <form.Field
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Instructor</FieldLabel>
-                <Input
-                  aria-invalid={isInvalid}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => {
-                    field.handleChange(event.target.value);
-                  }}
-                  value={field.state.value}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-          name="instructor"
-        />
+
         <form.Field
           children={(field) => {
             const isInvalid =
@@ -215,6 +193,29 @@ export function CourseVaulForm() {
             );
           }}
           name="group"
+        />
+        <form.Field
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Instructor</FieldLabel>
+                <Input
+                  aria-invalid={isInvalid}
+                  id={field.name}
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => {
+                    field.handleChange(event.target.value);
+                  }}
+                  value={field.state.value}
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
+          name="instructor"
         />
       </FieldGroup>
       <div className="flex gap-2">
