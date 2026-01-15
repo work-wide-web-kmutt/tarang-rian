@@ -1,6 +1,7 @@
 import { Trash2Icon } from "lucide-react";
 import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 import { Drawer } from "vaul-base";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SelectedClassSession } from "@/stores/selected";
@@ -112,16 +113,17 @@ function CourseVaul({
         >
           {session ? (
             <div className="flex h-full flex-col space-y-6 overflow-y-auto">
-              <div>
-                <h2 className="font-semibold text-2xl">
-                  {session.courseCode} — {session.courseName}
-                </h2>
-                <p className="mt-1 text-muted-foreground">
-                  Year {session.year}, Semester {session.semester}
-                </p>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  Instructor: {session.instructor}
-                </p>
+              <div className="space-y-0">
+                <h2 className="font-semibold text-2xl">{session.courseName}</h2>
+                <Badge>{session.courseCode}</Badge>
+                <div className="space-y-0 pt-4">
+                  <p className="mt-1 text-muted-foreground">
+                    Year {session.year}, Semester {session.semester}
+                  </p>
+                  <p className="mt-1 text-muted-foreground text-sm">
+                    Instructor: {session.instructor}
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-2 text-sm">
