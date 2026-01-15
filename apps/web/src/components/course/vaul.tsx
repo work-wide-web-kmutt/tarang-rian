@@ -72,8 +72,8 @@ function CourseVaul({
               {...props}
               className={cn(
                 className,
-                "transition-all duration-300 ease-in-out",
-                isHighlighted && "z-60"
+                "transition-all duration-300 ease-out",
+                isHighlighted && "z-60 scale-[1.02] shadow-lg"
               )}
               style={style}
             >
@@ -84,7 +84,10 @@ function CourseVaul({
       />
       <Drawer.Portal>
         <Drawer.Overlay
-          className="fixed inset-0 z-50 bg-black/80"
+          className={cn(
+            "fixed inset-0 z-50 bg-black/80 transition-opacity duration-300 ease-out",
+            openState ? "opacity-100" : "opacity-0"
+          )}
           onClick={() => {
             handleOpenChange(false);
           }}
@@ -96,7 +99,10 @@ function CourseVaul({
           }}
         />
         <Drawer.Content
-          className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
+          className={cn(
+            "fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground transition-transform duration-300 ease-out sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]",
+            openState ? "translate-x-0" : "translate-x-full"
+          )}
           onMouseDown={(e) => {
             e.stopPropagation();
           }}
