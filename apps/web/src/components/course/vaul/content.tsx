@@ -70,10 +70,7 @@ export function CourseVaulContent() {
       />
       <Drawer.Portal>
         <Drawer.Overlay
-          className={cn(
-            "fixed inset-0 z-50 bg-black/80 transition-opacity duration-300 ease-out",
-            openState ? "opacity-100" : "opacity-0"
-          )}
+          className="fixed inset-0 z-50 bg-black/80"
           onClick={() => {
             setOpen(false);
           }}
@@ -85,10 +82,7 @@ export function CourseVaulContent() {
           }}
         />
         <Drawer.Content
-          className={cn(
-            "fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground transition-transform duration-300 ease-out sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]",
-            openState ? "translate-x-0" : "translate-x-full"
-          )}
+          className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
           onMouseDown={(e) => {
             e.stopPropagation();
           }}
