@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import Loader from "@/components/loader";
 import { routeTree } from "@/routeTree.gen";
+import "@/stores/academic-context";
 
 const router = createRouter({
   routeTree,
