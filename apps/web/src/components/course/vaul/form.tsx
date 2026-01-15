@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import {
   BookOpen,
   CalendarIcon,
+  ClockIcon,
   GraduationCap,
   User,
   UsersIcon,
@@ -29,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DAYS } from "@/constants/times";
+import { parseTime } from "@/lib/parser/time";
 import { useCurrentYear } from "@/stores/academic-context";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
@@ -48,6 +50,8 @@ const editSchema = z.object({
   ]),
   year: z.string().min(1, "Year is required."),
   semester: z.enum(["1", "2", "S"]),
+  startTime: z.string().min(1, "Start time is required."),
+  endTime: z.string().min(1, "End time is required."),
 });
 
 export function CourseVaulForm() {
@@ -63,6 +67,17 @@ export function CourseVaulForm() {
     return years;
   }, [currentYear]);
 
+  const timeSlots = useMemo(() => {
+    const slots: string[] = [];
+    for (let hour = 8; hour <= 18; hour++) {
+      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      if (hour < 18) {
+        slots.push(`${hour.toString().padStart(2, "0")}:30`);
+      }
+    }
+    return slots;
+  }, []);
+
   const form = useForm({
     defaultValues: {
       courseCode: session?.courseCode ?? "",
@@ -72,6 +87,8 @@ export function CourseVaulForm() {
       day: session?.day ?? "Monday",
       year: session?.year ?? currentYear.toString(),
       semester: session?.semester ?? "1",
+      startTime: session?.start ?? "",
+      endTime: session?.end ?? "",
     },
     validators: {
       onBlur: editSchema,
@@ -89,6 +106,8 @@ export function CourseVaulForm() {
         day: value.day,
         year: value.year,
         semester: value.semester,
+        start: value.startTime,
+        end: value.endTime,
       });
       setIsEditing(false);
     },
@@ -106,6 +125,8 @@ export function CourseVaulForm() {
       day: session.day,
       year: session.year,
       semester: session.semester,
+      startTime: session.start,
+      endTime: session.end,
     });
   }, [session, form]);
 
@@ -296,6 +317,110 @@ export function CourseVaulForm() {
           }}
           name="day"
         />
+        <div className="flex gap-4">
+          <form.Field
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              const endTime = form.state.values.endTime;
+              return (
+                <Field className="flex-1" data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>Start Time</FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <ClockIcon />
+                    </InputGroupAddon>
+                    <Select
+                      onValueChange={(value) => {
+                        if (value) {
+                          field.handleChange(value);
+                        }
+                      }}
+                      value={field.state.value}
+                    >
+                      <SelectTrigger
+                        aria-invalid={isInvalid}
+                        className="w-full border-0 shadow-none"
+                        id={field.name}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeSlots.map((time) => {
+                          const isDisabled = endTime
+                            ? parseTime(time) >= parseTime(endTime)
+                            : false;
+                          return (
+                            <SelectItem
+                              disabled={isDisabled}
+                              key={time}
+                              value={time}
+                            >
+                              {time}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </InputGroup>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+            name="startTime"
+          />
+          <form.Field
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              const startTime = form.state.values.startTime;
+              return (
+                <Field className="flex-1" data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>End Time</FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <ClockIcon />
+                    </InputGroupAddon>
+                    <Select
+                      onValueChange={(value) => {
+                        if (value) {
+                          field.handleChange(value);
+                        }
+                      }}
+                      value={field.state.value}
+                    >
+                      <SelectTrigger
+                        aria-invalid={isInvalid}
+                        className="w-full border-0 shadow-none"
+                        id={field.name}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeSlots.map((time) => {
+                          const isDisabled = startTime
+                            ? parseTime(time) <= parseTime(startTime)
+                            : false;
+                          return (
+                            <SelectItem
+                              disabled={isDisabled}
+                              key={time}
+                              value={time}
+                            >
+                              {time}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </InputGroup>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+            name="endTime"
+          />
+        </div>
         <form.Field
           children={(field) => {
             const isInvalid =

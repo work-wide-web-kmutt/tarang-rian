@@ -47,6 +47,8 @@ interface SelectedGenElectivesState {
         day: GenElectiveOption["class"][number]["day"];
         year: string;
         semester: GenElectiveOption["semester"];
+        start: string;
+        end: string;
       }
     ) => void;
     clear: () => void;
@@ -206,6 +208,8 @@ const selectedGenElectivesStoreCreator: StateCreator<
         day: GenElectiveOption["class"][number]["day"];
         year: string;
         semester: GenElectiveOption["semester"];
+        start: string;
+        end: string;
       }
     ) =>
       set((state) => {
@@ -220,6 +224,8 @@ const selectedGenElectivesStoreCreator: StateCreator<
               day: updates.day,
               year: updates.year,
               semester: updates.semester,
+              start: updates.start,
+              end: updates.end,
             };
           }
           return session;
