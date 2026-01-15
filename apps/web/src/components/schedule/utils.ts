@@ -39,7 +39,7 @@ export function getTimeSlotPosition(
 }
 
 export function getClassKey(session: SelectedClassSession): string {
-  return `${session.courseCode}-${session.group}-${session.day}-${session.start}-${session.end}`;
+  return session.id;
 }
 
 function doSessionsOverlap(
@@ -63,9 +63,7 @@ export function hasOverlap(
   allSessions: SelectedClassSession[]
 ): boolean {
   return allSessions.some(
-    (other) =>
-      getClassKey(session) !== getClassKey(other) &&
-      doSessionsOverlap(session, other)
+    (other) => session.id !== other.id && doSessionsOverlap(session, other)
   );
 }
 
@@ -74,9 +72,7 @@ export function getOverlappingSessions(
   allSessions: SelectedClassSession[]
 ): SelectedClassSession[] {
   return allSessions.filter(
-    (other) =>
-      getClassKey(session) !== getClassKey(other) &&
-      doSessionsOverlap(session, other)
+    (other) => session.id !== other.id && doSessionsOverlap(session, other)
   );
 }
 

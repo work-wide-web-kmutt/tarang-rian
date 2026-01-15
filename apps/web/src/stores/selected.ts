@@ -1,9 +1,11 @@
+import { v7 } from "uuid";
 import { create, type StateCreator } from "zustand";
 
 import type { GenElectiveOption } from "../course/schema";
 import { getAcademicContext } from "./academic-context";
 
 export interface SelectedClassSession {
+  id: string;
   courseCode: string;
   courseName: string;
   year: string;
@@ -28,21 +30,15 @@ interface SelectedGenElectivesState {
       start: string,
       end: string
     ) => SelectedClassSession | null;
-    remove: (
-      courseCode: string,
-      group: string,
-      day: string,
-      start: string,
-      end: string
-    ) => void;
+    remove: (id: string) => void;
     update: (
-      oldSession: SelectedClassSession,
+      id: string,
       newDay: GenElectiveOption["class"][number]["day"],
       newStart: string,
       newEnd: string
     ) => void;
     updateSession: (
-      oldSession: SelectedClassSession,
+      id: string,
       updates: {
         courseCode: string;
         courseName: string;
@@ -67,6 +63,7 @@ const getStoredSelected = (): SelectedClassSession[] => {
     const parsed = JSON.parse(stored) as SelectedClassSession[];
     return parsed.map((session) => ({
       ...session,
+      id: session.id ?? v7(),
       type: session.type ?? "fixed",
     }));
   } catch {
@@ -109,6 +106,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
         }
 
         const newSession: SelectedClassSession = {
+          id: v7(),
           courseCode: course.code,
           courseName: course.name,
           year: course.year,
@@ -146,6 +144,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
 
         const academicContext = getAcademicContext();
         const newSession: SelectedClassSession = {
+          id: v7(),
           courseCode: `Unassigned (${state.selected.length + 1})`,
           courseName: "Unassigned Class",
           year: academicContext.currentYear.toString(),
@@ -166,42 +165,21 @@ const selectedGenElectivesStoreCreator: StateCreator<
 
       return createdSession;
     },
-    remove: (
-      courseCode: string,
-      group: string,
-      day: string,
-      start: string,
-      end: string
-    ) =>
+    remove: (id: string) =>
       set((state) => {
-        const updated = state.selected.filter(
-          (session) =>
-            !(
-              session.courseCode === courseCode &&
-              session.group === group &&
-              session.day === day &&
-              session.start === start &&
-              session.end === end
-            )
-        );
+        const updated = state.selected.filter((session) => session.id !== id);
         saveToStorage(updated);
         return { selected: updated };
       }),
     update: (
-      oldSession: SelectedClassSession,
+      id: string,
       newDay: GenElectiveOption["class"][number]["day"],
       newStart: string,
       newEnd: string
     ) =>
       set((state) => {
         const updated = state.selected.map((session) => {
-          if (
-            session.courseCode === oldSession.courseCode &&
-            session.group === oldSession.group &&
-            session.day === oldSession.day &&
-            session.start === oldSession.start &&
-            session.end === oldSession.end
-          ) {
+          if (session.id === id) {
             return {
               ...session,
               day: newDay,
@@ -215,7 +193,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
         return { selected: updated };
       }),
     updateSession: (
-      oldSession: SelectedClassSession,
+      id: string,
       updates: {
         courseCode: string;
         courseName: string;
@@ -224,13 +202,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
     ) =>
       set((state) => {
         const updated = state.selected.map((session) => {
-          if (
-            session.courseCode === oldSession.courseCode &&
-            session.group === oldSession.group &&
-            session.day === oldSession.day &&
-            session.start === oldSession.start &&
-            session.end === oldSession.end
-          ) {
+          if (session.id === id) {
             return {
               ...session,
               courseCode: updates.courseCode,

@@ -61,7 +61,7 @@ function CourseVaul({
       if (!session) {
         return;
       }
-      updateSession(session, {
+      updateSession(session.id, {
         courseCode: value.courseCode,
         courseName: value.courseName,
         instructor: value.instructor,
@@ -103,13 +103,7 @@ function CourseVaul({
     if (!session) {
       return;
     }
-    remove(
-      session.courseCode,
-      session.group,
-      session.day,
-      session.start,
-      session.end
-    );
+    remove(session.id);
     setOpen(false);
     onOpenChange?.(false);
   };

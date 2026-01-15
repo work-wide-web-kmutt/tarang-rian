@@ -358,7 +358,7 @@ export function Schedule({ sessions }: ScheduleProps) {
     }
 
     update(
-      sessionData,
+      sessionData.id,
       finalPosition.day,
       finalPosition.start,
       finalPosition.end
