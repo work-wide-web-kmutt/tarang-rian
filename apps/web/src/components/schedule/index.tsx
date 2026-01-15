@@ -14,13 +14,25 @@ import { SessionBlock } from "@/components/schedule/block";
 import { DraggableBlock } from "@/components/schedule/draggable-block";
 import {
   calculateSnappedPreview,
+  findDayRowFromMousePosition,
   formatTimeRange,
   get30MinuteSlotFromPosition,
+  getClassesForCell,
   getClassKey,
+  getMousePositionInDayRow,
   getTimeFrom30MinuteSlot,
   getTimeSlotPosition,
+  isFirstCol,
+  parseOverId,
 } from "@/components/schedule/utils";
-import { CELL_SIZE, DAY_COLUMN_WIDTH, MIN_WIDTH } from "@/constants/schedule";
+import {
+  ACTIVATION_DISTANCE,
+  CELL_SIZE,
+  DAY_COLUMN_WIDTH,
+  MIN_DRAG_DURATION,
+  MIN_WIDTH,
+  SLOT_DURATION_MINUTES,
+} from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
 import {
@@ -65,50 +77,6 @@ function DroppableCell({
   );
 }
 
-function findDayRowFromMousePosition(
-  mouseEvent: MouseEvent
-): { day: string; timeColIndex: number; cellX: number } | null {
-  for (const day of DAYS) {
-    const dayRowElement = document.querySelector(
-      `[data-day-row="${day}"]`
-    ) as HTMLElement;
-
-    if (!dayRowElement) {
-      continue;
-    }
-
-    const rect = dayRowElement.getBoundingClientRect();
-    const { clientX: mouseX, clientY: mouseY } = mouseEvent;
-
-    const isWithinBounds =
-      mouseY >= rect.top &&
-      mouseY <= rect.bottom &&
-      mouseX >= rect.left &&
-      mouseX <= rect.right;
-
-    if (!isWithinBounds) {
-      continue;
-    }
-
-    const x = mouseX - rect.left - DAY_COLUMN_WIDTH;
-
-    if (x < 0) {
-      continue;
-    }
-
-    const timeColIndex = Math.floor(x / CELL_SIZE);
-
-    if (timeColIndex < 0 || timeColIndex >= TIME_SLOTS.length) {
-      continue;
-    }
-
-    const cellX = x - timeColIndex * CELL_SIZE;
-    return { day, timeColIndex, cellX };
-  }
-
-  return null;
-}
-
 export function Schedule({ sessions }: ScheduleProps) {
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -131,7 +99,7 @@ export function Schedule({ sessions }: ScheduleProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: ACTIVATION_DISTANCE,
       },
     })
   );
@@ -186,25 +154,6 @@ export function Schedule({ sessions }: ScheduleProps) {
     };
   }, [activeSession]);
 
-  const getClassesForCell = (day: string, timeColIndex: number) => {
-    return sessions.filter((session) => {
-      if (session.day !== day) {
-        return false;
-      }
-      const { startCol, span } = getTimeSlotPosition(
-        session.start,
-        session.end
-      );
-      const endCol = startCol + span;
-      return timeColIndex >= startCol && timeColIndex < Math.ceil(endCol);
-    });
-  };
-
-  const isFirstCol = (session: SelectedClassSession, timeColIndex: number) => {
-    const { startCol } = getTimeSlotPosition(session.start, session.end);
-    return timeColIndex === startCol;
-  };
-
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const sessionData = active.data.current?.session as
@@ -214,49 +163,6 @@ export function Schedule({ sessions }: ScheduleProps) {
     if (sessionData) {
       setActiveSession(sessionData);
     }
-  };
-
-  const parseOverId = (
-    overId: string
-  ): {
-    day: string;
-    timeColIndex: number;
-  } | null => {
-    const [day, timeColIndexStr] = overId.split("-");
-    const timeColIndex = Number.parseInt(timeColIndexStr, 10);
-
-    if (
-      Number.isNaN(timeColIndex) ||
-      !DAYS.includes(day as (typeof DAYS)[number])
-    ) {
-      return null;
-    }
-
-    return { day, timeColIndex };
-  };
-
-  const getMousePositionInDayRow = (
-    day: string,
-    mouseEvent: MouseEvent,
-    timeColIndex: number
-  ): { x: number; cellX: number } | null => {
-    const dayRowElement = document.querySelector(
-      `[data-day-row="${day}"]`
-    ) as HTMLElement;
-
-    if (!dayRowElement) {
-      return null;
-    }
-
-    const rect = dayRowElement.getBoundingClientRect();
-    const x = mouseEvent.clientX - rect.left - DAY_COLUMN_WIDTH;
-
-    if (x < 0) {
-      return null;
-    }
-
-    const cellX = x - timeColIndex * CELL_SIZE;
-    return { x, cellX };
   };
 
   const handleSessionDragOver = (
@@ -538,9 +444,9 @@ export function Schedule({ sessions }: ScheduleProps) {
 
     const startSlot = Math.min(dragState.startSlot, dragState.endSlot);
     const endSlot = Math.max(dragState.startSlot, dragState.endSlot);
-    const duration = (endSlot - startSlot) * 30;
+    const duration = (endSlot - startSlot) * SLOT_DURATION_MINUTES;
 
-    if (duration >= 30) {
+    if (duration >= MIN_DRAG_DURATION) {
       const startTime = getTimeFrom30MinuteSlot(startSlot);
       const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
       const createdSession = addCustom(dragState.day, startTime, endTime);
@@ -593,7 +499,7 @@ export function Schedule({ sessions }: ScheduleProps) {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               style={{
-                gridTemplateColumns: `120px repeat(${TIME_SLOTS.length}, ${CELL_SIZE}px)`,
+                gridTemplateColumns: `${DAY_COLUMN_WIDTH}px repeat(${TIME_SLOTS.length}, ${CELL_SIZE}px)`,
               }}
             >
               <div
@@ -603,7 +509,11 @@ export function Schedule({ sessions }: ScheduleProps) {
                 {day}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
-                const cellClasses = getClassesForCell(day, timeColIndex);
+                const cellClasses = getClassesForCell(
+                  day,
+                  timeColIndex,
+                  sessions
+                );
                 const firstColClasses = cellClasses.filter((session) =>
                   isFirstCol(session, timeColIndex)
                 );
