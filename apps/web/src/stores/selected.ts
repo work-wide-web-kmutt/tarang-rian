@@ -124,7 +124,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
       set((state) => {
         const exists = state.selected.some(
           (current) =>
-            current.courseCode === "CUSTOM" &&
+            current.courseCode.toLowerCase().startsWith("unassigned") &&
             current.day === day &&
             current.start === start &&
             current.end === end
@@ -135,12 +135,12 @@ const selectedGenElectivesStoreCreator: StateCreator<
         }
 
         const newSession: SelectedClassSession = {
-          courseCode: "CUSTOM",
-          courseName: "Custom Class",
+          courseCode: `Unassigned (${state.selected.length})`,
+          courseName: "Unassigned Class",
           year: "2025",
           semester: "1",
           instructor: "TBA",
-          group: "1",
+          group: "TBA",
           day,
           start,
           end,

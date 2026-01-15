@@ -545,9 +545,10 @@ export function Schedule({ sessions }: ScheduleProps) {
       const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
       addCustom(dragState.day, startTime, endTime);
 
+      const unassignedNumber = sessions.length;
       const newSession: SelectedClassSession = {
-        courseCode: "CUSTOM",
-        courseName: "Custom Class",
+        courseCode: `Unassigned (${unassignedNumber})`,
+        courseName: "Unassigned Class",
         year: "2025",
         semester: "1",
         instructor: "TBA",
@@ -672,7 +673,7 @@ export function Schedule({ sessions }: ScheduleProps) {
                                 }}
                               >
                                 <div className="font-medium text-primary-foreground">
-                                  Custom Class
+                                  Unassigned Class
                                 </div>
                                 <div className="text-[10px] text-primary-foreground/80">
                                   {formatTimeRange(startTime, endTime)}
@@ -693,7 +694,7 @@ export function Schedule({ sessions }: ScheduleProps) {
                             }}
                           >
                             <div className="font-medium text-primary-foreground">
-                              {activeSession?.courseCode || "Custom Class"}
+                              {activeSession?.courseCode || "Unassigned Class"}
                             </div>
                             <div className="text-[10px] text-primary-foreground/80">
                               {formatTimeRange(
