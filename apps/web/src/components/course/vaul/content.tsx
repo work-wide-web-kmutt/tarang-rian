@@ -108,11 +108,17 @@ export function CourseVaulContent() {
                         <Badge>{session.courseCode}</Badge>
                         <p className="mt-1 flex gap-2 text-muted-foreground">
                           Year{" "}
-                          <Badge className="text-black" variant="outline">
+                          <Badge
+                            className="text-black dark:text-white"
+                            variant="outline"
+                          >
                             {session.year}
                           </Badge>
                           Semester{" "}
-                          <Badge className="text-black" variant="outline">
+                          <Badge
+                            className="text-black dark:text-white"
+                            variant="outline"
+                          >
                             {session.semester}
                           </Badge>
                         </p>
