@@ -19,6 +19,7 @@ export function DraggableBlock({
 }: DraggableBlockProps) {
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
+  const isHighlighted = openClassKey === classKey;
   const { startOffset } = getTimeSlotPosition(session.start, session.end);
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -33,9 +34,11 @@ export function DraggableBlock({
     <div
       className="group absolute inset-y-0 w-full"
       ref={setNodeRef}
-      style={{ opacity: isDragging ? 0 : undefined }}
+      style={{
+        opacity: isDragging ? 0 : undefined,
+      }}
     >
-      {isCustom && (
+      {isCustom && !isHighlighted && (
         <div
           {...attributes}
           {...listeners}
