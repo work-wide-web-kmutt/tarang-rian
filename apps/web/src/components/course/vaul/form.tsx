@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { BookOpen, GraduationCap, User, UsersIcon } from "lucide-react";
 import { type FormEvent, useEffect, useMemo } from "react";
 import z from "zod";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
@@ -9,7 +10,11 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Select,
   SelectContent,
@@ -113,16 +118,21 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Course Code</FieldLabel>
-                <Input
-                  aria-invalid={isInvalid}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => {
-                    field.handleChange(event.target.value);
-                  }}
-                  value={field.state.value}
-                />
+                <InputGroup>
+                  <InputGroupAddon>
+                    <BookOpen />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    aria-invalid={isInvalid}
+                    id={field.name}
+                    name={field.name}
+                    onBlur={field.handleBlur}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      field.handleChange(event.target.value);
+                    }}
+                    value={field.state.value}
+                  />
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -136,16 +146,21 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Course Name</FieldLabel>
-                <Input
-                  aria-invalid={isInvalid}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => {
-                    field.handleChange(event.target.value);
-                  }}
-                  value={field.state.value}
-                />
+                <InputGroup>
+                  <InputGroupAddon>
+                    <GraduationCap />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    aria-invalid={isInvalid}
+                    id={field.name}
+                    name={field.name}
+                    onBlur={field.handleBlur}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      field.handleChange(event.target.value);
+                    }}
+                    value={field.state.value}
+                  />
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -267,16 +282,21 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Group</FieldLabel>
-                <Input
-                  aria-invalid={isInvalid}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => {
-                    field.handleChange(event.target.value);
-                  }}
-                  value={field.state.value}
-                />
+                <InputGroup>
+                  <InputGroupAddon>
+                    <UsersIcon />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    aria-invalid={isInvalid}
+                    id={field.name}
+                    name={field.name}
+                    onBlur={field.handleBlur}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      field.handleChange(event.target.value);
+                    }}
+                    value={field.state.value}
+                  />
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -290,16 +310,21 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Instructor</FieldLabel>
-                <Input
-                  aria-invalid={isInvalid}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => {
-                    field.handleChange(event.target.value);
-                  }}
-                  value={field.state.value}
-                />
+                <InputGroup>
+                  <InputGroupAddon>
+                    <User />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    aria-invalid={isInvalid}
+                    id={field.name}
+                    name={field.name}
+                    onBlur={field.handleBlur}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      field.handleChange(event.target.value);
+                    }}
+                    value={field.state.value}
+                  />
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
