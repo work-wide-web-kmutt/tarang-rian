@@ -138,7 +138,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
 
         const academicContext = getAcademicContext();
         const newSession: SelectedClassSession = {
-          courseCode: `Unassigned (${state.selected.length})`,
+          courseCode: `Unassigned (${state.selected.length + 1})`,
           courseName: "Unassigned Class",
           year: academicContext.currentYear.toString(),
           semester: academicContext.currentSemester,
