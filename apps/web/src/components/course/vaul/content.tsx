@@ -53,6 +53,14 @@ export function CourseVaulContent() {
                 "transition-all duration-300 ease-out",
                 isHighlighted && "z-60 scale-[1.02] shadow-lg"
               )}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                props.onMouseDown?.(e);
+              }}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                props.onPointerDown?.(e);
+              }}
               style={style}
             >
               {children}
