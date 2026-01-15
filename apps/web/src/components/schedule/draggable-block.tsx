@@ -39,7 +39,7 @@ export function DraggableBlock({
         <div
           {...attributes}
           {...listeners}
-          className="absolute top-0 z-30 flex h-full w-6 cursor-grab items-center justify-center rounded-l bg-primary/20 opacity-0 transition-opacity hover:opacity-100 active:cursor-grabbing group-hover:opacity-100"
+          className="absolute top-0 z-30 flex h-full w-8 cursor-grab items-center justify-center rounded-l bg-primary/20 opacity-0 transition-opacity active:cursor-grabbing group-hover:opacity-100"
           data-drag-handle
           style={{
             left: `${startOffset * 100}%`,
@@ -50,7 +50,8 @@ export function DraggableBlock({
       )}
       <SessionBlock
         allSessions={allSessions}
-        extraLeftPadding={isCustom ? "1.5rem" : undefined}
+        extraLeftPadding={isCustom ? "0.5rem" : undefined}
+        isCustom={isCustom}
         onOpenChange={onOpenChange}
         openClassKey={openClassKey}
         session={session}

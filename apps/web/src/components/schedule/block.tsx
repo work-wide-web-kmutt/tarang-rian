@@ -13,6 +13,7 @@ interface SessionBlockProps {
   openClassKey: string | null;
   onOpenChange: (classKey: string | null) => void;
   extraLeftPadding?: string;
+  isCustom?: boolean;
 }
 
 export function SessionBlock({
@@ -21,6 +22,7 @@ export function SessionBlock({
   openClassKey,
   onOpenChange,
   extraLeftPadding,
+  isCustom = false,
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
@@ -53,22 +55,28 @@ export function SessionBlock({
       }}
     >
       <div
-        className={`text-base ${
-          hasOverlapping
-            ? "text-destructive-foreground"
-            : "text-primary-foreground"
+        className={`transition-transform duration-200 ease-out ${
+          isCustom ? "group-hover:translate-x-5" : ""
         }`}
       >
-        {session.courseCode}
-      </div>
-      <div
-        className={`text-sm ${
-          hasOverlapping
-            ? "text-destructive-foreground/80"
-            : "text-primary-foreground/80"
-        }`}
-      >
-        {session.start}–{session.end}
+        <div
+          className={`text-base ${
+            hasOverlapping
+              ? "text-destructive-foreground"
+              : "text-primary-foreground"
+          }`}
+        >
+          {session.courseCode}
+        </div>
+        <div
+          className={`text-sm ${
+            hasOverlapping
+              ? "text-destructive-foreground/80"
+              : "text-primary-foreground/80"
+          }`}
+        >
+          {session.start}–{session.end}
+        </div>
       </div>
     </CourseVaul>
   );
