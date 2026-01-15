@@ -19,7 +19,6 @@ export function DraggableBlock({
 }: DraggableBlockProps) {
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
-  const isHighlighted = openClassKey === classKey;
   const { startOffset } = getTimeSlotPosition(session.start, session.end);
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -38,22 +37,24 @@ export function DraggableBlock({
         opacity: isDragging ? 0 : undefined,
       }}
     >
-      {isCustom && !isHighlighted && (
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute top-0 z-30 flex h-full w-8 cursor-grab items-center justify-center rounded-l bg-primary/20 opacity-0 transition-opacity active:cursor-grabbing group-hover:opacity-100"
-          data-drag-handle
-          style={{
-            left: `${startOffset * 100}%`,
-          }}
-        >
-          <GripVertical className="h-3 w-3 text-primary-foreground" />
-        </div>
-      )}
+      <div
+        {...(isCustom ? attributes : {})}
+        {...(isCustom ? listeners : {})}
+        className={`absolute top-0 z-30 flex h-full w-6 items-center justify-center rounded-l bg-primary/20 ${
+          isCustom
+            ? "cursor-grab active:cursor-grabbing"
+            : "cursor-default opacity-50"
+        }`}
+        data-drag-handle
+        style={{
+          left: `${startOffset * 100}%`,
+        }}
+      >
+        <GripVertical className="h-3 w-3 text-primary-foreground" />
+      </div>
       <SessionBlock
         allSessions={allSessions}
-        extraLeftPadding={isCustom ? "0.5rem" : undefined}
+        extraLeftPadding="1.5rem"
         isCustom={isCustom}
         onOpenChange={onOpenChange}
         openClassKey={openClassKey}

@@ -30,9 +30,6 @@ export function SessionBlock({
   const hasOverlapping = hasOverlap(session, allSessions);
   const overlappingSessions = getOverlappingSessions(session, allSessions);
 
-  const hoverClass =
-    isCustom && !isHighlighted ? "group-hover:translate-x-5" : "";
-
   return (
     <CourseVaul
       className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 text-xs ${
@@ -57,9 +54,7 @@ export function SessionBlock({
         paddingLeft: extraLeftPadding,
       }}
     >
-      <div
-        className={`transition-transform duration-200 ease-out ${hoverClass}`}
-      >
+      <div>
         <div
           className={`${
             hasOverlapping
