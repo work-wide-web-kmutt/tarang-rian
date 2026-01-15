@@ -53,7 +53,7 @@ export function SessionBlock({
       }}
     >
       <div
-        className={`font-medium ${
+        className={`text-base ${
           hasOverlapping
             ? "text-destructive-foreground"
             : "text-primary-foreground"
@@ -62,22 +62,13 @@ export function SessionBlock({
         {session.courseCode}
       </div>
       <div
-        className={`text-[10px] ${
+        className={`text-sm ${
           hasOverlapping
             ? "text-destructive-foreground/80"
             : "text-primary-foreground/80"
         }`}
       >
         {session.start}–{session.end}
-      </div>
-      <div
-        className={`text-[10px] ${
-          hasOverlapping
-            ? "text-destructive-foreground/80"
-            : "text-primary-foreground/80"
-        }`}
-      >
-        Group {session.group}
       </div>
     </CourseVaul>
   );
