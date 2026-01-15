@@ -34,3 +34,5 @@ export const useCurrentSemester = () =>
 
 export const useAcademicContextActions = () =>
   useAcademicContextStore((state) => state.actions);
+
+export const getAcademicContext = () => useAcademicContextStore.getState();

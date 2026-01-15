@@ -1,6 +1,7 @@
 import { create, type StateCreator } from "zustand";
 
 import type { GenElectiveOption } from "../course/schema";
+import { getAcademicContext } from "./academic-context";
 
 export interface SelectedClassSession {
   courseCode: string;
@@ -26,7 +27,7 @@ interface SelectedGenElectivesState {
       day: GenElectiveOption["class"][number]["day"],
       start: string,
       end: string
-    ) => void;
+    ) => SelectedClassSession | null;
     remove: (
       courseCode: string,
       group: string,
@@ -120,7 +121,8 @@ const selectedGenElectivesStoreCreator: StateCreator<
       day: GenElectiveOption["class"][number]["day"],
       start: string,
       end: string
-    ) =>
+    ) => {
+      let createdSession: SelectedClassSession | null = null;
       set((state) => {
         const exists = state.selected.some(
           (current) =>
@@ -134,11 +136,12 @@ const selectedGenElectivesStoreCreator: StateCreator<
           return state;
         }
 
+        const academicContext = getAcademicContext();
         const newSession: SelectedClassSession = {
           courseCode: `Unassigned (${state.selected.length})`,
           courseName: "Unassigned Class",
-          year: "2025",
-          semester: "1",
+          year: academicContext.currentYear.toString(),
+          semester: academicContext.currentSemester,
           instructor: "TBA",
           group: "TBA",
           day,
@@ -147,10 +150,14 @@ const selectedGenElectivesStoreCreator: StateCreator<
           type: "custom",
         };
 
+        createdSession = newSession;
         const updated = [...state.selected, newSession];
         saveToStorage(updated);
         return { selected: updated };
-      }),
+      });
+
+      return createdSession;
+    },
     remove: (
       courseCode: string,
       group: string,
