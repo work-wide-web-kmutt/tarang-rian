@@ -1,5 +1,11 @@
 import { useForm } from "@tanstack/react-form";
-import { BookOpen, GraduationCap, User, UsersIcon } from "lucide-react";
+import {
+  BookOpen,
+  CalendarIcon,
+  GraduationCap,
+  User,
+  UsersIcon,
+} from "lucide-react";
 import { type FormEvent, useEffect, useMemo } from "react";
 import z from "zod";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
@@ -175,29 +181,34 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Year</FieldLabel>
-                <Select
-                  onValueChange={(value) => {
-                    if (value) {
-                      field.handleChange(value);
-                    }
-                  }}
-                  value={field.state.value}
-                >
-                  <SelectTrigger
-                    aria-invalid={isInvalid}
-                    className="w-full"
-                    id={field.name}
+                <InputGroup>
+                  <InputGroupAddon>
+                    <CalendarIcon />
+                  </InputGroupAddon>
+                  <Select
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.handleChange(value);
+                      }
+                    }}
+                    value={field.state.value}
                   >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearOptions.map((year) => (
-                      <SelectItem key={year} value={year.toString()}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      aria-invalid={isInvalid}
+                      className="w-full border-0 shadow-none"
+                      id={field.name}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {yearOptions.map((year) => (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -211,27 +222,32 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Semester</FieldLabel>
-                <Select
-                  onValueChange={(value) => {
-                    if (value) {
-                      field.handleChange(value as typeof field.state.value);
-                    }
-                  }}
-                  value={field.state.value}
-                >
-                  <SelectTrigger
-                    aria-invalid={isInvalid}
-                    className="w-full"
-                    id={field.name}
+                <InputGroup>
+                  <InputGroupAddon>
+                    <BookOpen />
+                  </InputGroupAddon>
+                  <Select
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.handleChange(value as typeof field.state.value);
+                      }
+                    }}
+                    value={field.state.value}
                   >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      aria-invalid={isInvalid}
+                      className="w-full border-0 shadow-none"
+                      id={field.name}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="S">S</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -246,29 +262,34 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Day</FieldLabel>
-                <Select
-                  onValueChange={(value) => {
-                    if (value) {
-                      field.handleChange(value as typeof field.state.value);
-                    }
-                  }}
-                  value={field.state.value}
-                >
-                  <SelectTrigger
-                    aria-invalid={isInvalid}
-                    className="w-full"
-                    id={field.name}
+                <InputGroup>
+                  <InputGroupAddon>
+                    <CalendarIcon />
+                  </InputGroupAddon>
+                  <Select
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.handleChange(value as typeof field.state.value);
+                      }
+                    }}
+                    value={field.state.value}
                   >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DAYS.map((day: (typeof DAYS)[number]) => (
-                      <SelectItem key={day} value={day}>
-                        {day}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      aria-invalid={isInvalid}
+                      className="w-full border-0 shadow-none"
+                      id={field.name}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DAYS.map((day: (typeof DAYS)[number]) => (
+                        <SelectItem key={day} value={day}>
+                          {day}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </InputGroup>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
