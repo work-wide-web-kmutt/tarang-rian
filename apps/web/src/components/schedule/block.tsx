@@ -61,7 +61,8 @@ export function SessionBlock({
               : "text-primary-foreground"
           }`}
         >
-          {session.courseCode}
+          <p>{session.courseCode}</p>{" "}
+          <p className="font-bold">{session.courseName}</p>
         </div>
         <div
           className={`text-[10px] ${
@@ -70,7 +71,7 @@ export function SessionBlock({
               : "text-primary-foreground/80"
           }`}
         >
-          {session.start}–{session.end}
+          {session.start} - {session.end}
         </div>
       </div>
     </CourseVaul>
