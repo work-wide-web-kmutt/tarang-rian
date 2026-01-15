@@ -10,7 +10,7 @@ This project uses **TanStack Form** (`@tanstack/react-form`) with **Zod** for sc
 
 - MUST use `@tanstack/react-form` for form state management
 - MUST use Zod schemas for validation
-- MUST use shadcn/ui Field components (`Field`, `FieldLabel`, `FieldDescription`, `FieldError`, `FieldGroup`, `FieldSet`, `FieldLegend`) for accessible form structure
+- MUST use shadcn/ui Field components (`Field`, `FieldContent`, `FieldDescription`, `FieldError`, `FieldGroup`, `FieldLabel`, `FieldLegend`, `FieldSeparator`, `FieldSet`, `FieldTitle`) for accessible form structure
 - NEVER mix form libraries (e.g., React Hook Form) in the same project
 
 ### Type Safety & Validation
@@ -113,6 +113,23 @@ export function MyForm() {
 
 ## Field Components
 
+### Anatomy
+
+The `Field` family is designed for composing accessible forms. A typical field is structured as follows:
+
+```typescript
+<Field>
+  <FieldLabel htmlFor="input-id">Label</FieldLabel>
+  {/* Input, Select, Switch, etc. */}
+  <FieldDescription>Optional helper text.</FieldDescription>
+  <FieldError>Validation message.</FieldError>
+</Field>
+```
+
+- `Field` is the core wrapper for a single field
+- `FieldContent` is a flex column that groups label and description (not required if you have no description)
+- Wrap related fields with `FieldGroup`, and use `FieldSet` with `FieldLegend` for semantic grouping
+
 ### Field Component Pattern
 
 Every form field MUST follow this structure:
@@ -141,6 +158,8 @@ Every form field MUST follow this structure:
 - MUST set `data-invalid={isInvalid}` on the `Field` component
 - MUST set `aria-invalid={isInvalid}` on the input element
 - MUST only show `FieldError` when field is invalid
+- Add `data-invalid` to `Field` to switch the entire block into an error state
+- Render `FieldError` immediately after the control or inside `FieldContent` to keep error messages aligned with the field
 
 ### Field Labeling
 
@@ -148,6 +167,170 @@ Every form field MUST follow this structure:
 - MUST use `field.name` for both `htmlFor` and `id` when possible
 - MUST provide descriptive, concise labels
 - SHOULD use `FieldDescription` for additional context or instructions
+- `FieldLabel` is styled for both direct inputs and nested `Field` children
+- Use `FieldTitle` inside `FieldContent` when you need a title with label styling
+
+### Field Orientation
+
+The `Field` component supports three orientation modes:
+
+- **Vertical (default)**: Stacks label, control, and helper text—ideal for mobile-first layouts
+- **Horizontal**: Set `orientation="horizontal"` to align the label and control side-by-side. Pair with `FieldContent` to keep descriptions aligned
+- **Responsive**: Set `orientation="responsive"` for automatic column layouts inside container-aware parents. Apply `@container/field-group` classes on `FieldGroup` to switch orientations at specific breakpoints
+
+```typescript
+// Vertical (default)
+<Field>
+  <FieldLabel htmlFor="name">Name</FieldLabel>
+  <Input id="name" />
+</Field>
+
+// Horizontal
+<Field orientation="horizontal">
+  <Checkbox id="remember" />
+  <FieldContent>
+    <FieldLabel htmlFor="remember">Remember me</FieldLabel>
+    <FieldDescription>Save your preferences</FieldDescription>
+  </FieldContent>
+</Field>
+
+// Responsive with container queries
+<FieldGroup className="@container/field-group flex flex-col gap-6">
+  <Field orientation="responsive">
+    <FieldContent>
+      <FieldLabel htmlFor="name">Name</FieldLabel>
+      <FieldDescription>Provide your full name</FieldDescription>
+    </FieldContent>
+    <Input id="name" />
+  </Field>
+</FieldGroup>
+```
+
+### FieldContent
+
+`FieldContent` is a flex column that groups label and description when the label sits beside the control. Not required if you have no description.
+
+```typescript
+<Field orientation="horizontal">
+  <Checkbox id="notifications" />
+  <FieldContent>
+    <FieldLabel htmlFor="notifications">Notifications</FieldLabel>
+    <FieldDescription>Email, SMS, and push options.</FieldDescription>
+  </FieldContent>
+</Field>
+```
+
+- Use `FieldContent` when using `orientation="horizontal"` or `orientation="responsive"` with descriptions
+- `FieldContent` automatically balances long lines in horizontal layouts
+- Use `FieldTitle` inside `FieldContent` for a title with label styling instead of `FieldLabel`
+
+### FieldSet and FieldLegend
+
+Use `FieldSet` and `FieldLegend` for semantic grouping of related fields:
+
+```typescript
+<FieldSet>
+  <FieldLegend>Payment Method</FieldLegend>
+  <FieldDescription>All transactions are secure and encrypted</FieldDescription>
+  <FieldGroup>
+    {/* Fields */}
+  </FieldGroup>
+</FieldSet>
+```
+
+- `FieldSet` renders a semantic `fieldset` with spacing presets
+- `FieldLegend` has two variants: `legend` (default) and `label`
+- Use `variant="label"` on `FieldLegend` to apply label sizing and alignment (handy for nested `FieldSet`)
+- `FieldSet` and `FieldLegend` keep related controls grouped for keyboard and assistive tech users
+- `Field` outputs `role="group"` so nested controls inherit labeling from `FieldLabel` and `FieldLegend` when combined
+
+### FieldSeparator
+
+`FieldSeparator` is a visual divider to separate sections inside a `FieldGroup`. Accepts optional inline content.
+
+```typescript
+<FieldGroup>
+  <FieldSet>
+    <FieldLegend>Payment Method</FieldLegend>
+    {/* Fields */}
+  </FieldSet>
+  <FieldSeparator />
+  <FieldSet>
+    <FieldLegend>Billing Address</FieldLegend>
+    {/* Fields */}
+  </FieldSet>
+</FieldGroup>
+```
+
+- Apply `FieldSeparator` sparingly to ensure screen readers encounter clear section boundaries
+- Can include inline content: `<FieldSeparator>Or continue with</FieldSeparator>`
+
+### Accessibility Considerations
+
+- `FieldSet` and `FieldLegend` keep related controls grouped for keyboard and assistive tech users
+- `Field` outputs `role="group"` so nested controls inherit labeling from `FieldLabel` and `FieldLegend` when combined
+- Apply `FieldSeparator` sparingly to ensure screen readers encounter clear section boundaries
+- Always associate labels with inputs using `htmlFor` and `id` attributes
+- Use semantic HTML form elements (`<form>`, `<input>`, `<textarea>`, etc.)
+- Ensure all form controls are keyboard accessible
+
+## Responsive Layouts
+
+### Container Queries for Responsive Fields
+
+Use `orientation="responsive"` with container queries for automatic column layouts:
+
+```typescript
+<FieldGroup className="@container/field-group flex flex-col gap-6">
+  <Field orientation="responsive">
+    <FieldContent>
+      <FieldLabel htmlFor="name">Name</FieldLabel>
+      <FieldDescription>
+        Provide your full name for identification
+      </FieldDescription>
+    </FieldContent>
+    <Input id="name" placeholder="Evil Rabbit" required />
+  </Field>
+  <FieldSeparator />
+  <Field orientation="responsive">
+    <FieldContent>
+      <FieldLabel htmlFor="message">Message</FieldLabel>
+      <FieldDescription>
+        You can write your message here. Keep it short, preferably under 100 characters.
+      </FieldDescription>
+    </FieldContent>
+    <Textarea
+      id="message"
+      placeholder="Hello, world!"
+      required
+      className="min-h-[100px] resize-none sm:min-w-[300px]"
+    />
+  </Field>
+</FieldGroup>
+```
+
+- **Vertical fields:** Default orientation stacks label, control, and helper text—ideal for mobile-first layouts
+- **Horizontal fields:** Set `orientation="horizontal"` on `Field` to align the label and control side-by-side. Pair with `FieldContent` to keep descriptions aligned
+- **Responsive fields:** Set `orientation="responsive"` for automatic column layouts inside container-aware parents. Apply `@container/field-group` classes on `FieldGroup` to switch orientations at specific breakpoints
+
+### Horizontal Field Pattern
+
+For checkboxes, switches, and similar controls, use horizontal orientation:
+
+```typescript
+<Field orientation="horizontal">
+  <Checkbox id="remember" />
+  <FieldContent>
+    <FieldLabel htmlFor="remember" className="font-normal">
+      Remember me
+    </FieldLabel>
+    <FieldDescription>Save your login for next time</FieldDescription>
+  </FieldContent>
+</Field>
+```
+
+- Use `FieldContent` to group label and description when using horizontal orientation
+- Apply `className="font-normal"` to `FieldLabel` when it appears next to a control (not above it)
 
 ## Input Types
 
@@ -201,6 +384,7 @@ Every form field MUST follow this structure:
 ### Checkbox
 
 ```typescript
+// Simple checkbox without description
 <form.Field
   name="acceptTerms"
   children={(field) => {
@@ -212,7 +396,34 @@ Every form field MUST follow this structure:
           onCheckedChange={(checked) =>
             field.handleChange(checked === true)}
         />
-        <FieldLabel htmlFor={field.name}>Accept terms</FieldLabel>
+        <FieldLabel htmlFor={field.name} className="font-normal">
+          Accept terms
+        </FieldLabel>
+      </Field>
+    );
+  }}
+/>
+
+// Checkbox with description
+<form.Field
+  name="newsletter"
+  children={(field) => {
+    return (
+      <Field orientation="horizontal">
+        <Checkbox
+          id={field.name}
+          checked={field.state.value}
+          onCheckedChange={(checked) =>
+            field.handleChange(checked === true)}
+        />
+        <FieldContent>
+          <FieldLabel htmlFor={field.name} className="font-normal">
+            Subscribe to newsletter
+          </FieldLabel>
+          <FieldDescription>
+            Receive updates about new features and products.
+          </FieldDescription>
+        </FieldContent>
       </Field>
     );
   }}
@@ -268,6 +479,28 @@ const form = useForm({
 - MUST use `FieldError` component to display errors
 - MUST pass `errors={field.state.meta.errors}` to `FieldError`
 - SHOULD show errors immediately after blur for better UX
+
+### FieldError Component
+
+`FieldError` is an accessible error container that accepts children or an `errors` array:
+
+```typescript
+// With errors array (from TanStack Form)
+<FieldError errors={field.state.meta.errors} />
+
+// With children
+<FieldError>Enter a valid email address.</FieldError>
+
+// With multiple errors
+<FieldError errors={[
+  { message: "Email is required." },
+  { message: "Email must be valid." }
+]} />
+```
+
+- When the `errors` array contains multiple messages, the component renders a list automatically
+- `FieldError` also accepts issues produced by any validator that implements Standard Schema, including Zod, Valibot, and ArkType. Pass the `issues` array from the schema result directly to render a unified error list across libraries
+- Render `FieldError` immediately after the control or inside `FieldContent` to keep error messages aligned with the field
 
 ## Array Fields
 
@@ -499,6 +732,158 @@ const formSchema = z
   });
 ```
 
+## Field Components API Reference
+
+### FieldSet
+
+Container that renders a semantic `fieldset` with spacing presets.
+
+| Prop      | Type   | Default |
+| --------- | ------ | ------- |
+| className | string |         |
+
+```typescript
+<FieldSet>
+  <FieldLegend>Delivery</FieldLegend>
+  <FieldGroup>{/* Fields */}</FieldGroup>
+</FieldSet>
+```
+
+### FieldLegend
+
+Legend element for a `FieldSet`. Switch to the `label` variant to align with label sizing.
+
+| Prop      | Type                | Default  |
+| --------- | ------------------- | -------- |
+| variant   | "legend" \| "label" | "legend" |
+| className | string              |          |
+
+```typescript
+<FieldLegend variant="label">Notification Preferences</FieldLegend>
+```
+
+The `FieldLegend` has two variants: `legend` and `label`. The `label` variant applies label sizing and alignment. Handy if you have nested `FieldSet`.
+
+### FieldGroup
+
+Layout wrapper that stacks `Field` components and enables container queries for responsive orientations.
+
+| Prop      | Type   | Default |
+| --------- | ------ | ------- |
+| className | string |         |
+
+```typescript
+<FieldGroup className="@container/field-group flex flex-col gap-6">
+  <Field>{/* ... */}</Field>
+  <Field>{/* ... */}</Field>
+</FieldGroup>
+```
+
+### Field
+
+The core wrapper for a single field. Provides orientation control, invalid state styling, and spacing.
+
+| Prop         | Type                                    | Default      |
+| ------------ | --------------------------------------- | ------------ |
+| orientation  | "vertical" \| "horizontal" \| "responsive" | "vertical" |
+| className    | string                                  |              |
+| data-invalid | boolean                                 |              |
+
+```typescript
+<Field orientation="horizontal" data-invalid={isInvalid}>
+  <FieldLabel htmlFor="remember">Remember me</FieldLabel>
+  <Switch id="remember" />
+</Field>
+```
+
+### FieldContent
+
+Flex column that groups control and descriptions when the label sits beside the control. Not required if you have no description.
+
+| Prop      | Type   | Default |
+| --------- | ------ | ------- |
+| className | string |         |
+
+```typescript
+<Field orientation="horizontal">
+  <Checkbox id="notifications" />
+  <FieldContent>
+    <FieldLabel htmlFor="notifications">Notifications</FieldLabel>
+    <FieldDescription>Email, SMS, and push options.</FieldDescription>
+  </FieldContent>
+</Field>
+```
+
+### FieldLabel
+
+Label styled for both direct inputs and nested `Field` children.
+
+| Prop      | Type    | Default |
+| --------- | ------- | ------- |
+| className | string  |         |
+| htmlFor   | string  |         |
+| asChild   | boolean | false   |
+
+```typescript
+<FieldLabel htmlFor="email">Email</FieldLabel>
+```
+
+### FieldTitle
+
+Renders a title with label styling inside `FieldContent`.
+
+| Prop      | Type   | Default |
+| --------- | ------ | ------- |
+| className | string |         |
+
+```typescript
+<FieldContent>
+  <FieldTitle>Enable Touch ID</FieldTitle>
+  <FieldDescription>Unlock your device faster.</FieldDescription>
+</FieldContent>
+```
+
+### FieldDescription
+
+Helper text slot that automatically balances long lines in horizontal layouts.
+
+| Prop      | Type   | Default |
+| --------- | ------ | ------- |
+| className | string |         |
+
+```typescript
+<FieldDescription>We never share your email with anyone.</FieldDescription>
+```
+
+### FieldSeparator
+
+Visual divider to separate sections inside a `FieldGroup`. Accepts optional inline content.
+
+| Prop      | Type   | Default |
+| --------- | ------ | ------- |
+| className | string |         |
+
+```typescript
+<FieldSeparator>Or continue with</FieldSeparator>
+```
+
+### FieldError
+
+Accessible error container that accepts children or an `errors` array (e.g., from `react-hook-form` or TanStack Form).
+
+| Prop      | Type                                     | Default |
+| --------- | ---------------------------------------- | ------- |
+| errors    | Array<{ message?: string } \| undefined> |         |
+| className | string                                   |         |
+
+```typescript
+<FieldError errors={errors.username} />
+```
+
+When the `errors` array contains multiple messages, the component renders a list automatically.
+
+`FieldError` also accepts issues produced by any validator that implements Standard Schema, including Zod, Valibot, and ArkType. Pass the `issues` array from the schema result directly to render a unified error list across libraries.
+
 ## Notes
 
 - TanStack Form provides excellent TypeScript support and type inference
@@ -506,3 +891,6 @@ const formSchema = z
 - Zod schemas can be reused for both client and server-side validation
 - Always test forms with keyboard navigation and screen readers
 - Consider using `InputGroup` for enhanced input UX (character counts, icons, etc.)
+- `FieldSet` and `FieldLegend` keep related controls grouped for keyboard and assistive tech users
+- `Field` outputs `role="group"` so nested controls inherit labeling from `FieldLabel` and `FieldLegend` when combined
+- Apply `FieldSeparator` sparingly to ensure screen readers encounter clear section boundaries
