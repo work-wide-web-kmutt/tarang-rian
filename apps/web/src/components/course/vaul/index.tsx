@@ -1,11 +1,12 @@
 import { PencilIcon, Trash2Icon } from "lucide-react";
-import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Drawer } from "vaul-base";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
+import { CourseVaulProvider, useCourseVaulContext } from "./context";
 import { CourseVaulForm } from "./form";
 
 interface CourseVaulProps {
@@ -29,26 +30,45 @@ function CourseVaul({
   overlappingSessions = [],
   onOpenOtherCourse,
 }: CourseVaulProps) {
-  const [open, setOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  return (
+    <CourseVaulProvider
+      isHighlighted={isHighlighted}
+      onOpenChange={onOpenChange}
+    >
+      <CourseVaulContent
+        children={children}
+        className={className}
+        isHighlighted={isHighlighted}
+        onOpenOtherCourse={onOpenOtherCourse}
+        overlappingSessions={overlappingSessions}
+        session={session}
+        style={style}
+      />
+    </CourseVaulProvider>
+  );
+}
+
+interface CourseVaulContentProps {
+  children: ReactNode;
+  style?: CSSProperties;
+  className?: string;
+  isHighlighted?: boolean;
+  onOpenOtherCourse?: (classKey: string) => void;
+  session?: SelectedClassSession;
+  overlappingSessions?: SelectedClassSession[];
+}
+
+function CourseVaulContent({
+  children,
+  style,
+  className,
+  isHighlighted = false,
+  onOpenOtherCourse,
+  session,
+  overlappingSessions = [],
+}: CourseVaulContentProps) {
+  const { open, setOpen, isEditing, setIsEditing } = useCourseVaulContext();
   const { remove } = useSelectedGenElectivesActions();
-
-  useEffect(() => {
-    if (isHighlighted) {
-      setOpen(true);
-    }
-  }, [isHighlighted]);
-
-  useEffect(() => {
-    if (!open) {
-      setIsEditing(false);
-    }
-  }, [open]);
-
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    onOpenChange?.(newOpen);
-  };
 
   const openState = isHighlighted || open;
 
@@ -58,15 +78,10 @@ function CourseVaul({
     }
     remove(session.id);
     setOpen(false);
-    onOpenChange?.(false);
   };
 
   return (
-    <Drawer.Root
-      direction="right"
-      onOpenChange={handleOpenChange}
-      open={openState}
-    >
+    <Drawer.Root direction="right" onOpenChange={setOpen} open={openState}>
       <Drawer.Trigger
         nativeButton={false}
         render={(props) => {
@@ -92,7 +107,7 @@ function CourseVaul({
             openState ? "opacity-100" : "opacity-0"
           )}
           onClick={() => {
-            handleOpenChange(false);
+            setOpen(false);
           }}
           onMouseDown={(e) => {
             e.stopPropagation();
@@ -183,7 +198,6 @@ function CourseVaul({
                           key={overlapKey}
                           onClick={() => {
                             setOpen(false);
-                            onOpenChange?.(false);
                             onOpenOtherCourse?.(overlapKey);
                           }}
                           variant="outline"
