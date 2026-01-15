@@ -12,6 +12,7 @@ interface SessionBlockProps {
   allSessions: SelectedClassSession[];
   openClassKey: string | null;
   onOpenChange: (classKey: string | null) => void;
+  extraLeftPadding?: string;
 }
 
 export function SessionBlock({
@@ -19,6 +20,7 @@ export function SessionBlock({
   allSessions,
   openClassKey,
   onOpenChange,
+  extraLeftPadding,
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
@@ -47,6 +49,7 @@ export function SessionBlock({
       style={{
         left: `${startOffset * 100}%`,
         width: `calc(${span * 100}% - 0.25rem)`,
+        paddingLeft: extraLeftPadding,
       }}
     >
       <div

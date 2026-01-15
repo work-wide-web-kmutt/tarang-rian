@@ -1,7 +1,19 @@
-import { DndContext } from "@dnd-kit/core";
+import {
+  DndContext,
+  type DragEndEvent,
+  type DragOverEvent,
+  DragOverlay,
+  type DragStartEvent,
+  PointerSensor,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { useRef, useState } from "react";
 import { SessionBlock } from "@/components/schedule/block";
+import { DraggableBlock } from "@/components/schedule/draggable-block";
 import {
+  calculateSnappedPreview,
   formatTimeRange,
   get30MinuteSlotFromPosition,
   getClassKey,
@@ -26,15 +38,59 @@ interface DragState {
   endSlot: number;
 }
 
+interface SnappedPreview {
+  day: GenElectiveOption["class"][number]["day"];
+  start: string;
+  end: string;
+  startCol: number;
+  startOffset: number;
+  span: number;
+}
+
+function DroppableCell({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) {
+  const { setNodeRef } = useDroppable({
+    id,
+  });
+
+  return (
+    <div className="relative h-full w-full" ref={setNodeRef}>
+      {children}
+    </div>
+  );
+}
+
 export function Schedule({ sessions }: ScheduleProps) {
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [activeSession, setActiveSession] =
+    useState<SelectedClassSession | null>(null);
+  const [snappedPreview, setSnappedPreview] = useState<SnappedPreview | null>(
+    null
+  );
+  const [dragOverPosition, setDragOverPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const dragStartRef = useRef<{
     day: string;
     timeColIndex: number;
     x: number;
   } | null>(null);
-  const { addCustom } = useSelectedGenElectivesActions();
+  const { addCustom, update } = useSelectedGenElectivesActions();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const getClassesForCell = (day: string, timeColIndex: number) => {
     return sessions.filter((session) => {
@@ -55,6 +111,269 @@ export function Schedule({ sessions }: ScheduleProps) {
     return timeColIndex === startCol;
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const sessionData = active.data.current?.session as
+      | SelectedClassSession
+      | undefined;
+
+    if (sessionData) {
+      setActiveSession(sessionData);
+    }
+  };
+
+  const parseOverId = (
+    overId: string
+  ): {
+    day: string;
+    timeColIndex: number;
+  } | null => {
+    const [day, timeColIndexStr] = overId.split("-");
+    const timeColIndex = Number.parseInt(timeColIndexStr, 10);
+
+    if (
+      Number.isNaN(timeColIndex) ||
+      !DAYS.includes(day as (typeof DAYS)[number])
+    ) {
+      return null;
+    }
+
+    return { day, timeColIndex };
+  };
+
+  const getMousePositionInDayRow = (
+    day: string,
+    mouseEvent: MouseEvent,
+    timeColIndex: number
+  ): { x: number; cellX: number } | null => {
+    const dayRowElement = document.querySelector(
+      `[data-day-row="${day}"]`
+    ) as HTMLElement;
+
+    if (!dayRowElement) {
+      return null;
+    }
+
+    const rect = dayRowElement.getBoundingClientRect();
+    const x = mouseEvent.clientX - rect.left - DAY_COLUMN_WIDTH;
+
+    if (x < 0) {
+      return null;
+    }
+
+    const cellX = x - timeColIndex * CELL_SIZE;
+    return { x, cellX };
+  };
+
+  const handleSessionDragOver = (
+    sessionData: SelectedClassSession,
+    day: string,
+    timeColIndex: number,
+    mouseEvent: MouseEvent
+  ) => {
+    const position = getMousePositionInDayRow(day, mouseEvent, timeColIndex);
+    if (!position) {
+      return;
+    }
+
+    const { slotIndex } = get30MinuteSlotFromPosition(
+      position.cellX,
+      CELL_SIZE,
+      timeColIndex
+    );
+
+    const { newStart, newEnd } = calculateSnappedPreview(
+      sessionData,
+      day as GenElectiveOption["class"][number]["day"],
+      slotIndex
+    );
+
+    const { startCol, startOffset, span } = getTimeSlotPosition(
+      newStart,
+      newEnd
+    );
+
+    setSnappedPreview({
+      day: day as GenElectiveOption["class"][number]["day"],
+      start: newStart,
+      end: newEnd,
+      startCol,
+      startOffset,
+      span,
+    });
+  };
+
+  const handleCreateDragOver = (
+    day: string,
+    timeColIndex: number,
+    mouseEvent: MouseEvent
+  ) => {
+    if (!dragState) {
+      return;
+    }
+
+    const position = getMousePositionInDayRow(day, mouseEvent, timeColIndex);
+    if (!position) {
+      return;
+    }
+
+    const { slotIndex } = get30MinuteSlotFromPosition(
+      position.cellX,
+      CELL_SIZE,
+      timeColIndex
+    );
+
+    const startSlot = Math.min(dragState.startSlot, slotIndex);
+    const endSlot = Math.max(dragState.startSlot, slotIndex);
+
+    setDragState({ ...dragState, startSlot, endSlot });
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+
+    if (!(over && event.activatorEvent)) {
+      setSnappedPreview(null);
+      return;
+    }
+
+    const parsed = parseOverId(over.id as string);
+    if (!parsed) {
+      setSnappedPreview(null);
+      return;
+    }
+
+    const { day, timeColIndex } = parsed;
+    const mouseEvent = event.activatorEvent as MouseEvent;
+
+    const sessionData = active.data.current?.session as
+      | SelectedClassSession
+      | undefined;
+
+    if (sessionData) {
+      handleSessionDragOver(sessionData, day, timeColIndex, mouseEvent);
+    } else if (dragState) {
+      handleCreateDragOver(day, timeColIndex, mouseEvent);
+    }
+
+    setDragOverPosition({
+      x: mouseEvent.clientX,
+      y: mouseEvent.clientY,
+    });
+  };
+
+  const calculateFinalPosition = (
+    sessionData: SelectedClassSession,
+    day: string,
+    timeColIndex: number,
+    mouseEvent: MouseEvent | null
+  ): {
+    start: string;
+    end: string;
+    day: GenElectiveOption["class"][number]["day"];
+  } | null => {
+    if (snappedPreview) {
+      return {
+        start: snappedPreview.start,
+        end: snappedPreview.end,
+        day: snappedPreview.day,
+      };
+    }
+
+    if (!mouseEvent) {
+      return null;
+    }
+
+    const position = getMousePositionInDayRow(day, mouseEvent, timeColIndex);
+    if (!position) {
+      return null;
+    }
+
+    const { slotIndex } = get30MinuteSlotFromPosition(
+      position.cellX,
+      CELL_SIZE,
+      timeColIndex
+    );
+
+    const result = calculateSnappedPreview(
+      sessionData,
+      day as GenElectiveOption["class"][number]["day"],
+      slotIndex
+    );
+
+    return {
+      start: result.newStart,
+      end: result.newEnd,
+      day: day as GenElectiveOption["class"][number]["day"],
+    };
+  };
+
+  const resetDragState = () => {
+    setActiveSession(null);
+    setSnappedPreview(null);
+    setDragOverPosition(null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) {
+      resetDragState();
+      return;
+    }
+
+    const sessionData = active.data.current?.session as
+      | SelectedClassSession
+      | undefined;
+
+    if (!sessionData) {
+      resetDragState();
+      return;
+    }
+
+    const parsed = parseOverId(over.id as string);
+    if (!parsed) {
+      resetDragState();
+      return;
+    }
+
+    const { day, timeColIndex } = parsed;
+    const mouseEvent = dragOverPosition
+      ? ({
+          clientX: dragOverPosition.x,
+          clientY: dragOverPosition.y,
+        } as MouseEvent)
+      : (event.activatorEvent as MouseEvent | null);
+
+    const finalPosition = calculateFinalPosition(
+      sessionData,
+      day,
+      timeColIndex,
+      mouseEvent
+    );
+
+    if (!finalPosition) {
+      resetDragState();
+      return;
+    }
+
+    update(
+      sessionData,
+      finalPosition.day,
+      finalPosition.start,
+      finalPosition.end
+    );
+    resetDragState();
+  };
+
+  const handleDragCancel = () => {
+    setActiveSession(null);
+    setSnappedPreview(null);
+    setDragOverPosition(null);
+    dragStartRef.current = null;
+    setDragState(null);
+  };
+
   const handleMouseDown = (
     e: React.MouseEvent<HTMLDivElement>,
     day: GenElectiveOption["class"][number]["day"],
@@ -63,7 +382,8 @@ export function Schedule({ sessions }: ScheduleProps) {
     const target = e.target as HTMLElement;
     if (
       target.closest("[data-session-block]") ||
-      target.closest("[data-day-label]")
+      target.closest("[data-day-label]") ||
+      target.closest("[data-drag-handle]")
     ) {
       return;
     }
@@ -152,7 +472,13 @@ export function Schedule({ sessions }: ScheduleProps) {
   };
 
   return (
-    <DndContext>
+    <DndContext
+      onDragCancel={handleDragCancel}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragStart={handleDragStart}
+      sensors={sensors}
+    >
       <div style={{ width: `${MIN_WIDTH}px` }}>
         <div
           className="grid border border-border"
@@ -177,7 +503,7 @@ export function Schedule({ sessions }: ScheduleProps) {
           {DAYS.map((day) => (
             <div
               className="grid border-border border-b last:border-b-0"
-              data-day-row
+              data-day-row={day}
               key={day}
               onMouseLeave={handleMouseUp}
               onMouseMove={handleMouseMove}
@@ -197,77 +523,112 @@ export function Schedule({ sessions }: ScheduleProps) {
                 const firstColClasses = cellClasses.filter((session) =>
                   isFirstCol(session, timeColIndex)
                 );
+                const dropId = `${day}-${timeColIndex}`;
 
                 return (
-                  <div
-                    aria-label={`${day} ${time} - Drag to create custom class`}
-                    className="relative min-h-[80px] border-border border-r bg-background last:border-r-0"
-                    key={`${day}-${time}`}
-                    onClick={() => {
-                      // No-op: drag interaction uses onMouseDown
-                    }}
-                    onKeyDown={() => {
-                      // No-op: keyboard support for drag not implemented yet
-                    }}
-                    onMouseDown={(e) => handleMouseDown(e, day, timeColIndex)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    {firstColClasses.map((session) => {
-                      const classKey = getClassKey(session);
-                      return (
-                        <SessionBlock
-                          allSessions={sessions}
-                          key={classKey}
-                          onOpenChange={setOpenClassKey}
-                          openClassKey={openClassKey}
-                          session={session}
-                        />
-                      );
-                    })}
-                    {dragState &&
-                      dragState.day === day &&
-                      (() => {
-                        const startSlot = Math.min(
-                          dragState.startSlot,
-                          dragState.endSlot
+                  <DroppableCell id={dropId} key={dropId}>
+                    <div
+                      aria-label={`${day} ${time} - Drag to create custom class`}
+                      className="relative h-[80px] border-border border-r bg-background last:border-r-0"
+                      onMouseDown={(e) => handleMouseDown(e, day, timeColIndex)}
+                    >
+                      {firstColClasses.map((session) => {
+                        const classKey = getClassKey(session);
+                        return session.type === "custom" ? (
+                          <DraggableBlock
+                            allSessions={sessions}
+                            key={classKey}
+                            onOpenChange={setOpenClassKey}
+                            openClassKey={openClassKey}
+                            session={session}
+                          />
+                        ) : (
+                          <SessionBlock
+                            allSessions={sessions}
+                            key={classKey}
+                            onOpenChange={setOpenClassKey}
+                            openClassKey={openClassKey}
+                            session={session}
+                          />
                         );
-                        const endSlot = Math.max(
-                          dragState.startSlot,
-                          dragState.endSlot
-                        );
-                        const startTime = getTimeFrom30MinuteSlot(startSlot);
-                        const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
-                        const { startCol, startOffset, span } =
-                          getTimeSlotPosition(startTime, endTime);
-
-                        if (timeColIndex === startCol) {
-                          return (
-                            <div
-                              className="absolute inset-y-0 z-10 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
-                              style={{
-                                left: `${startOffset * 100}%`,
-                                width: `calc(${span * 100}% - 0.25rem)`,
-                              }}
-                            >
-                              <div className="font-medium text-primary-foreground">
-                                Custom Class
-                              </div>
-                              <div className="text-[10px] text-primary-foreground/80">
-                                {formatTimeRange(startTime, endTime)}
-                              </div>
-                            </div>
+                      })}
+                      {dragState &&
+                        dragState.day === day &&
+                        (() => {
+                          const startSlot = Math.min(
+                            dragState.startSlot,
+                            dragState.endSlot
                           );
-                        }
-                        return null;
-                      })()}
-                  </div>
+                          const endSlot = Math.max(
+                            dragState.startSlot,
+                            dragState.endSlot
+                          );
+                          const startTime = getTimeFrom30MinuteSlot(startSlot);
+                          const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
+                          const { startCol, startOffset, span } =
+                            getTimeSlotPosition(startTime, endTime);
+
+                          if (timeColIndex === startCol) {
+                            return (
+                              <div
+                                className="absolute inset-y-0 z-10 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
+                                style={{
+                                  left: `${startOffset * 100}%`,
+                                  width: `calc(${span * 100}% - 0.25rem)`,
+                                }}
+                              >
+                                <div className="font-medium text-primary-foreground">
+                                  Custom Class
+                                </div>
+                                <div className="text-[10px] text-primary-foreground/80">
+                                  {formatTimeRange(startTime, endTime)}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      {snappedPreview &&
+                        snappedPreview.day === day &&
+                        timeColIndex === snappedPreview.startCol && (
+                          <div
+                            className="absolute inset-y-0 z-30 m-0.5 rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                            style={{
+                              left: `${snappedPreview.startOffset * 100}%`,
+                              width: `calc(${snappedPreview.span * 100}% - 0.25rem)`,
+                            }}
+                          >
+                            <div className="font-medium text-primary-foreground">
+                              {activeSession?.courseCode || "Custom Class"}
+                            </div>
+                            <div className="text-[10px] text-primary-foreground/80">
+                              {formatTimeRange(
+                                snappedPreview.start,
+                                snappedPreview.end
+                              )}
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  </DroppableCell>
                 );
               })}
             </div>
           ))}
         </div>
       </div>
+      <DragOverlay>
+        {activeSession ? (
+          <div className="m-0.5 rounded border border-primary bg-primary/80 p-1.5 text-xs">
+            <div className="font-medium text-primary-foreground">
+              {activeSession.courseCode}
+            </div>
+            <div className="text-[10px] text-primary-foreground/80">
+              {activeSession.start}–{activeSession.end}
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 }

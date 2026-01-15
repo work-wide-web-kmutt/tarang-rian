@@ -34,6 +34,12 @@ interface SelectedGenElectivesState {
       start: string,
       end: string
     ) => void;
+    update: (
+      oldSession: SelectedClassSession,
+      newDay: GenElectiveOption["class"][number]["day"],
+      newStart: string,
+      newEnd: string
+    ) => void;
     clear: () => void;
   };
 }
@@ -163,6 +169,33 @@ const selectedGenElectivesStoreCreator: StateCreator<
               session.end === end
             )
         );
+        saveToStorage(updated);
+        return { selected: updated };
+      }),
+    update: (
+      oldSession: SelectedClassSession,
+      newDay: GenElectiveOption["class"][number]["day"],
+      newStart: string,
+      newEnd: string
+    ) =>
+      set((state) => {
+        const updated = state.selected.map((session) => {
+          if (
+            session.courseCode === oldSession.courseCode &&
+            session.group === oldSession.group &&
+            session.day === oldSession.day &&
+            session.start === oldSession.start &&
+            session.end === oldSession.end
+          ) {
+            return {
+              ...session,
+              day: newDay,
+              start: newStart,
+              end: newEnd,
+            };
+          }
+          return session;
+        });
         saveToStorage(updated);
         return { selected: updated };
       }),

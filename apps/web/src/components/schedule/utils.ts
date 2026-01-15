@@ -1,3 +1,4 @@
+import type { GenElectiveOption } from "@/course/schema";
 import { parseTime } from "@/lib/parser/time";
 import type { SelectedClassSession } from "@/stores/selected";
 
@@ -95,4 +96,27 @@ export function getTimeFrom30MinuteSlot(slotIndex: number): string {
 
 export function formatTimeRange(start: string, end: string): string {
   return `${start}–${end}`;
+}
+
+export function calculateSnappedPreview(
+  session: SelectedClassSession,
+  _targetDay: GenElectiveOption["class"][number]["day"],
+  targetSlotIndex: number
+): { newStart: string; newEnd: string } {
+  const startMinutes = parseTime(session.start);
+  const endMinutes = parseTime(session.end);
+  const duration = endMinutes - startMinutes;
+
+  const newStartMinutes = BASE_MINUTES + targetSlotIndex * 30;
+  const newEndMinutes = newStartMinutes + duration;
+
+  const newStartHours = Math.floor(newStartMinutes / 60);
+  const newStartMins = newStartMinutes % 60;
+  const newEndHours = Math.floor(newEndMinutes / 60);
+  const newEndMins = newEndMinutes % 60;
+
+  const newStart = `${newStartHours.toString().padStart(2, "0")}:${newStartMins.toString().padStart(2, "0")}`;
+  const newEnd = `${newEndHours.toString().padStart(2, "0")}:${newEndMins.toString().padStart(2, "0")}`;
+
+  return { newStart, newEnd };
 }

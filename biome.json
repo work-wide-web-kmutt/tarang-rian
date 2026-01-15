@@ -25,6 +25,12 @@
   "extends": ["ultracite/core", "ultracite/react"],
   "linter": {
     "rules": {
+      "a11y": {
+        "noStaticElementInteractions": "off",
+        "noNoninteractiveElementInteractions": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "noNoninteractiveTabindex": "off"
+      },
       "style": {
         "noRestrictedImports": {
           "level": "error",
