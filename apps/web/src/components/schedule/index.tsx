@@ -543,23 +543,12 @@ export function Schedule({ sessions }: ScheduleProps) {
     if (duration >= 30) {
       const startTime = getTimeFrom30MinuteSlot(startSlot);
       const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
-      addCustom(dragState.day, startTime, endTime);
+      const createdSession = addCustom(dragState.day, startTime, endTime);
 
-      const unassignedNumber = sessions.length;
-      const newSession: SelectedClassSession = {
-        courseCode: `Unassigned (${unassignedNumber})`,
-        courseName: "Unassigned Class",
-        year: "2025",
-        semester: "1",
-        instructor: "TBA",
-        group: "1",
-        day: dragState.day,
-        start: startTime,
-        end: endTime,
-        type: "custom",
-      };
-      const classKey = getClassKey(newSession);
-      setOpenClassKey(classKey);
+      if (createdSession) {
+        const classKey = getClassKey(createdSession);
+        setOpenClassKey(classKey);
+      }
     }
 
     dragStartRef.current = null;

@@ -30,7 +30,7 @@ export function SessionBlock({
 
   return (
     <CourseVaul
-      className={`absolute inset-y-0 z-20 m-0.5 rounded border p-1.5 text-xs ${
+      className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 text-xs ${
         hasOverlapping
           ? "border-destructive bg-destructive/40"
           : "border-primary bg-primary"
