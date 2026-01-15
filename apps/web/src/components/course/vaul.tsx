@@ -1,8 +1,17 @@
-import { Trash2Icon } from "lucide-react";
+import { useForm } from "@tanstack/react-form";
+import { PencilIcon, Trash2Icon } from "lucide-react";
 import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 import { Drawer } from "vaul-base";
+import z from "zod";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
@@ -18,6 +27,12 @@ interface CourseVaulProps {
   onOpenOtherCourse?: (classKey: string) => void;
 }
 
+const editSchema = z.object({
+  courseCode: z.string().min(1, "Course code is required."),
+  courseName: z.string().min(1, "Course name is required."),
+  instructor: z.string().min(1, "Instructor name is required."),
+});
+
 function CourseVaul({
   children,
   style,
@@ -29,13 +44,53 @@ function CourseVaul({
   onOpenOtherCourse,
 }: CourseVaulProps) {
   const [open, setOpen] = useState(false);
-  const { remove } = useSelectedGenElectivesActions();
+  const [isEditing, setIsEditing] = useState(false);
+  const { remove, updateSession } = useSelectedGenElectivesActions();
+
+  const form = useForm({
+    defaultValues: {
+      courseCode: session?.courseCode ?? "",
+      courseName: session?.courseName ?? "",
+      instructor: session?.instructor ?? "",
+    },
+    validators: {
+      onBlur: editSchema,
+      onSubmit: editSchema,
+    },
+    onSubmit: ({ value }) => {
+      if (!session) {
+        return;
+      }
+      updateSession(session, {
+        courseCode: value.courseCode,
+        courseName: value.courseName,
+        instructor: value.instructor,
+      });
+      setIsEditing(false);
+    },
+  });
 
   useEffect(() => {
     if (isHighlighted) {
       setOpen(true);
     }
   }, [isHighlighted]);
+
+  useEffect(() => {
+    if (session && isEditing) {
+      form.reset({
+        courseCode: session.courseCode,
+        courseName: session.courseName,
+        instructor: session.instructor,
+      });
+    }
+  }, [session, isEditing, form]);
+
+  useEffect(() => {
+    if (!open) {
+      setIsEditing(false);
+    }
+  }, [open]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -113,18 +168,147 @@ function CourseVaul({
         >
           {session ? (
             <div className="flex h-full flex-col space-y-6 overflow-y-auto">
-              <div className="space-y-0">
-                <h2 className="font-semibold text-2xl">{session.courseName}</h2>
-                <Badge>{session.courseCode}</Badge>
-                <div className="space-y-0 pt-4">
-                  <p className="mt-1 text-muted-foreground">
-                    Year {session.year}, Semester {session.semester}
-                  </p>
-                  <p className="mt-1 text-muted-foreground text-sm">
-                    Instructor: {session.instructor}
-                  </p>
+              {isEditing ? (
+                <form
+                  className="space-y-6"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    form.handleSubmit();
+                  }}
+                >
+                  <FieldGroup>
+                    <form.Field
+                      children={(field) => {
+                        const isInvalid =
+                          field.state.meta.isTouched &&
+                          !field.state.meta.isValid;
+                        return (
+                          <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>
+                              Course Code
+                            </FieldLabel>
+                            <Input
+                              aria-invalid={isInvalid}
+                              id={field.name}
+                              name={field.name}
+                              onBlur={field.handleBlur}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              value={field.state.value}
+                            />
+                            {isInvalid && (
+                              <FieldError errors={field.state.meta.errors} />
+                            )}
+                          </Field>
+                        );
+                      }}
+                      name="courseCode"
+                    />
+                    <form.Field
+                      children={(field) => {
+                        const isInvalid =
+                          field.state.meta.isTouched &&
+                          !field.state.meta.isValid;
+                        return (
+                          <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>
+                              Course Name
+                            </FieldLabel>
+                            <Input
+                              aria-invalid={isInvalid}
+                              id={field.name}
+                              name={field.name}
+                              onBlur={field.handleBlur}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              value={field.state.value}
+                            />
+                            {isInvalid && (
+                              <FieldError errors={field.state.meta.errors} />
+                            )}
+                          </Field>
+                        );
+                      }}
+                      name="courseName"
+                    />
+                    <form.Field
+                      children={(field) => {
+                        const isInvalid =
+                          field.state.meta.isTouched &&
+                          !field.state.meta.isValid;
+                        return (
+                          <Field data-invalid={isInvalid}>
+                            <FieldLabel htmlFor={field.name}>
+                              Instructor
+                            </FieldLabel>
+                            <Input
+                              aria-invalid={isInvalid}
+                              id={field.name}
+                              name={field.name}
+                              onBlur={field.handleBlur}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              value={field.state.value}
+                            />
+                            {isInvalid && (
+                              <FieldError errors={field.state.meta.errors} />
+                            )}
+                          </Field>
+                        );
+                      }}
+                      name="instructor"
+                    />
+                  </FieldGroup>
+                  <div className="flex gap-2">
+                    <Button disabled={form.state.isSubmitting} type="submit">
+                      {form.state.isSubmitting ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setIsEditing(false);
+                        form.reset();
+                      }}
+                      type="button"
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="space-y-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <h2 className="font-semibold text-2xl">
+                        {session.courseName}
+                      </h2>
+                      <Badge>{session.courseCode}</Badge>
+                    </div>
+                    {session.type === "custom" && (
+                      <Button
+                        aria-label="Edit course information"
+                        onClick={() => setIsEditing(true)}
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-0 pt-4">
+                    <p className="mt-1 text-muted-foreground">
+                      Year {session.year}, Semester {session.semester}
+                    </p>
+                    <p className="mt-1 text-muted-foreground text-sm">
+                      Instructor: {session.instructor}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="space-y-2 text-sm">
                 <div>
