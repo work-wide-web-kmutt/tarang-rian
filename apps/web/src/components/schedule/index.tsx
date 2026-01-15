@@ -597,7 +597,7 @@ export function Schedule({ sessions }: ScheduleProps) {
               }}
             >
               <div
-                className="sticky left-0 z-50 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs"
+                className="sticky left-0 z-40 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs"
                 data-day-label
               >
                 {day}
@@ -655,7 +655,7 @@ export function Schedule({ sessions }: ScheduleProps) {
                           if (timeColIndex === startCol) {
                             return (
                               <div
-                                className="absolute inset-y-0 z-10 m-0.5 rounded border border-primary bg-primary p-1.5 text-xs"
+                                className="absolute inset-y-0 z-30 m-0.5 rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
                                 style={{
                                   left: `${startOffset * 100}%`,
                                   width: `calc(${span * 100}% - 0.25rem)`,

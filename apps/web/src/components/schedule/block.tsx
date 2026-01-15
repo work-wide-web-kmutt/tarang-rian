@@ -61,7 +61,7 @@ export function SessionBlock({
         className={`transition-transform duration-200 ease-out ${hoverClass}`}
       >
         <div
-          className={`text-base ${
+          className={`${
             hasOverlapping
               ? "text-destructive-foreground"
               : "text-primary-foreground"
@@ -70,7 +70,7 @@ export function SessionBlock({
           {session.courseCode}
         </div>
         <div
-          className={`text-sm ${
+          className={`text-[10px] ${
             hasOverlapping
               ? "text-destructive-foreground/80"
               : "text-primary-foreground/80"
