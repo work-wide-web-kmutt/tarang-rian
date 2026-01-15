@@ -1,4 +1,11 @@
-import { PencilIcon, Trash2Icon } from "lucide-react";
+import {
+  CalendarIcon,
+  ClockIcon,
+  PencilIcon,
+  Trash2Icon,
+  User,
+  UsersIcon,
+} from "lucide-react";
 import { Drawer } from "vaul-base";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { CourseVaulForm } from "@/components/course/vaul/form";
@@ -89,49 +96,83 @@ export function CourseVaulContent() {
               {isEditing ? (
                 <CourseVaulForm />
               ) : (
-                <div className="space-y-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <h2 className="font-semibold text-2xl">
-                        {session.courseName}
-                      </h2>
-                      <Badge>{session.courseCode}</Badge>
+                <>
+                  <div>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex flex-col gap-2">
+                        <h2 className="font-semibold text-2xl">
+                          {session.courseName}
+                        </h2>
+                        <Badge>{session.courseCode}</Badge>
+                        <p className="mt-1 flex gap-2 text-muted-foreground">
+                          Year{" "}
+                          <Badge className="text-black" variant="outline">
+                            {session.year}
+                          </Badge>
+                          Semester{" "}
+                          <Badge className="text-black" variant="outline">
+                            {session.semester}
+                          </Badge>
+                        </p>
+                      </div>
+                      {session.type === "custom" && (
+                        <Button
+                          aria-label="Edit course information"
+                          onClick={() => setIsEditing(true)}
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
-                    {session.type === "custom" && (
-                      <Button
-                        aria-label="Edit course information"
-                        onClick={() => setIsEditing(true)}
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Button>
-                    )}
                   </div>
-                  <div className="space-y-0 pt-4">
-                    <p className="mt-1 text-muted-foreground">
-                      Year {session.year}, Semester {session.semester}
-                    </p>
-                    <p className="mt-1 text-muted-foreground text-sm">
-                      Instructor: {session.instructor}
-                    </p>
-                  </div>
-                </div>
+                  <table className="table-fixed text-sm">
+                    <tbody>
+                      <tr>
+                        <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <CalendarIcon className="h-3.5 w-3.5" />
+                            <span>Day</span>
+                          </div>
+                        </td>
+                        <td className="py-1.5">{session.day}</td>
+                      </tr>
+                      <tr>
+                        <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <ClockIcon className="h-3.5 w-3.5" />
+                            <span>Time</span>
+                          </div>
+                        </td>
+                        <td className="py-1.5">
+                          {session.start} - {session.end}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <UsersIcon className="h-3.5 w-3.5" />
+                            <span>Group</span>
+                          </div>
+                        </td>
+                        <td className="py-1.5">{session.group}</td>
+                      </tr>
+                      <tr>
+                        <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <User className="h-3.5 w-3.5" />
+                            <span>Instructor</span>
+                          </div>
+                        </td>
+                        <td className="py-1.5">{session.instructor}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </>
               )}
 
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="font-medium">Day:</span> {session.day}
-                </div>
-                <div>
-                  <span className="font-medium">Time:</span> {session.start} -{" "}
-                  {session.end}
-                </div>
-                <div>
-                  <span className="font-medium">Group:</span> {session.group}
-                </div>
-              </div>
               {overlappingSessions.length > 0 && (
                 <div className="space-y-2">
                   <div className="font-medium text-sm">Overlaps:</div>
