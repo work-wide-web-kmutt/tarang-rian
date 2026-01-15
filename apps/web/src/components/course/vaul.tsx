@@ -161,7 +161,10 @@ function CourseVaul({
           }}
         >
           {session ? (
-            <div className="flex h-full flex-col space-y-6 overflow-y-auto">
+            <div
+              className="flex h-full flex-col space-y-6 overflow-y-auto"
+              data-vaul-no-drag
+            >
               {isEditing ? (
                 <form
                   className="space-y-6"
@@ -347,7 +350,10 @@ function CourseVaul({
               </div>
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center">
+            <div
+              className="flex h-full items-center justify-center"
+              data-vaul-no-drag
+            >
               <p className="text-muted-foreground">
                 No course information available
               </p>
