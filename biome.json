@@ -29,7 +29,8 @@
         "noStaticElementInteractions": "off",
         "noNoninteractiveElementInteractions": "off",
         "useAriaPropsSupportedByRole": "off",
-        "noNoninteractiveTabindex": "off"
+        "noNoninteractiveTabindex": "off",
+        "useSemanticElements": "off"
       },
       "style": {
         "noRestrictedImports": {
