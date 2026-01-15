@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { type FormEvent, useEffect } from "react";
 import z from "zod";
+import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -9,7 +10,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
 const editSchema = z.object({
@@ -18,40 +18,37 @@ const editSchema = z.object({
   instructor: z.string().min(1, "Instructor name is required."),
 });
 
-interface CourseVaulFormProps {
-  session: SelectedClassSession;
-  onCancel: () => void;
-  onSaved?: () => void;
-}
-
-export function CourseVaulForm({
-  session,
-  onCancel,
-  onSaved,
-}: CourseVaulFormProps) {
+export function CourseVaulForm() {
   const { updateSession } = useSelectedGenElectivesActions();
+  const { setIsEditing, session } = useCourseVaulContext();
 
   const form = useForm({
     defaultValues: {
-      courseCode: session.courseCode,
-      courseName: session.courseName,
-      instructor: session.instructor,
+      courseCode: session?.courseCode ?? "",
+      courseName: session?.courseName ?? "",
+      instructor: session?.instructor ?? "",
     },
     validators: {
       onBlur: editSchema,
       onSubmit: editSchema,
     },
     onSubmit: ({ value }) => {
-      updateSession(session.id, {
+      if (!session) {
+        return;
+      }
+      updateSession(session?.id, {
         courseCode: value.courseCode,
         courseName: value.courseName,
         instructor: value.instructor,
       });
-      onSaved?.();
+      setIsEditing(false);
     },
   });
 
   useEffect(() => {
+    if (!session) {
+      return;
+    }
     form.reset({
       courseCode: session.courseCode,
       courseName: session.courseName,
@@ -143,7 +140,7 @@ export function CourseVaulForm({
         </Button>
         <Button
           onClick={() => {
-            onCancel();
+            setIsEditing(false);
             form.reset();
           }}
           type="button"

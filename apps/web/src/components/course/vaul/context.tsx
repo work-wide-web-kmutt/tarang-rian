@@ -1,4 +1,5 @@
 import {
+  type CSSProperties,
   createContext,
   type ReactNode,
   useCallback,
@@ -7,26 +8,46 @@ import {
   useMemo,
   useState,
 } from "react";
+import type { SelectedClassSession } from "@/stores/selected";
 
 interface CourseVaulContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  children: ReactNode;
+  style?: CSSProperties;
+  className?: string;
+  isHighlighted: boolean;
+  session?: SelectedClassSession;
+  overlappingSessions: SelectedClassSession[];
+  onOpenOtherCourse?: (classKey: string) => void;
 }
 
 const CourseVaulContext = createContext<CourseVaulContextValue | null>(null);
 
 interface CourseVaulProviderProps {
   children: ReactNode;
+  triggerChildren: ReactNode;
+  style?: CSSProperties;
+  className?: string;
   isHighlighted?: boolean;
   onOpenChange?: (open: boolean) => void;
+  session?: SelectedClassSession;
+  overlappingSessions?: SelectedClassSession[];
+  onOpenOtherCourse?: (classKey: string) => void;
 }
 
 export function CourseVaulProvider({
   children,
+  triggerChildren,
+  style,
+  className,
   isHighlighted = false,
   onOpenChange,
+  session,
+  overlappingSessions = [],
+  onOpenOtherCourse,
 }: CourseVaulProviderProps) {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -57,8 +78,26 @@ export function CourseVaulProvider({
       setOpen: handleSetOpen,
       isEditing,
       setIsEditing,
+      children: triggerChildren,
+      style,
+      className,
+      isHighlighted,
+      session,
+      overlappingSessions,
+      onOpenOtherCourse,
     }),
-    [open, isEditing, handleSetOpen]
+    [
+      open,
+      isEditing,
+      handleSetOpen,
+      triggerChildren,
+      style,
+      className,
+      isHighlighted,
+      session,
+      overlappingSessions,
+      onOpenOtherCourse,
+    ]
   );
 
   return (
