@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
-interface CourseVaulType {
+interface CourseVaulProps {
   children: ReactNode;
   style?: CSSProperties;
   className?: string;
@@ -26,7 +26,7 @@ function CourseVaul({
   session,
   overlappingSessions = [],
   onOpenOtherCourse,
-}: CourseVaulType) {
+}: CourseVaulProps) {
   const [open, setOpen] = useState(false);
   const { remove } = useSelectedGenElectivesActions();
 
@@ -82,8 +82,27 @@ function CourseVaul({
         }}
       />
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-50 bg-black/80" />
-        <Drawer.Content className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]">
+        <Drawer.Overlay
+          className="fixed inset-0 z-50 bg-black/80"
+          onClick={() => {
+            handleOpenChange(false);
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+        />
+        <Drawer.Content
+          className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+        >
           {session ? (
             <div className="flex h-full flex-col space-y-6 overflow-y-auto">
               <div>
