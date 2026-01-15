@@ -22,7 +22,6 @@ export function SessionBlock({
   openClassKey,
   onOpenChange,
   extraLeftPadding,
-  isCustom = false,
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
