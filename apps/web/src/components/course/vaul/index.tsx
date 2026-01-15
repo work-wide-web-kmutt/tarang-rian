@@ -1,20 +1,12 @@
-import { useForm } from "@tanstack/react-form";
 import { PencilIcon, Trash2Icon } from "lucide-react";
 import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 import { Drawer } from "vaul-base";
-import z from "zod";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
+import { CourseVaulForm } from "./form";
 
 interface CourseVaulProps {
   children: ReactNode;
@@ -26,12 +18,6 @@ interface CourseVaulProps {
   overlappingSessions?: SelectedClassSession[];
   onOpenOtherCourse?: (classKey: string) => void;
 }
-
-const editSchema = z.object({
-  courseCode: z.string().min(1, "Course code is required."),
-  courseName: z.string().min(1, "Course name is required."),
-  instructor: z.string().min(1, "Instructor name is required."),
-});
 
 function CourseVaul({
   children,
@@ -45,46 +31,13 @@ function CourseVaul({
 }: CourseVaulProps) {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { remove, updateSession } = useSelectedGenElectivesActions();
-
-  const form = useForm({
-    defaultValues: {
-      courseCode: session?.courseCode ?? "",
-      courseName: session?.courseName ?? "",
-      instructor: session?.instructor ?? "",
-    },
-    validators: {
-      onBlur: editSchema,
-      onSubmit: editSchema,
-    },
-    onSubmit: ({ value }) => {
-      if (!session) {
-        return;
-      }
-      updateSession(session.id, {
-        courseCode: value.courseCode,
-        courseName: value.courseName,
-        instructor: value.instructor,
-      });
-      setIsEditing(false);
-    },
-  });
+  const { remove } = useSelectedGenElectivesActions();
 
   useEffect(() => {
     if (isHighlighted) {
       setOpen(true);
     }
   }, [isHighlighted]);
-
-  useEffect(() => {
-    if (session && isEditing) {
-      form.reset({
-        courseCode: session.courseCode,
-        courseName: session.courseName,
-        instructor: session.instructor,
-      });
-    }
-  }, [session, isEditing, form]);
 
   useEffect(() => {
     if (!open) {
@@ -166,115 +119,15 @@ function CourseVaul({
               data-vaul-no-drag
             >
               {isEditing ? (
-                <form
-                  className="space-y-6"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    form.handleSubmit();
+                <CourseVaulForm
+                  onCancel={() => {
+                    setIsEditing(false);
                   }}
-                >
-                  <FieldGroup>
-                    <form.Field
-                      children={(field) => {
-                        const isInvalid =
-                          field.state.meta.isTouched &&
-                          !field.state.meta.isValid;
-                        return (
-                          <Field data-invalid={isInvalid}>
-                            <FieldLabel htmlFor={field.name}>
-                              Course Code
-                            </FieldLabel>
-                            <Input
-                              aria-invalid={isInvalid}
-                              id={field.name}
-                              name={field.name}
-                              onBlur={field.handleBlur}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                              value={field.state.value}
-                            />
-                            {isInvalid && (
-                              <FieldError errors={field.state.meta.errors} />
-                            )}
-                          </Field>
-                        );
-                      }}
-                      name="courseCode"
-                    />
-                    <form.Field
-                      children={(field) => {
-                        const isInvalid =
-                          field.state.meta.isTouched &&
-                          !field.state.meta.isValid;
-                        return (
-                          <Field data-invalid={isInvalid}>
-                            <FieldLabel htmlFor={field.name}>
-                              Course Name
-                            </FieldLabel>
-                            <Input
-                              aria-invalid={isInvalid}
-                              id={field.name}
-                              name={field.name}
-                              onBlur={field.handleBlur}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                              value={field.state.value}
-                            />
-                            {isInvalid && (
-                              <FieldError errors={field.state.meta.errors} />
-                            )}
-                          </Field>
-                        );
-                      }}
-                      name="courseName"
-                    />
-                    <form.Field
-                      children={(field) => {
-                        const isInvalid =
-                          field.state.meta.isTouched &&
-                          !field.state.meta.isValid;
-                        return (
-                          <Field data-invalid={isInvalid}>
-                            <FieldLabel htmlFor={field.name}>
-                              Instructor
-                            </FieldLabel>
-                            <Input
-                              aria-invalid={isInvalid}
-                              id={field.name}
-                              name={field.name}
-                              onBlur={field.handleBlur}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
-                              value={field.state.value}
-                            />
-                            {isInvalid && (
-                              <FieldError errors={field.state.meta.errors} />
-                            )}
-                          </Field>
-                        );
-                      }}
-                      name="instructor"
-                    />
-                  </FieldGroup>
-                  <div className="flex gap-2">
-                    <Button disabled={form.state.isSubmitting} type="submit">
-                      {form.state.isSubmitting ? "Saving..." : "Save"}
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setIsEditing(false);
-                        form.reset();
-                      }}
-                      type="button"
-                      variant="outline"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
+                  onSaved={() => {
+                    setIsEditing(false);
+                  }}
+                  session={session}
+                />
               ) : (
                 <div className="space-y-0">
                   <div className="flex items-start justify-between gap-2">
