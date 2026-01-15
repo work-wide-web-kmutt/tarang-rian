@@ -65,6 +65,7 @@ function CourseVaul({
       open={openState}
     >
       <Drawer.Trigger
+        nativeButton={false}
         render={(props) => {
           return (
             <div
