@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { type FormEvent, useEffect } from "react";
+import { type FormEvent, useEffect, useMemo } from "react";
 import z from "zod";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DAYS } from "@/constants/times";
+import { useCurrentYear } from "@/stores/academic-context";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
 const editSchema = z.object({
@@ -34,11 +35,22 @@ const editSchema = z.object({
     "Saturday",
     "Sunday",
   ]),
+  year: z.string().min(1, "Year is required."),
+  semester: z.enum(["1", "2", "S"]),
 });
 
 export function CourseVaulForm() {
   const { updateSession } = useSelectedGenElectivesActions();
   const { setIsEditing, session } = useCourseVaulContext();
+  const currentYear = useCurrentYear();
+
+  const yearOptions = useMemo(() => {
+    const years: number[] = [];
+    for (let i = currentYear - 4; i <= currentYear + 4; i++) {
+      years.push(i);
+    }
+    return years;
+  }, [currentYear]);
 
   const form = useForm({
     defaultValues: {
@@ -47,6 +59,8 @@ export function CourseVaulForm() {
       instructor: session?.instructor ?? "",
       group: session?.group ?? "",
       day: session?.day ?? "Monday",
+      year: session?.year ?? currentYear.toString(),
+      semester: session?.semester ?? "1",
     },
     validators: {
       onBlur: editSchema,
@@ -62,6 +76,8 @@ export function CourseVaulForm() {
         instructor: value.instructor,
         group: value.group,
         day: value.day,
+        year: value.year,
+        semester: value.semester,
       });
       setIsEditing(false);
     },
@@ -77,6 +93,8 @@ export function CourseVaulForm() {
       instructor: session.instructor,
       group: session.group,
       day: session.day,
+      year: session.year,
+      semester: session.semester,
     });
   }, [session, form]);
 
@@ -133,6 +151,77 @@ export function CourseVaulForm() {
             );
           }}
           name="courseName"
+        />
+
+        <form.Field
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Year</FieldLabel>
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      field.handleChange(value);
+                    }
+                  }}
+                  value={field.state.value}
+                >
+                  <SelectTrigger
+                    aria-invalid={isInvalid}
+                    className="w-full"
+                    id={field.name}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
+          name="year"
+        />
+        <form.Field
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Semester</FieldLabel>
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      field.handleChange(value as typeof field.state.value);
+                    }
+                  }}
+                  value={field.state.value}
+                >
+                  <SelectTrigger
+                    aria-invalid={isInvalid}
+                    className="w-full"
+                    id={field.name}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="S">S</SelectItem>
+                  </SelectContent>
+                </Select>
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
+          name="semester"
         />
 
         <form.Field
