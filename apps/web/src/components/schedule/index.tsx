@@ -389,19 +389,14 @@ export function Schedule({ sessions }: ScheduleProps) {
       return; // Only allow left mouse button (0)
     }
 
-    const target = e.target as HTMLElement;
-
-    // Check if click is on context menu (simplified check with single attribute)
-    if (target.closest("[data-context-menu]")) {
+    // Don't create new class if vaul/sheet is open
+    if (openClassKey !== null) {
       return;
     }
 
-    // Check if click is on existing session blocks, day labels, or drag handles
-    if (
-      target.closest("[data-session-block]") ||
-      target.closest("[data-day-label]") ||
-      target.closest("[data-drag-handle]")
-    ) {
+    // Only allow creating new class if clicking directly on the grid cell background
+    // This prevents clicks on children (SessionBlock, etc.) or overlaying elements (sheets, dialogs, etc.)
+    if (e.target !== e.currentTarget) {
       return;
     }
 
@@ -419,6 +414,11 @@ export function Schedule({ sessions }: ScheduleProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!(dragStartRef.current && dragState)) {
+      return;
+    }
+
+    // Don't update drag state if vaul/sheet is open
+    if (openClassKey !== null) {
       return;
     }
 
@@ -454,6 +454,13 @@ export function Schedule({ sessions }: ScheduleProps) {
 
   const handleMouseUp = () => {
     if (!(dragState && dragStartRef.current)) {
+      dragStartRef.current = null;
+      setDragState(null);
+      return;
+    }
+
+    // Don't create new class if vaul/sheet is open
+    if (openClassKey !== null) {
       dragStartRef.current = null;
       setDragState(null);
       return;

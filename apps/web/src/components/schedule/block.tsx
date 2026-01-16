@@ -58,7 +58,8 @@ export function SessionBlock({
     setShowDeleteDialog(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.stopPropagation();
     remove(session.id);
     setShowDeleteDialog(false);
   };

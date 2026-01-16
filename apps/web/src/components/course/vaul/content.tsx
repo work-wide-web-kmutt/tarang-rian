@@ -30,7 +30,8 @@ export function CourseVaulContent() {
     return null;
   }
 
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.stopPropagation();
     handleRemove();
     setShowRemoveDialog(false);
   };
