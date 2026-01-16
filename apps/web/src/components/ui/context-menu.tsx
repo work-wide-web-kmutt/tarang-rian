@@ -44,6 +44,7 @@ function ContextMenuContent({
         align={align}
         alignOffset={alignOffset}
         className="isolate z-50 outline-none"
+        data-context-menu
         side={side}
         sideOffset={sideOffset}
       >

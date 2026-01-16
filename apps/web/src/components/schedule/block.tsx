@@ -40,7 +40,9 @@ export function SessionBlock({
   const overlappingSessions = getOverlappingSessions(session, allSessions);
   const { remove } = useSelectedGenElectivesActions();
 
-  const handleDelete = () => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     remove(session.id);
   };
 

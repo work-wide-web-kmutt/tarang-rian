@@ -101,6 +101,12 @@ export function Schedule({ sessions }: ScheduleProps) {
       activationConstraint: {
         distance: ACTIVATION_DISTANCE,
       },
+      filter: (event: Event) => {
+        if (event instanceof MouseEvent) {
+          return event.button === 0; // Only allow left mouse button
+        }
+        return true; // Allow touch events
+      },
     })
   );
 
@@ -379,7 +385,18 @@ export function Schedule({ sessions }: ScheduleProps) {
     day: GenElectiveOption["class"][number]["day"],
     timeColIndex: number
   ) => {
+    if (e.button !== 0) {
+      return; // Only allow left mouse button (0)
+    }
+
     const target = e.target as HTMLElement;
+
+    // Check if click is on context menu (simplified check with single attribute)
+    if (target.closest("[data-context-menu]")) {
+      return;
+    }
+
+    // Check if click is on existing session blocks, day labels, or drag handles
     if (
       target.closest("[data-session-block]") ||
       target.closest("[data-day-label]") ||
