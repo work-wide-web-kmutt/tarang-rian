@@ -1,4 +1,5 @@
 import { Trash2Icon } from "lucide-react";
+import { useState } from "react";
 import CourseVaul from "@/components/course/vaul";
 import {
   getClassKey,
@@ -6,6 +7,16 @@ import {
   getTimeSlotPosition,
   hasOverlap,
 } from "@/components/schedule/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -39,11 +50,17 @@ export function SessionBlock({
   const hasOverlapping = hasOverlap(session, allSessions);
   const overlappingSessions = getOverlappingSessions(session, allSessions);
   const { remove } = useSelectedGenElectivesActions();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
     remove(session.id);
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -104,6 +121,24 @@ export function SessionBlock({
           Delete
         </ContextMenuItem>
       </ContextMenuContent>
+      <AlertDialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove class from schedule?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove {session.courseCode} -{" "}
+              {session.courseName} from your schedule? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </ContextMenu>
   );
 }

@@ -6,17 +6,34 @@ import {
   User,
   UsersIcon,
 } from "lucide-react";
+import { useState } from "react";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export function CourseVaulContent() {
   const { session, overlappingSessions, setIsEditing, handleRemove } =
     useCourseVaulContext();
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
 
   if (!session) {
     return null;
   }
+
+  const handleConfirmRemove = () => {
+    handleRemove();
+    setShowRemoveDialog(false);
+  };
 
   return (
     <>
@@ -108,10 +125,28 @@ export function CourseVaulContent() {
         </div>
       )}
       <div className="flex">
-        <Button onClick={handleRemove} variant="destructive">
+        <Button onClick={() => setShowRemoveDialog(true)} variant="destructive">
           <Trash2Icon className="mr-2 h-4 w-4" />
           Remove from selected
         </Button>
+        <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove class from schedule?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to remove {session.courseCode} -{" "}
+                {session.courseName} from your schedule? This action cannot be
+                undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmRemove}>
+                Remove
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );
