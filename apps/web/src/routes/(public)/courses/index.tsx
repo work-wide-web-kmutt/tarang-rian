@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { allCourses } from "content-collections";
-import { useMemo, useState } from "react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useMemo } from "react";
 import { CourseFilters } from "@/components/course/course-filters";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
@@ -18,9 +19,18 @@ function AllCoursesPage() {
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [dayFilter, setDayFilter] = useState("all");
-  const [timeSlotFilter, setTimeSlotFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useQueryState(
+    "q",
+    parseAsString.withDefault("")
+  );
+  const [dayFilter, setDayFilter] = useQueryState(
+    "day",
+    parseAsString.withDefault("all")
+  );
+  const [timeSlotFilter, setTimeSlotFilter] = useQueryState(
+    "time",
+    parseAsString.withDefault("all")
+  );
 
   const sortedCourses = [...allCourses].sort((a, b) => {
     if (a.year === b.year) {
