@@ -1,3 +1,5 @@
+import { Trash2Icon } from "lucide-react";
+import { useState } from "react";
 import CourseVaul from "@/components/course/vaul";
 import {
   getClassKey,
@@ -5,13 +7,35 @@ import {
   getTimeSlotPosition,
   hasOverlap,
 } from "@/components/schedule/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import type { SelectedClassSession } from "@/stores/selected";
+import { useSelectedGenElectivesActions } from "@/stores/selected";
 
 interface SessionBlockProps {
   session: SelectedClassSession;
   allSessions: SelectedClassSession[];
   openClassKey: string | null;
   onOpenChange: (classKey: string | null) => void;
+  extraLeftPadding?: string;
+  isCustom?: boolean;
 }
 
 export function SessionBlock({
@@ -19,62 +43,103 @@ export function SessionBlock({
   allSessions,
   openClassKey,
   onOpenChange,
+  extraLeftPadding,
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
-  const isHighlighted = openClassKey === classKey;
   const hasOverlapping = hasOverlap(session, allSessions);
   const overlappingSessions = getOverlappingSessions(session, allSessions);
+  const { remove } = useSelectedGenElectivesActions();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.stopPropagation();
+    remove(session.id);
+    setShowDeleteDialog(false);
+  };
 
   return (
-    <CourseVaul
-      className={`absolute inset-y-0 z-20 m-0.5 rounded border p-1.5 text-xs ${
-        hasOverlapping
-          ? "border-destructive bg-destructive/40"
-          : "border-primary bg-primary"
-      }`}
-      isHighlighted={isHighlighted}
-      key={classKey}
-      onOpenChange={(open) => {
-        onOpenChange(open ? classKey : null);
-      }}
-      onOpenOtherCourse={(otherClassKey) => {
-        onOpenChange(otherClassKey);
-      }}
-      overlappingSessions={overlappingSessions}
-      session={session}
-      style={{
-        left: `${startOffset * 100}%`,
-        width: `calc(${span * 100}% - 0.25rem)`,
-      }}
-    >
-      <div
-        className={`font-medium ${
-          hasOverlapping
-            ? "text-destructive-foreground"
-            : "text-primary-foreground"
-        }`}
-      >
-        {session.courseCode}
-      </div>
-      <div
-        className={`text-[10px] ${
-          hasOverlapping
-            ? "text-destructive-foreground/80"
-            : "text-primary-foreground/80"
-        }`}
-      >
-        {session.start}–{session.end}
-      </div>
-      <div
-        className={`text-[10px] ${
-          hasOverlapping
-            ? "text-destructive-foreground/80"
-            : "text-primary-foreground/80"
-        }`}
-      >
-        Group {session.group}
-      </div>
-    </CourseVaul>
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <CourseVaul
+          className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 text-xs ${
+            hasOverlapping
+              ? "border-destructive bg-destructive/40"
+              : "border-primary bg-primary"
+          }`}
+          data-session-block
+          key={classKey}
+          onOpenChange={(open) => {
+            onOpenChange(open ? classKey : null);
+          }}
+          overlappingSessions={overlappingSessions}
+          session={session}
+          shouldOpen={openClassKey === classKey}
+          style={{
+            left: `${startOffset * 100}%`,
+            width: `calc(${span * 100}% - 0.25rem)`,
+            paddingLeft: extraLeftPadding,
+          }}
+        >
+          <div>
+            <div
+              className={`${
+                hasOverlapping
+                  ? "text-destructive-foreground"
+                  : "text-primary-foreground"
+              }`}
+            >
+              <p>{session.courseCode}</p>{" "}
+              <p className="font-bold">{session.courseName}</p>
+            </div>
+            <div
+              className={`text-[10px] ${
+                hasOverlapping
+                  ? "text-destructive-foreground/80"
+                  : "text-primary-foreground/80"
+              }`}
+            >
+              {session.start} - {session.end}
+            </div>
+          </div>
+        </CourseVaul>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuGroup>
+          <ContextMenuLabel>
+            {session.courseCode} - {session.courseName}
+          </ContextMenuLabel>
+        </ContextMenuGroup>
+        <ContextMenuSeparator />
+        <ContextMenuItem onClick={handleDelete} variant="destructive">
+          <Trash2Icon />
+          Delete
+        </ContextMenuItem>
+      </ContextMenuContent>
+      <AlertDialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove class from schedule?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove {session.courseCode} -{" "}
+              {session.courseName} from your schedule? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </ContextMenu>
   );
 }

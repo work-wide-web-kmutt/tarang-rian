@@ -1,8 +1,11 @@
+import { v7 } from "uuid";
 import { create, type StateCreator } from "zustand";
 
 import type { GenElectiveOption } from "../course/schema";
+import { getAcademicContext } from "./academic-context";
 
 export interface SelectedClassSession {
+  id: string;
   courseCode: string;
   courseName: string;
   year: string;
@@ -12,6 +15,7 @@ export interface SelectedClassSession {
   day: GenElectiveOption["class"][number]["day"];
   start: string;
   end: string;
+  type: "fixed" | "custom";
 }
 
 interface SelectedGenElectivesState {
@@ -21,12 +25,31 @@ interface SelectedGenElectivesState {
       course: GenElectiveOption,
       classSession: GenElectiveOption["class"][number]
     ) => void;
-    remove: (
-      courseCode: string,
-      group: string,
-      day: string,
+    addCustom: (
+      day: GenElectiveOption["class"][number]["day"],
       start: string,
       end: string
+    ) => SelectedClassSession | null;
+    remove: (id: string) => void;
+    update: (
+      id: string,
+      newDay: GenElectiveOption["class"][number]["day"],
+      newStart: string,
+      newEnd: string
+    ) => void;
+    updateSession: (
+      id: string,
+      updates: {
+        courseCode: string;
+        courseName: string;
+        instructor: string;
+        group: string;
+        day: GenElectiveOption["class"][number]["day"];
+        year: string;
+        semester: GenElectiveOption["semester"];
+        start: string;
+        end: string;
+      }
     ) => void;
     clear: () => void;
   };
@@ -40,7 +63,15 @@ const getStoredSelected = (): SelectedClassSession[] => {
   }
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) {
+      return [];
+    }
+    const parsed = JSON.parse(stored) as SelectedClassSession[];
+    return parsed.map((session) => ({
+      ...session,
+      id: session.id ?? v7(),
+      type: session.type ?? "fixed",
+    }));
   } catch {
     return [];
   }
@@ -81,6 +112,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
         }
 
         const newSession: SelectedClassSession = {
+          id: v7(),
           courseCode: course.code,
           courseName: course.name,
           year: course.year,
@@ -90,30 +122,114 @@ const selectedGenElectivesStoreCreator: StateCreator<
           day: classSession.day,
           start: classSession.start,
           end: classSession.end,
+          type: "fixed",
         };
 
         const updated = [...state.selected, newSession];
         saveToStorage(updated);
         return { selected: updated };
       }),
-    remove: (
-      courseCode: string,
-      group: string,
-      day: string,
+    addCustom: (
+      day: GenElectiveOption["class"][number]["day"],
       start: string,
       end: string
+    ) => {
+      let createdSession: SelectedClassSession | null = null;
+      set((state) => {
+        const exists = state.selected.some(
+          (current) =>
+            current.courseCode.toLowerCase().startsWith("unassigned") &&
+            current.day === day &&
+            current.start === start &&
+            current.end === end
+        );
+
+        if (exists) {
+          return state;
+        }
+
+        const academicContext = getAcademicContext();
+        const newSession: SelectedClassSession = {
+          id: v7(),
+          courseCode: `Unassigned (${state.selected.length + 1})`,
+          courseName: "Unassigned Class",
+          year: academicContext.currentYear.toString(),
+          semester: academicContext.currentSemester,
+          instructor: "TBA",
+          group: "TBA",
+          day,
+          start,
+          end,
+          type: "custom",
+        };
+
+        createdSession = newSession;
+        const updated = [...state.selected, newSession];
+        saveToStorage(updated);
+        return { selected: updated };
+      });
+
+      return createdSession;
+    },
+    remove: (id: string) =>
+      set((state) => {
+        const updated = state.selected.filter((session) => session.id !== id);
+        saveToStorage(updated);
+        return { selected: updated };
+      }),
+    update: (
+      id: string,
+      newDay: GenElectiveOption["class"][number]["day"],
+      newStart: string,
+      newEnd: string
     ) =>
       set((state) => {
-        const updated = state.selected.filter(
-          (session) =>
-            !(
-              session.courseCode === courseCode &&
-              session.group === group &&
-              session.day === day &&
-              session.start === start &&
-              session.end === end
-            )
-        );
+        const updated = state.selected.map((session) => {
+          if (session.id === id) {
+            return {
+              ...session,
+              day: newDay,
+              start: newStart,
+              end: newEnd,
+            };
+          }
+          return session;
+        });
+        saveToStorage(updated);
+        return { selected: updated };
+      }),
+    updateSession: (
+      id: string,
+      updates: {
+        courseCode: string;
+        courseName: string;
+        instructor: string;
+        group: string;
+        day: GenElectiveOption["class"][number]["day"];
+        year: string;
+        semester: GenElectiveOption["semester"];
+        start: string;
+        end: string;
+      }
+    ) =>
+      set((state) => {
+        const updated = state.selected.map((session) => {
+          if (session.id === id) {
+            return {
+              ...session,
+              courseCode: updates.courseCode,
+              courseName: updates.courseName,
+              instructor: updates.instructor,
+              group: updates.group,
+              day: updates.day,
+              year: updates.year,
+              semester: updates.semester,
+              start: updates.start,
+              end: updates.end,
+            };
+          }
+          return session;
+        });
         saveToStorage(updated);
         return { selected: updated };
       }),

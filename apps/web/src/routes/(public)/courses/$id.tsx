@@ -48,7 +48,7 @@ function CourseDetailPage() {
             <p className="font-medium text-sm">Classes</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {course.class.map((cls: GenElectiveOption["class"][number]) => {
-                const isClassSelected = selected.some(
+                const selectedSession = selected.find(
                   (s) =>
                     s.courseCode === course.code &&
                     s.group === cls.group &&
@@ -56,19 +56,14 @@ function CourseDetailPage() {
                     s.start === cls.start &&
                     s.end === cls.end
                 );
+                const isClassSelected = !!selectedSession;
 
                 return (
                   <Button
                     key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
                     onClick={() => {
-                      if (isClassSelected) {
-                        remove(
-                          course.code,
-                          cls.group,
-                          cls.day,
-                          cls.start,
-                          cls.end
-                        );
+                      if (isClassSelected && selectedSession) {
+                        remove(selectedSession.id);
                       } else {
                         add(course, cls);
                       }
