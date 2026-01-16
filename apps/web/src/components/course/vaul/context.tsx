@@ -18,10 +18,8 @@ interface CourseVaulContextValue {
   children: ReactNode;
   style?: CSSProperties;
   className?: string;
-  isHighlighted: boolean;
   session?: SelectedClassSession;
   overlappingSessions: SelectedClassSession[];
-  onOpenOtherCourse?: (classKey: string) => void;
 }
 
 const CourseVaulContext = createContext<CourseVaulContextValue | null>(null);
@@ -31,11 +29,9 @@ interface CourseVaulProviderProps {
   triggerChildren: ReactNode;
   style?: CSSProperties;
   className?: string;
-  isHighlighted?: boolean;
   onOpenChange?: (open: boolean) => void;
   session?: SelectedClassSession;
   overlappingSessions?: SelectedClassSession[];
-  onOpenOtherCourse?: (classKey: string) => void;
 }
 
 export function CourseVaulProvider({
@@ -43,20 +39,12 @@ export function CourseVaulProvider({
   triggerChildren,
   style,
   className,
-  isHighlighted = false,
   onOpenChange,
   session,
   overlappingSessions = [],
-  onOpenOtherCourse,
 }: CourseVaulProviderProps) {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    if (isHighlighted) {
-      setOpen(true);
-    }
-  }, [isHighlighted]);
 
   useEffect(() => {
     if (!open) {
@@ -81,10 +69,8 @@ export function CourseVaulProvider({
       children: triggerChildren,
       style,
       className,
-      isHighlighted,
       session,
       overlappingSessions,
-      onOpenOtherCourse,
     }),
     [
       open,
@@ -93,10 +79,8 @@ export function CourseVaulProvider({
       triggerChildren,
       style,
       className,
-      isHighlighted,
       session,
       overlappingSessions,
-      onOpenOtherCourse,
     ]
   );
 

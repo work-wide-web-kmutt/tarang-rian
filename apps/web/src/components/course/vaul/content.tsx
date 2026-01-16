@@ -23,13 +23,10 @@ export function CourseVaulContent() {
     children,
     style,
     className,
-    isHighlighted,
     session,
     overlappingSessions,
   } = useCourseVaulContext();
   const { remove } = useSelectedGenElectivesActions();
-
-  const openState = isHighlighted || open;
 
   const handleRemove = () => {
     if (!session) {
@@ -42,11 +39,7 @@ export function CourseVaulContent() {
   return (
     <>
       <div
-        className={cn(
-          className,
-          "transition-all duration-300 ease-out",
-          isHighlighted && "z-60 scale-[1.02] shadow-lg"
-        )}
+        className={cn(className, "transition-all duration-300 ease-out")}
         onClick={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -66,7 +59,7 @@ export function CourseVaulContent() {
       >
         {children}
       </div>
-      <Sheet onOpenChange={setOpen} open={openState}>
+      <Sheet onOpenChange={setOpen} open={open}>
         <SheetContent
           className="flex h-full w-[80vw] flex-col rounded-l-lg border-l p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
           side="right"

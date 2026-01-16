@@ -25,7 +25,6 @@ export function SessionBlock({
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
-  const isHighlighted = openClassKey === classKey;
   const hasOverlapping = hasOverlap(session, allSessions);
   const overlappingSessions = getOverlappingSessions(session, allSessions);
 
@@ -37,13 +36,9 @@ export function SessionBlock({
           : "border-primary bg-primary"
       }`}
       data-session-block
-      isHighlighted={isHighlighted}
       key={classKey}
       onOpenChange={(open) => {
         onOpenChange(open ? classKey : null);
-      }}
-      onOpenOtherCourse={(otherClassKey) => {
-        onOpenChange(otherClassKey);
       }}
       overlappingSessions={overlappingSessions}
       session={session}
