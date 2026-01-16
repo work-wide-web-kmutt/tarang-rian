@@ -71,6 +71,11 @@ const getStoredSelected = (): SelectedClassSession[] => {
       ...session,
       id: session.id ?? v7(),
       type: session.type ?? "fixed",
+      courseCode: session.courseCode ?? "",
+      courseName: session.courseName ?? "",
+      instructor: session.instructor ?? "",
+      group: session.group ?? "",
+      year: session.year ?? "",
     }));
   } catch {
     return [];
@@ -138,7 +143,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
       set((state) => {
         const exists = state.selected.some(
           (current) =>
-            current.courseCode.toLowerCase().startsWith("unassigned") &&
+            current.courseCode?.toLowerCase().startsWith("unassigned") &&
             current.day === day &&
             current.start === start &&
             current.end === end
