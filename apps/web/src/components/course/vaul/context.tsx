@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { SelectedClassSession } from "@/stores/selected";
+import { useSelectedGenElectivesActions } from "@/stores/selected";
 
 interface CourseVaulContextValue {
   open: boolean;
@@ -20,6 +21,7 @@ interface CourseVaulContextValue {
   className?: string;
   session?: SelectedClassSession;
   overlappingSessions: SelectedClassSession[];
+  handleRemove: () => void;
 }
 
 const CourseVaulContext = createContext<CourseVaulContextValue | null>(null);
@@ -47,6 +49,7 @@ export function CourseVaulProvider({
 }: CourseVaulProviderProps) {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const { remove } = useSelectedGenElectivesActions();
 
   useEffect(() => {
     if (shouldOpen) {
@@ -70,6 +73,14 @@ export function CourseVaulProvider({
     [onOpenChange]
   );
 
+  const handleRemove = useCallback(() => {
+    if (!session) {
+      return;
+    }
+    remove(session.id);
+    handleSetOpen(false);
+  }, [session, remove, handleSetOpen]);
+
   const contextValue = useMemo(
     () => ({
       open,
@@ -81,6 +92,7 @@ export function CourseVaulProvider({
       className,
       session,
       overlappingSessions,
+      handleRemove,
     }),
     [
       open,
@@ -91,6 +103,7 @@ export function CourseVaulProvider({
       className,
       session,
       overlappingSessions,
+      handleRemove,
     ]
   );
 

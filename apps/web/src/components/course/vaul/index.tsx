@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
-import { CourseVaulContent } from "@/components/course/vaul/content";
 import { CourseVaulProvider } from "@/components/course/vaul/context";
+import { CourseVaulSheet } from "@/components/course/vaul/sheet";
 import type { SelectedClassSession } from "@/stores/selected";
 
 interface CourseVaulProps {
@@ -13,7 +13,7 @@ interface CourseVaulProps {
   shouldOpen?: boolean;
 }
 
-function CourseVaul({
+export default function CourseVaul({
   children,
   style,
   className,
@@ -32,9 +32,7 @@ function CourseVaul({
       style={style}
       triggerChildren={children}
     >
-      <CourseVaulContent />
+      <CourseVaulSheet />
     </CourseVaulProvider>
   );
 }
-
-export default CourseVaul;
