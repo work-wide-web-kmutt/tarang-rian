@@ -4,6 +4,7 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
@@ -39,23 +40,25 @@ function RootComponent() {
   return (
     <>
       <HeadContent />
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        disableTransitionOnChange
-        enableSystem
-        storageKey="vite-ui-theme"
-      >
-        <div className="flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <div className="min-h-screen">
-              <Outlet />
-            </div>
-            <Footer />
-          </main>
-        </div>
-      </ThemeProvider>
+      <NuqsAdapter>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          disableTransitionOnChange
+          enableSystem
+          storageKey="vite-ui-theme"
+        >
+          <div className="flex flex-col">
+            <Header />
+            <main className="flex-1">
+              <div className="min-h-screen">
+                <Outlet />
+              </div>
+              <Footer />
+            </main>
+          </div>
+        </ThemeProvider>
+      </NuqsAdapter>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
       {import.meta.env.DEV && <BreakpointIndicator />}
     </>
