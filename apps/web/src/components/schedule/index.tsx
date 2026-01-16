@@ -516,7 +516,9 @@ export function Schedule({ sessions }: ScheduleProps) {
         <div className="border-border border-r border-b border-l">
           {DAYS.map((day) => (
             <div
-              className="grid border-border border-b last:border-b-0"
+              className={`grid border-border border-b last:border-b-0 ${
+                dragState ? "cursor-crosshair select-none" : ""
+              }`}
               data-day-row={day}
               key={day}
               onMouseLeave={handleMouseUp}
@@ -589,7 +591,7 @@ export function Schedule({ sessions }: ScheduleProps) {
                           if (timeColIndex === startCol) {
                             return (
                               <div
-                                className="absolute inset-y-0 z-30 m-0.5 rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                                className="absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
                                 style={{
                                   left: `${startOffset * 100}%`,
                                   width: `calc(${span * 100}% - 0.25rem)`,
@@ -610,7 +612,7 @@ export function Schedule({ sessions }: ScheduleProps) {
                         snappedPreview.day === day &&
                         timeColIndex === snappedPreview.startCol && (
                           <div
-                            className="absolute inset-y-0 z-30 m-0.5 rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                            className="absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
                             style={{
                               left: `${snappedPreview.startOffset * 100}%`,
                               width: `calc(${snappedPreview.span * 100}% - 0.25rem)`,
