@@ -26,7 +26,6 @@ export function CourseVaulContent() {
     isHighlighted,
     session,
     overlappingSessions,
-    onOpenOtherCourse,
   } = useCourseVaulContext();
   const { remove } = useSelectedGenElectivesActions();
 
@@ -167,16 +166,9 @@ export function CourseVaulContent() {
                     {overlappingSessions.map((overlapSession) => {
                       const overlapKey = `${overlapSession.courseCode}-${overlapSession.group}-${overlapSession.day}-${overlapSession.start}-${overlapSession.end}`;
                       return (
-                        <Button
-                          key={overlapKey}
-                          onClick={() => {
-                            setOpen(false);
-                            onOpenOtherCourse?.(overlapKey);
-                          }}
-                          variant="outline"
-                        >
+                        <Badge key={overlapKey} variant="outline">
                           {overlapSession.courseCode}
-                        </Button>
+                        </Badge>
                       );
                     })}
                   </div>
