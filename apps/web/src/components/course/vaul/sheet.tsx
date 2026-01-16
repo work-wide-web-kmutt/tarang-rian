@@ -34,6 +34,7 @@ export function CourseVaulSheet() {
       <Sheet onOpenChange={setOpen} open={open}>
         <SheetContent
           className="flex h-full w-[80vw] flex-col rounded-l-lg border-l p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
+          showCloseButton={false}
           side="right"
         >
           {session ? (
