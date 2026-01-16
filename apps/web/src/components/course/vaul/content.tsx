@@ -127,7 +127,7 @@ export function CourseVaulContent() {
       )}
       <div className="flex">
         <Button onClick={() => setShowRemoveDialog(true)} variant="destructive">
-          <Trash2Icon className="mr-2 h-4 w-4" />
+          <Trash2Icon />
           Remove from selected
         </Button>
         <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
