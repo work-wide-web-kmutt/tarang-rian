@@ -14,7 +14,7 @@ const academicContextStoreCreator: StateCreator<AcademicContextState> = (
   set
 ) => ({
   currentYear: 2025,
-  currentSemester: "1",
+  currentSemester: "2",
   actions: {
     setYear: (year: number) => set({ currentYear: year }),
     setSemester: (semester: GenElectiveOption["semester"]) =>
