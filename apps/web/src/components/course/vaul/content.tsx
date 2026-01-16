@@ -6,11 +6,11 @@ import {
   User,
   UsersIcon,
 } from "lucide-react";
-import { Drawer } from "vaul-base";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { CourseVaulForm } from "@/components/course/vaul/form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
@@ -41,60 +41,39 @@ export function CourseVaulContent() {
   };
 
   return (
-    <Drawer.Root direction="right" onOpenChange={setOpen} open={openState}>
-      <Drawer.Trigger
-        nativeButton={false}
-        render={(props) => {
-          return (
-            <div
-              {...props}
-              className={cn(
-                className,
-                "transition-all duration-300 ease-out",
-                isHighlighted && "z-60 scale-[1.02] shadow-lg"
-              )}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-                props.onMouseDown?.(e);
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                props.onPointerDown?.(e);
-              }}
-              style={style}
-            >
-              {children}
-            </div>
-          );
+    <>
+      <div
+        className={cn(
+          className,
+          "transition-all duration-300 ease-out",
+          isHighlighted && "z-60 scale-[1.02] shadow-lg"
+        )}
+        onClick={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(true);
+          }
         }}
-      />
-      <Drawer.Portal>
-        <Drawer.Overlay
-          className="fixed inset-0 z-50 bg-black/80"
-          onClick={() => {
-            setOpen(false);
-          }}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-          }}
-        />
-        <Drawer.Content
-          className="fixed top-0 right-0 z-70 flex h-full w-[80vw] flex-col rounded-l-lg border bg-background p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-          }}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+        }}
+        role="button"
+        style={style}
+        tabIndex={0}
+      >
+        {children}
+      </div>
+      <Sheet onOpenChange={setOpen} open={openState}>
+        <SheetContent
+          className="flex h-full w-[80vw] flex-col rounded-l-lg border-l p-6 text-foreground sm:w-[60vw] lg:w-[40vw] xl:w-[20vw]"
+          side="right"
         >
           {session ? (
-            <div
-              className="flex h-full flex-col space-y-6 overflow-y-auto"
-              data-vaul-no-drag
-            >
+            <div className="flex h-full flex-col space-y-6 overflow-y-auto">
               {isEditing ? (
                 <CourseVaulForm />
               ) : (
@@ -211,17 +190,14 @@ export function CourseVaulContent() {
               </div>
             </div>
           ) : (
-            <div
-              className="flex h-full items-center justify-center"
-              data-vaul-no-drag
-            >
+            <div className="flex h-full items-center justify-center">
               <p className="text-muted-foreground">
                 No course information available
               </p>
             </div>
           )}
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }
