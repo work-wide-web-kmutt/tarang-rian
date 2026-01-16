@@ -42,6 +42,7 @@ export function SessionBlock({
       }}
       overlappingSessions={overlappingSessions}
       session={session}
+      shouldOpen={openClassKey === classKey}
       style={{
         left: `${startOffset * 100}%`,
         width: `calc(${span * 100}% - 0.25rem)`,

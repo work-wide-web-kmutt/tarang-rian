@@ -10,6 +10,7 @@ interface CourseVaulProps {
   onOpenChange?: (open: boolean) => void;
   session?: SelectedClassSession;
   overlappingSessions?: SelectedClassSession[];
+  shouldOpen?: boolean;
 }
 
 function CourseVaul({
@@ -19,6 +20,7 @@ function CourseVaul({
   onOpenChange,
   session,
   overlappingSessions = [],
+  shouldOpen = false,
 }: CourseVaulProps) {
   return (
     <CourseVaulProvider
@@ -26,6 +28,7 @@ function CourseVaul({
       onOpenChange={onOpenChange}
       overlappingSessions={overlappingSessions}
       session={session}
+      shouldOpen={shouldOpen}
       style={style}
       triggerChildren={children}
     >

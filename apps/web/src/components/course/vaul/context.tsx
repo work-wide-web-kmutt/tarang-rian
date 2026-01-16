@@ -32,6 +32,7 @@ interface CourseVaulProviderProps {
   onOpenChange?: (open: boolean) => void;
   session?: SelectedClassSession;
   overlappingSessions?: SelectedClassSession[];
+  shouldOpen?: boolean;
 }
 
 export function CourseVaulProvider({
@@ -42,9 +43,18 @@ export function CourseVaulProvider({
   onOpenChange,
   session,
   overlappingSessions = [],
+  shouldOpen = false,
 }: CourseVaulProviderProps) {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (shouldOpen) {
+      setOpen(true);
+    } else if (!shouldOpen && open) {
+      setOpen(false);
+    }
+  }, [shouldOpen, open]);
 
   useEffect(() => {
     if (!open) {
