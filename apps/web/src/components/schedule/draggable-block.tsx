@@ -36,8 +36,8 @@ export function DraggableBlock({
     },
   });
 
-  const handleResizeMouseDown = (
-    e: React.MouseEvent,
+  const handleResizePointerDown = (
+    e: React.PointerEvent,
     edge: "left" | "right"
   ) => {
     if (!isCustom) {
@@ -59,8 +59,8 @@ export function DraggableBlock({
       {/* Left resize handle (adjust start time) */}
       {isCustom && (
         <div
-          className="absolute top-0 z-40 h-full w-2 cursor-ew-resize"
-          onMouseDown={(e) => handleResizeMouseDown(e, "left")}
+          className="absolute top-0 z-40 h-full w-2 cursor-ew-resize touch-none"
+          onPointerDown={(e) => handleResizePointerDown(e, "left")}
           style={{
             left: `${startOffset * 100}%`,
           }}
@@ -88,8 +88,8 @@ export function DraggableBlock({
       {/* Right resize handle (adjust end time) */}
       {isCustom && (
         <div
-          className="absolute top-0 z-40 h-full w-2 cursor-ew-resize"
-          onMouseDown={(e) => handleResizeMouseDown(e, "right")}
+          className="absolute top-0 z-40 h-full w-2 cursor-ew-resize touch-none"
+          onPointerDown={(e) => handleResizePointerDown(e, "right")}
           style={{
             right: `calc(${(1 - startOffset - span) * 100}%)`,
           }}
