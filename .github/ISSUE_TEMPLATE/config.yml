@@ -1,0 +1,21 @@
+name: Issue
+description: File an issue or request a feature
+title: "[Type] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file an issue or feature request!
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checklist
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have read the project documentation and README
+          required: true
+        - label: I have provided all relevant information
+          required: true
