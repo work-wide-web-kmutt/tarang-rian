@@ -230,3 +230,60 @@ export function isFirstCol(
   const { startCol } = getTimeSlotPosition(session.start, session.end);
   return timeColIndex === startCol;
 }
+
+export function calculateResizePreview(
+  session: SelectedClassSession,
+  edge: "left" | "right",
+  targetSlotIndex: number
+): { newStart: string; newEnd: string; isValid: boolean } {
+  const startMinutes = parseTime(session.start);
+  const endMinutes = parseTime(session.end);
+  const minDuration = SLOT_DURATION_MINUTES;
+
+  let newStartMinutes = startMinutes;
+  let newEndMinutes = endMinutes;
+
+  if (edge === "left") {
+    // Left edge = adjusting start time
+    newStartMinutes = BASE_MINUTES + targetSlotIndex * SLOT_DURATION_MINUTES;
+    if (newEndMinutes - newStartMinutes < minDuration) {
+      newStartMinutes = newEndMinutes - minDuration;
+    }
+  } else {
+    // Right edge = adjusting end time
+    newEndMinutes =
+      BASE_MINUTES + (targetSlotIndex + 1) * SLOT_DURATION_MINUTES;
+    if (newEndMinutes - newStartMinutes < minDuration) {
+      newEndMinutes = newStartMinutes + minDuration;
+    }
+  }
+
+  const minTime = BASE_MINUTES;
+  const maxTime = BASE_MINUTES + TIME_SLOTS.length * 60;
+
+  const isValid =
+    newStartMinutes >= minTime &&
+    newEndMinutes <= maxTime &&
+    newStartMinutes < newEndMinutes;
+
+  newStartMinutes = Math.max(
+    minTime,
+    Math.min(newStartMinutes, maxTime - minDuration)
+  );
+  newEndMinutes = Math.min(
+    maxTime,
+    Math.max(newEndMinutes, minTime + minDuration)
+  );
+
+  const formatTime = (mins: number) => {
+    const hours = Math.floor(mins / 60);
+    const minutes = mins % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+  };
+
+  return {
+    newStart: formatTime(newStartMinutes),
+    newEnd: formatTime(newEndMinutes),
+    isValid,
+  };
+}
