@@ -8,7 +8,7 @@ import { CourseFilters } from "@/components/course/course-filters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
-import { formatDayShort } from "@/lib/formatter/day-short";
+
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -121,7 +121,8 @@ function AllCoursesPage() {
       ) : (
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            Showing {filteredCourses.length} of {sortedCourses.length} courses
+            {t("courses.show")} {filteredCourses.length} {t("courses.of")}{" "}
+            {sortedCourses.length} {t("courses.courses")}
           </p>
           {filteredCourses.map((course) => {
             return (
@@ -169,7 +170,8 @@ function AllCoursesPage() {
                             size="sm"
                             variant={isClassSelected ? "secondary" : "outline"}
                           >
-                            {formatDayShort(cls.day)} {cls.start} - {cls.end}
+                            {t(`days_short.${cls.day.toLowerCase()}`)}{" "}
+                            {cls.start} - {cls.end}
                           </Button>
                         );
                       }

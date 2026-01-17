@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
-import { formatDayShort } from "@/lib/formatter/day-short";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -24,9 +23,10 @@ export const Route = createFileRoute("/(public)/courses/$id")({
 
 function CourseDetailPage() {
   const { course } = Route.useLoaderData();
+  const { t } = useTranslation();
+
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
-  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
@@ -89,7 +89,8 @@ function CourseDetailPage() {
                     size="sm"
                     variant={isClassSelected ? "secondary" : "outline"}
                   >
-                    {formatDayShort(cls.day)} {cls.start} - {cls.end}
+                    {t(`days_short.${cls.day.toLowerCase()}`)} {cls.start} -{" "}
+                    {cls.end}
                   </Button>
                 );
               })}

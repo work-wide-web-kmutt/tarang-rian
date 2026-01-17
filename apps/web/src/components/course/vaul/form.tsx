@@ -7,6 +7,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { type FormEvent, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import z from "zod";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ const editSchema = z.object({
 });
 
 export function CourseVaulForm() {
+  const { t } = useTranslation();
   const { updateSession } = useSelectedGenElectivesActions();
   const { setIsEditing, session } = useCourseVaulContext();
   const currentYear = useCurrentYear();
@@ -310,7 +312,7 @@ export function CourseVaulForm() {
                     <SelectContent>
                       {DAYS.map((day: (typeof DAYS)[number]) => (
                         <SelectItem key={day} value={day}>
-                          {day}
+                          {t(`days.${day.toLowerCase()}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>

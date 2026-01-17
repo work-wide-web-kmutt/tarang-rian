@@ -11,12 +11,23 @@
       "schedule": "ตารางเรียน"
     },
     "days": {
-      "mon": "จันทร์",
-      "tue": "อังคาร",
-      "wed": "พุธ",
-      "thu": "พฤหัส",
-      "fri": "ศุกร์",
-      "Saturday": "เสาร์"
+      "day": "วัน",
+      "monday": "จันทร์",
+      "tuesday": "อังคาร",
+      "wednesday": "พุธ",
+      "thursday": "พฤหัสบดี",
+      "friday": "ศุกร์",
+      "saturday": "เสาร์",
+      "sunday": "อาทิตย์"
+    },
+    "days_short": {
+      "monday": "จ.",
+      "tuesday": "อ.",
+      "wednesday": "พ.",
+      "thursday": "พฤ.",
+      "friday": "ศ.",
+      "saturday": "ส.",
+      "sunday": "อา."
     },
     "academic": {
       "year": "ปี",
@@ -24,7 +35,15 @@
       "classes": "คาบเรียน"
     },
     "filter": {
-      "search": "ค้นหาด้วยรหัสหรือชื่อวิชา..."
+      "search": "ค้นหาด้วยรหัสหรือชื่อวิชา...",
+      "days": {
+        "all": "ทุกวัน"
+      },
+      "times": {
+        "all": "ทุกช่วงเวลา",
+        "morning": "เช้า (ก่อน 12:00)",
+        "afternoon": "บ่าย (12:00 เป็นต้นไป)"
+      }
     },
     "courses": {
       "courses": "รายวิชา",
@@ -38,7 +57,6 @@
       "disclaimer_text3": "และ เอกสารของรายวิชา",
       "course_info": "ข้อมูลรายวิชา"
     },
-    "schedule": {},
     "settings": {
       "title": "ตั้งค่า",
       "language": "ภาษา",

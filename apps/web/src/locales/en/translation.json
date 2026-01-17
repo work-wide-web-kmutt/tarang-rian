@@ -11,12 +11,23 @@
       "schedule": "Schedule"
     },
     "days": {
-      "mon": "Monday",
-      "tue": "Tuesday",
-      "wed": "Wednesday",
-      "thu": "Thursday",
-      "fri": "Friday",
-      "Saturday": "Saturday"
+      "day": "Day",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "days_short": {
+      "monday": "MON",
+      "tuesday": "TUE",
+      "wednesday": "WED",
+      "thursday": "THU",
+      "friday": "FRI",
+      "saturday": "SAT",
+      "sunday": "SUN"
     },
     "academic": {
       "year": "Year",
@@ -24,7 +35,15 @@
       "classes": "Classes"
     },
     "filter": {
-      "search": "Search by course code or name..."
+      "search": "Search by course code or name...",
+      "days": {
+        "all": "All Days"
+      },
+      "times": {
+        "all": "All Times",
+        "morning": "Morning (before 12:00)",
+        "afternoon": "Afternoon (12:00+)"
+      }
     },
     "courses": {
       "courses": "Courses",
@@ -38,7 +57,6 @@
       "disclaimer_text3": "and official course documents.",
       "course_info": "Course Information"
     },
-    "schedule": {},
     "settings": {
       "title": "Settings",
       "language": "Language",
