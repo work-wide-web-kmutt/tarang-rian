@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "welcome": "Welcome",
+    "home_title_1": "LET'S PLAN BEFORE",
+    "home_title_2": "THE RACE START.",
+    "checkout_courses": "Checkout the courses.",
+    "plan_schedule": "Plan the schedule",
+    "course_management": "Course management and planning platform",
+    "nav": {
+      "courses": "Courses",
+      "schedule": "Schedule"
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
+      "select_language": "Select Language"
+    }
+  }
+}

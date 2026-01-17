@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "welcome": "ยินดีต้อนรับ",
+    "home_title_1": "วางแผนก่อน",
+    "home_title_2": "ออกสตาร์ท",
+    "checkout_courses": "ดูรายวิชา",
+    "plan_schedule": "จัดตารางเรียน",
+    "course_management": "แพลตฟอร์มจัดการรายวิชาและวางแผนการเรียน",
+    "nav": {
+      "courses": "รายวิชา",
+      "schedule": "ตารางเรียน"
+    },
+    "settings": {
+      "title": "ตั้งค่า",
+      "language": "ภาษา",
+      "select_language": "เลือกภาษา"
+    }
+  }
+}

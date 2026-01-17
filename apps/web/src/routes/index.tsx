@@ -8,7 +8,10 @@ export const Route = createFileRoute("/")({
   component: HomeComponent,
 });
 
+import { useTranslation } from "react-i18next";
+
 function HomeComponent() {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -45,18 +48,18 @@ function HomeComponent() {
         </div>
         <div className="w-full border-border border-y-2 border-dashed py-6">
           <div className="container mx-auto max-w-8xl px-18">
-            <div className="text-4xl">LET'S PLAN BEFORE</div>
-            <div className="font-bold text-4xl">THE RACE START.</div>
+            <div className="text-4xl">{t("home_title_1")}</div>
+            <div className="font-bold text-4xl">{t("home_title_2")}</div>
           </div>
         </div>
         <div className="w-full">
           <div className="container mx-auto flex max-w-8xl gap-2 px-18 py-6">
             <Link to="/courses">
-              <Button size="lg">Checkout the courses.</Button>
+              <Button size="lg">{t("checkout_courses")}</Button>
             </Link>
             <Link to="/schedule">
               <Button size="lg" variant="secondary">
-                Plan the schedule
+                {t("plan_schedule")}
               </Button>
             </Link>
           </div>
