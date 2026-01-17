@@ -17,7 +17,7 @@ function TagsInput({
 }: React.ComponentProps<typeof TagsInputRoot>) {
   return (
     <TagsInputRoot
-      className={cn("flex w-[380px] flex-col gap-2", className)}
+      className={cn("flex w-full flex-col gap-2", className)}
       data-slot="tags-input"
       {...props}
     />
@@ -44,7 +44,7 @@ function TagsInputList({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "flex min-h-10 w-full flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "flex min-h-10 w-full flex-wrap items-center gap-1.5 rounded-none border border-input bg-background px-3 py-2 text-xs focus-within:ring-1 focus-within:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       data-slot="tags-input-list"
