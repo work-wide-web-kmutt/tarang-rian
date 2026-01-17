@@ -1,5 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
 import { formatDayShort } from "@/lib/formatter/day-short";
@@ -37,6 +39,23 @@ function CourseDetailPage() {
           Instructor: {course.instructor}
         </p>
       </div>
+
+      <Alert className="mb-4" variant="destructive">
+        <AlertTriangle />
+        <AlertTitle>Course Information Disclaimer</AlertTitle>
+        <AlertDescription>
+          Course information displayed here may not be accurate. Always verify
+          details by checking{" "}
+          <a
+            href="https://www.facebook.com/genKMUTTofficial"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            the official Facebook page
+          </a>{" "}
+          and official course documents.
+        </AlertDescription>
+      </Alert>
 
       <div className="space-y-4">
         <section className="rounded-lg border p-4 shadow-sm">

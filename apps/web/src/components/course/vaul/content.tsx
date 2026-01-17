@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   CalendarIcon,
   ClockIcon,
   PencilIcon,
@@ -8,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -67,6 +69,25 @@ export function CourseVaulContent() {
           )}
         </div>
       </div>
+      {session.type === "fixed" && (
+        <Alert className="mb-4" variant="destructive">
+          <AlertTriangle />
+          <AlertTitle>Course Information Disclaimer</AlertTitle>
+          <AlertDescription>
+            Course information displayed here may not be accurate. Always verify
+            details by checking{" "}
+            <a
+              href="https://www.facebook.com/genKMUTTofficial"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              the official Facebook page
+            </a>{" "}
+            and official course documents.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <table className="table-fixed text-sm">
         <tbody>
           <tr>
