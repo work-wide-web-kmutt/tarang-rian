@@ -468,17 +468,18 @@ export function CourseVaulForm() {
                   }}
                   value={field.state.value}
                 >
-                  <TagsInputList
-                    aria-invalid={isInvalid}
-                    id={field.name}
-                    onBlur={field.handleBlur}
-                  >
+                  <TagsInputList>
                     {field.state.value.map((instructor) => (
                       <TagsInputItem key={instructor} value={instructor}>
                         {instructor}
                       </TagsInputItem>
                     ))}
-                    <TagsInputInput placeholder="Add instructor..." />
+                    <TagsInputInput
+                      aria-invalid={isInvalid}
+                      id={field.name}
+                      onBlur={field.handleBlur}
+                      placeholder="Add instructor..."
+                    />
                   </TagsInputList>
                 </TagsInput>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
