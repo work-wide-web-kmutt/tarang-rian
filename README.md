@@ -1,3 +1,9 @@
+<div align="center">
+  <img src="resources/github-banner.svg" alt="Tarang Rian Banner" width="830">
+</div>
+
+</br>
+
 # Tarang Rian ตารางเรียน
 
 An academic course planning platform for browsing and scheduling general elective courses, built with React and TanStack Router.
