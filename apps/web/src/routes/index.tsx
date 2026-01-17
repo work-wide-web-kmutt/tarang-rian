@@ -63,7 +63,7 @@ function HomeComponent() {
         </div>
       </div>
       <div className="container relative z-0 mx-auto h-dvh max-w-8xl bg-background px-12">
-        <div className="h-full w-full border-2 border-border border-dashed" />
+        <div className="h-full w-full border-border border-x-2 border-dashed" />
       </div>
     </div>
   );

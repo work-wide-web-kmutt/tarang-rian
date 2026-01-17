@@ -9,30 +9,35 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as publicScheduleRouteImport } from './routes/(public)/schedule'
 import { Route as publicCoursesIndexRouteImport } from './routes/(public)/courses/index'
 import { Route as publicCoursesIdRouteImport } from './routes/(public)/courses/$id'
 
+const publicRouteRoute = publicRouteRouteImport.update({
+  id: '/(public)',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const publicScheduleRoute = publicScheduleRouteImport.update({
-  id: '/(public)/schedule',
+  id: '/schedule',
   path: '/schedule',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const publicCoursesIndexRoute = publicCoursesIndexRouteImport.update({
-  id: '/(public)/courses/',
+  id: '/courses/',
   path: '/courses/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const publicCoursesIdRoute = publicCoursesIdRouteImport.update({
-  id: '/(public)/courses/$id',
+  id: '/courses/$id',
   path: '/courses/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => publicRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -50,6 +55,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(public)': typeof publicRouteRouteWithChildren
   '/(public)/schedule': typeof publicScheduleRoute
   '/(public)/courses/$id': typeof publicCoursesIdRoute
   '/(public)/courses/': typeof publicCoursesIndexRoute
@@ -62,6 +68,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/(public)'
     | '/(public)/schedule'
     | '/(public)/courses/$id'
     | '/(public)/courses/'
@@ -69,13 +76,18 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  publicScheduleRoute: typeof publicScheduleRoute
-  publicCoursesIdRoute: typeof publicCoursesIdRoute
-  publicCoursesIndexRoute: typeof publicCoursesIndexRoute
+  publicRouteRoute: typeof publicRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(public)': {
+      id: '/(public)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof publicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -88,30 +100,44 @@ declare module '@tanstack/react-router' {
       path: '/schedule'
       fullPath: '/schedule'
       preLoaderRoute: typeof publicScheduleRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/(public)/courses/': {
       id: '/(public)/courses/'
       path: '/courses'
       fullPath: '/courses'
       preLoaderRoute: typeof publicCoursesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/(public)/courses/$id': {
       id: '/(public)/courses/$id'
       path: '/courses/$id'
       fullPath: '/courses/$id'
       preLoaderRoute: typeof publicCoursesIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof publicRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+interface publicRouteRouteChildren {
+  publicScheduleRoute: typeof publicScheduleRoute
+  publicCoursesIdRoute: typeof publicCoursesIdRoute
+  publicCoursesIndexRoute: typeof publicCoursesIndexRoute
+}
+
+const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicScheduleRoute: publicScheduleRoute,
   publicCoursesIdRoute: publicCoursesIdRoute,
   publicCoursesIndexRoute: publicCoursesIndexRoute,
+}
+
+const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
+  publicRouteRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  publicRouteRoute: publicRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
