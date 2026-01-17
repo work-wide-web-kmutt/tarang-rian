@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/theme-provider";
@@ -47,12 +48,14 @@ export function Logo({
       : "/static/logos/logo-full-light.svg";
 
   return (
-    // biome-ignore lint/correctness/useImageSize: width/height can be provided via props for flexible sizing
-    <img
-      alt={alt}
-      className={cn(logoVariants({ size, className }))}
-      src={logoSrc}
-      {...props}
-    />
+    <Link aria-label="Go to home page" to="/">
+      {/* biome-ignore lint/correctness/useImageSize: width/height can be provided via props for flexible sizing */}
+      <img
+        alt={alt}
+        className={cn(logoVariants({ size, className }))}
+        src={logoSrc}
+        {...props}
+      />
+    </Link>
   );
 }
