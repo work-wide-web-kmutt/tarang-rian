@@ -37,12 +37,16 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "Tarang Rian - Course management and planning platform",
       },
       {
+        property: "og:image",
+        content: "/static/og-image.png",
+      },
+      {
         property: "og:type",
         content: "website",
       },
       {
         name: "twitter:card",
-        content: "summary",
+        content: "summary_large_image",
       },
       {
         name: "twitter:title",
@@ -51,6 +55,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       {
         name: "twitter:description",
         content: "Tarang Rian - Course management and planning platform",
+      },
+      {
+        name: "twitter:image",
+        content: "/static/og-image.png",
       },
     ],
     links: [
