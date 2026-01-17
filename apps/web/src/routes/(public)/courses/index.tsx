@@ -80,13 +80,9 @@ function AllCoursesPage() {
   }, [sortedCourses, searchQuery, dayFilter, timeSlotFilter]);
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-4">
+    <div className="container mx-auto px-20 py-4">
       <div className="mb-4">
-        <h1 className="font-semibold text-2xl">All GEN Courses</h1>
-        <p className="text-muted-foreground">
-          Listing all General Education elective courses from content
-          collections.
-        </p>
+        <h1 className="font-semibold text-3xl">Courses</h1>
       </div>
 
       <CourseFilters
