@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
 import { AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
@@ -25,6 +26,7 @@ function CourseDetailPage() {
   const { course } = Route.useLoaderData();
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-4">
@@ -33,35 +35,35 @@ function CourseDetailPage() {
           {course.code} — {course.name}
         </h1>
         <p className="text-muted-foreground">
-          Year {course.year}, Semester {course.semester}
+          {t("academic.year")} {course.year}, {t("academic.semester")}{" "}
+          {course.semester}
         </p>
       </div>
 
       <Alert className="mb-4" variant="destructive">
         <AlertTriangle />
-        <AlertTitle>Course Information Disclaimer</AlertTitle>
+        <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
         <AlertDescription>
-          Course information displayed here may not be accurate. Always verify
-          details by checking{" "}
+          {t("courses.disclaimer_text1")}{" "}
           <a
             href="https://www.facebook.com/genKMUTTofficial"
             rel="noopener noreferrer"
             target="_blank"
           >
-            the official Facebook page
+            {t("courses.disclaimer_text2")}
           </a>{" "}
-          and official course documents.
+          {t("courses.disclaimer_text3")}
         </AlertDescription>
       </Alert>
 
       <div className="space-y-4">
         <section className="rounded-lg border p-4 shadow-sm">
           <header className="mb-2">
-            <h2 className="font-medium text-lg">Course Information</h2>
+            <h2 className="font-medium text-lg">{t("courses.course_info")}</h2>
           </header>
 
           <div className="mt-2">
-            <p className="font-medium text-sm">Classes</p>
+            <p className="font-medium text-sm">{t("academic.classes")}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {course.class.map((cls: GenElectiveOption["class"][number]) => {
                 const selectedSession = selected.find(

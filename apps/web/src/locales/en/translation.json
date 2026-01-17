@@ -10,6 +10,35 @@
       "courses": "Courses",
       "schedule": "Schedule"
     },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "Saturday": "Saturday"
+    },
+    "academic": {
+      "year": "Year",
+      "semester": "Semester",
+      "classes": "Classes"
+    },
+    "filter": {
+      "search": "Search by course code or name..."
+    },
+    "courses": {
+      "courses": "Courses",
+      "show": "Showing",
+      "of": "of",
+      "view": "view",
+      "no_result": "No courses found matching your filters.",
+      "disclaimer_head": "Course Information Disclaimer",
+      "disclaimer_text1": "Course information displayed here may not be accurate. Always verify details by checking",
+      "disclaimer_text2": "the official Facebook page",
+      "disclaimer_text3": "and official course documents.",
+      "course_info": "Course Information"
+    },
+    "schedule": {},
     "settings": {
       "title": "Settings",
       "language": "Language",

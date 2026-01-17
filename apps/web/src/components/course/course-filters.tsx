@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -41,6 +42,8 @@ export function CourseFilters({
   timeSlotFilter,
   onTimeSlotChange,
 }: CourseFiltersProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="mb-6 space-y-4">
       <div className="relative">
@@ -48,7 +51,7 @@ export function CourseFilters({
         <Input
           className="pl-9"
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by course code or name..."
+          placeholder={t("filter.search")}
           value={searchQuery}
         />
       </div>
