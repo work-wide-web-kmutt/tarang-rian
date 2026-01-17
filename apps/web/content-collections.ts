@@ -13,7 +13,7 @@ const courses = defineCollection({
       .replace(MD_FILE_EXTENSION_REGEX, "")
       .replace(/\//g, "-");
     const normalizedClass =
-      data.class?.map((cls: { instructor: string | string[] }) => ({
+      data.class?.map((cls) => ({
         ...cls,
         instructor: Array.isArray(cls.instructor)
           ? cls.instructor
