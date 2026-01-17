@@ -22,7 +22,11 @@
       "!**/convex/_generated"
     ]
   },
-  "extends": ["ultracite/core", "ultracite/react"],
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/remix"
+  ],
   "linter": {
     "rules": {
       "a11y": {

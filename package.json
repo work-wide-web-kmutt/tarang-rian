@@ -30,16 +30,16 @@
     "@tarang-rian/env": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.10",
+    "@biomejs/biome": "2.3.11",
     "@commitlint/cli": "^20.3.0",
     "@commitlint/config-conventional": "^20.3.0",
     "@intellectronica/ruler": "^0.3.23",
     "@tarang-rian/config": "workspace:*",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
+    "lint-staged": "^16.2.7",
     "turbo": "^2.6.3",
     "typescript": "catalog:",
-    "ultracite": "6.5.0",
+    "ultracite": "7.0.11",
     "wrangler": "^4.54.0"
   },
   "lint-staged": {
