@@ -8,6 +8,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -27,6 +28,7 @@ export function CourseVaulContent() {
   const { session, overlappingSessions, setIsEditing, handleRemove } =
     useCourseVaulContext();
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const { t } = useTranslation();
 
   if (!session) {
     return null;
@@ -46,11 +48,11 @@ export function CourseVaulContent() {
             <h2 className="font-semibold text-2xl">{session.courseName}</h2>
             <Badge>{session.courseCode}</Badge>
             <p className="mt-1 flex gap-2 text-muted-foreground">
-              Year{" "}
+              {t("academic.year")}{" "}
               <Badge className="text-black dark:text-white" variant="outline">
                 {session.year}
               </Badge>
-              Semester{" "}
+              {t("academic.semester")}{" "}
               <Badge className="text-black dark:text-white" variant="outline">
                 {session.semester}
               </Badge>
@@ -72,18 +74,17 @@ export function CourseVaulContent() {
       {session.type === "fixed" && (
         <Alert className="mb-4" variant="destructive">
           <AlertTriangle />
-          <AlertTitle>Course Information Disclaimer</AlertTitle>
+          <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
           <AlertDescription>
-            Course information displayed here may not be accurate. Always verify
-            details by checking{" "}
+            {t("courses.disclaimer_text1")}{" "}
             <a
               href="https://www.facebook.com/genKMUTTofficial"
               rel="noopener noreferrer"
               target="_blank"
             >
-              the official Facebook page
+              {t("courses.disclaimer_text2")}
             </a>{" "}
-            and official course documents.
+            {t("courses.disclaimer_text3")}
           </AlertDescription>
         </Alert>
       )}
@@ -94,7 +95,7 @@ export function CourseVaulContent() {
             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <CalendarIcon className="h-3.5 w-3.5" />
-                <span>Day</span>
+                <span>{t("days_time.day")}</span>
               </div>
             </td>
             <td className="py-1.5">{session.day}</td>
@@ -103,7 +104,7 @@ export function CourseVaulContent() {
             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <ClockIcon className="h-3.5 w-3.5" />
-                <span>Time</span>
+                <span>{t("days_time.time")}</span>
               </div>
             </td>
             <td className="py-1.5">
@@ -114,7 +115,7 @@ export function CourseVaulContent() {
             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <UsersIcon className="h-3.5 w-3.5" />
-                <span>Group</span>
+                <span>{t("course.group")}</span>
               </div>
             </td>
             <td className="py-1.5">{session.group}</td>
@@ -123,7 +124,7 @@ export function CourseVaulContent() {
             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <User className="h-3.5 w-3.5" />
-                <span>Instructor</span>
+                <span>{t("course.instructor")}</span>
               </div>
             </td>
             <td className="py-1.5">
@@ -157,22 +158,24 @@ export function CourseVaulContent() {
       <div className="flex">
         <Button onClick={() => setShowRemoveDialog(true)} variant="destructive">
           <Trash2Icon />
-          Remove from selected
+          {t("schedule.remove_from_select")}
         </Button>
         <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Remove class from schedule?</AlertDialogTitle>
+              <AlertDialogTitle>
+                {t("schedule.remove_from_schedule")}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to remove {session.courseCode} -{" "}
-                {session.courseName} from your schedule? This action cannot be
-                undone.
+                {t("schedule.remove_from_schedule_description1")}{" "}
+                {session.courseCode} - {session.courseName}{" "}
+                {t("schedule.remove_from_schedule_description2")}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t("schedule.cancel")}</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmRemove}>
-                Remove
+                {t("schedule.remove")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

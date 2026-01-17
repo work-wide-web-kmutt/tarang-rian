@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { CourseVaulContent } from "@/components/course/vaul/content";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { CourseVaulForm } from "@/components/course/vaul/form";
@@ -7,6 +8,7 @@ import { cn } from "@/lib/utils";
 export function CourseVaulSheet() {
   const { open, setOpen, isEditing, children, style, className, session } =
     useCourseVaulContext();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -44,7 +46,7 @@ export function CourseVaulSheet() {
           ) : (
             <div className="flex h-full items-center justify-center">
               <p className="text-muted-foreground">
-                No course information available
+                {t("courses.no_course_info")}
               </p>
             </div>
           )}

@@ -11,6 +11,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SessionBlock } from "@/components/schedule/block";
 import { DraggableBlock } from "@/components/schedule/draggable-block";
 import {
@@ -99,6 +100,7 @@ function DroppableCell({
 export function Schedule({ sessions, size = "md" }: ScheduleProps) {
   const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE[size];
   const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
+  const { t } = useTranslation();
 
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -671,7 +673,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
           }}
         >
           <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
-            Day
+            {t("days_time.day")}
           </div>
           {TIME_SLOTS.map((time) => (
             <div
@@ -702,7 +704,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                 className="sticky left-0 z-40 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs"
                 data-day-label
               >
-                {day}
+                {t(`days_time.${day.toLowerCase()}`)}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
                 const cellClasses = getClassesForCell(

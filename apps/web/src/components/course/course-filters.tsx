@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,15 +25,6 @@ interface CourseFiltersProps {
   onTimeSlotChange: (value: string) => void;
 }
 
-function getDayLabel(value: string): string {
-  return value === "all" ? "All Days" : value;
-}
-
-function getTimeSlotLabel(value: string): string {
-  const slot = TIME_SLOTS.find((s) => s.value === value);
-  return slot ? slot.label : value;
-}
-
 export function CourseFilters({
   searchQuery,
   onSearchChange,
@@ -41,6 +33,18 @@ export function CourseFilters({
   timeSlotFilter,
   onTimeSlotChange,
 }: CourseFiltersProps) {
+  const { t } = useTranslation();
+
+  const getDayLabel = (value: string): string => {
+    return value === "all"
+      ? t("filter.days.all")
+      : t(`days_time.${value.toLowerCase()}`);
+  };
+
+  const getTimeSlotLabel = (value: string): string => {
+    return value === "all" ? t("filter.times.all") : t(`filter.times.${value}`);
+  };
+
   return (
     <div className="mb-6 space-y-4">
       <div className="relative">
@@ -48,7 +52,7 @@ export function CourseFilters({
         <Input
           className="pl-9"
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by course code or name..."
+          placeholder={t("filter.search")}
           value={searchQuery}
         />
       </div>
@@ -66,10 +70,10 @@ export function CourseFilters({
             <SelectValue>{getDayLabel(dayFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Days</SelectItem>
+            <SelectItem value="all">{t("filter.days.all")}</SelectItem>
             {DAYS.map((day) => (
               <SelectItem key={day} value={day}>
-                {day}
+                {t(`days_time.${day.toLowerCase()}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -89,7 +93,9 @@ export function CourseFilters({
           <SelectContent>
             {TIME_SLOTS.map((slot) => (
               <SelectItem key={slot.value} value={slot.value}>
-                {slot.label}
+                {slot.value === "all"
+                  ? t("filter.times.all")
+                  : t(`filter.times.${slot.value}`)}
               </SelectItem>
             ))}
           </SelectContent>

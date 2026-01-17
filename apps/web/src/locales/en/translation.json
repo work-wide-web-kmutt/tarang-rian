@@ -1,0 +1,90 @@
+{
+  "translation": {
+    "welcome": "Welcome",
+    "home_title_1": "LET'S PLAN BEFORE",
+    "home_title_2": "THE RACE START.",
+    "checkout_courses": "Checkout the courses.",
+    "plan_schedule": "Plan the schedule",
+    "course_management": "Course management and planning platform",
+    "nav": {
+      "courses": "Courses",
+      "schedule": "Schedule"
+    },
+    "form": {
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "days_time": {
+      "day": "Day",
+      "time": "Time",
+      "start_time": "Start Time",
+      "end_time": "End Time",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "days_short": {
+      "monday": "MON",
+      "tuesday": "TUE",
+      "wednesday": "WED",
+      "thursday": "THU",
+      "friday": "FRI",
+      "saturday": "SAT",
+      "sunday": "SUN"
+    },
+    "academic": {
+      "year": "Year",
+      "semester": "Semester",
+      "classes": "Classes"
+    },
+    "filter": {
+      "search": "Search by course code or name...",
+      "days": {
+        "all": "All Days"
+      },
+      "times": {
+        "all": "All Times",
+        "morning": "Morning (before 12:00)",
+        "afternoon": "Afternoon (12:00+)"
+      }
+    },
+    "schedule": {
+      "delete": "Delete",
+      "remove_from_select": "Remove from select",
+      "remove_from_schedule": "Remove from schedule?",
+      "remove_from_schedule_description1": "Are you sure you want to remove",
+      "remove_from_schedule_description2": "from your schedule? This action cannot be undone.",
+      "remove": "Remove",
+      "cancel": "Cancel"
+    },
+    "courses": {
+      "courses": "Courses",
+      "show": "Showing",
+      "of": "of",
+      "view": "view",
+      "no_result": "No courses found matching your filters.",
+      "disclaimer_head": "Course Information Disclaimer",
+      "disclaimer_text1": "Course information displayed here may not be accurate. Always verify details by checking",
+      "disclaimer_text2": "the official Facebook page",
+      "disclaimer_text3": "and official course documents.",
+      "course_info": "Course Information",
+      "no_course_info": "No course information available"
+    },
+    "course": {
+      "course_code": "Course Code",
+      "course_name": "Course Name",
+      "group": "Group",
+      "instructor": "Instructor"
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
+      "select_language": "Select Language"
+    }
+  }
+}

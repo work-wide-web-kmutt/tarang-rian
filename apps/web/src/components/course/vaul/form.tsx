@@ -7,6 +7,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { type FormEvent, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import z from "zod";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ const editSchema = z.object({
 });
 
 export function CourseVaulForm() {
+  const { t } = useTranslation();
   const { updateSession } = useSelectedGenElectivesActions();
   const { setIsEditing, session } = useCourseVaulContext();
   const currentYear = useCurrentYear();
@@ -149,7 +151,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Course Code</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("course.course_code")}
+                </FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <BookOpen />
@@ -177,7 +181,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Course Name</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("course.course_name")}
+                </FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <GraduationCap />
@@ -206,7 +212,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Year</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("academic.year")}
+                </FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <CalendarIcon />
@@ -247,7 +255,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Semester</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("academic.semester")}
+                </FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <BookOpen />
@@ -287,7 +297,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Day</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("days_time.day")}
+                </FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <CalendarIcon />
@@ -310,7 +322,7 @@ export function CourseVaulForm() {
                     <SelectContent>
                       {DAYS.map((day: (typeof DAYS)[number]) => (
                         <SelectItem key={day} value={day}>
-                          {day}
+                          {t(`days.${day.toLowerCase()}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -330,7 +342,9 @@ export function CourseVaulForm() {
               const endTime = form.state.values.endTime;
               return (
                 <Field className="flex-1" data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Start Time</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("days_time.start_time")}
+                  </FieldLabel>
                   <InputGroup>
                     <InputGroupAddon>
                       <ClockIcon />
@@ -381,7 +395,9 @@ export function CourseVaulForm() {
               const startTime = form.state.values.startTime;
               return (
                 <Field className="flex-1" data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>End Time</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("days_time.end_time")}
+                  </FieldLabel>
                   <InputGroup>
                     <InputGroupAddon>
                       <ClockIcon />
@@ -432,7 +448,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Group</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("course.group")}
+                </FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <UsersIcon />
@@ -460,7 +478,9 @@ export function CourseVaulForm() {
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Instructor</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("course.instructor")}
+                </FieldLabel>
                 <TagsInput
                   className="w-full"
                   onValueChange={(newTags) => {
@@ -491,7 +511,7 @@ export function CourseVaulForm() {
       </FieldGroup>
       <div className="flex gap-2">
         <Button disabled={form.state.isSubmitting} type="submit">
-          {form.state.isSubmitting ? "Saving..." : "Save"}
+          {form.state.isSubmitting ? t("form.saving") : t("form.save")}
         </Button>
         <Button
           onClick={() => {
@@ -501,7 +521,7 @@ export function CourseVaulForm() {
           type="button"
           variant="outline"
         >
-          Cancel
+          {t("form.cancel")}
         </Button>
       </div>
     </form>

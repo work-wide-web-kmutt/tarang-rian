@@ -3,11 +3,12 @@ import { allCourses } from "content-collections";
 import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
-import { formatDayShort } from "@/lib/formatter/day-short";
+
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -81,26 +82,27 @@ function AllCoursesPage() {
     });
   }, [sortedCourses, searchQuery, dayFilter, timeSlotFilter]);
 
+  const { t } = useTranslation();
+
   return (
     <div className="container mx-auto px-20 py-4">
       <Alert className="mb-4" variant="destructive">
         <AlertTriangle />
-        <AlertTitle>Course Information Disclaimer</AlertTitle>
+        <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
         <AlertDescription>
-          Course information displayed here may not be accurate. Always verify
-          details by checking{" "}
+          {t("courses.disclaimer_text1")}{" "}
           <a
             href="https://www.facebook.com/genKMUTTofficial"
             rel="noopener noreferrer"
             target="_blank"
           >
-            the official Facebook page
+            {t("courses.disclaimer_text2")}
           </a>{" "}
-          and official course documents.
+          {t("courses.disclaimer_text3")}
         </AlertDescription>
       </Alert>
       <div className="mb-4">
-        <h1 className="font-semibold text-3xl">Courses</h1>
+        <h1 className="font-semibold text-3xl">{t("courses.courses")}</h1>
       </div>
 
       <CourseFilters
@@ -114,14 +116,13 @@ function AllCoursesPage() {
 
       {filteredCourses.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
-          <p className="text-muted-foreground">
-            No courses found matching your filters.
-          </p>
+          <p className="text-muted-foreground">{t("courses.no_result")}</p>
         </div>
       ) : (
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            Showing {filteredCourses.length} of {sortedCourses.length} courses
+            {t("courses.show")} {filteredCourses.length} {t("courses.of")}{" "}
+            {sortedCourses.length} {t("courses.courses")}
           </p>
           {filteredCourses.map((course) => {
             return (
@@ -135,13 +136,14 @@ function AllCoursesPage() {
                       {course.code} — {course.name}
                     </h2>
                     <p className="text-muted-foreground text-sm">
-                      Year {course.year}, Semester {course.semester}
+                      {t("academic.year")} {course.year},{" "}
+                      {t("academic.semester")} {course.semester}
                     </p>
                   </div>
                 </header>
 
                 <div className="mt-2">
-                  <p className="font-medium text-sm">Classes</p>
+                  <p className="font-medium text-sm">{t("academic.classes")}</p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {course.class.map(
                       (cls: GenElectiveOption["class"][number]) => {
@@ -168,7 +170,8 @@ function AllCoursesPage() {
                             size="sm"
                             variant={isClassSelected ? "secondary" : "outline"}
                           >
-                            {formatDayShort(cls.day)} {cls.start} - {cls.end}
+                            {t(`days_short.${cls.day.toLowerCase()}`)}{" "}
+                            {cls.start} - {cls.end}
                           </Button>
                         );
                       }
@@ -178,7 +181,7 @@ function AllCoursesPage() {
 
                 <div className="mt-4 flex justify-end gap-2">
                   <Link params={{ id: course.slug }} to="/courses/$id">
-                    <Button variant="outline">View</Button>
+                    <Button variant="outline">{t("courses.view")}</Button>
                   </Link>
                 </div>
               </section>
