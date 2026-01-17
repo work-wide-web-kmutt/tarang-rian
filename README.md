@@ -1,39 +1,42 @@
-# tarang-rian
+<div align="center">
+  <img src="resources/github-banner.svg" alt="Tarang Rian Banner" width="830">
+</div>
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, and more.
+</br>
 
-## Features
+# Tarang Rian ตารางเรียน
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Reusable UI components
-- **Biome** - Linting and formatting
-- **Husky** - Git hooks for code quality
-- **Turborepo** - Optimized monorepo build system
+An academic course planning platform for browsing and scheduling general elective courses, built with React and TanStack Router.
 
 ## Getting Started
 
-First, install the dependencies:
+### Prerequisites
+
+- [Bun](https://bun.sh) (version 1.3.5 or later)
+
+### Installation
+
+Install dependencies:
 
 ```bash
 bun install
 ```
 
+### Development
 
-Then, run the development server:
+Start the development server:
 
 ```bash
 bun run dev
 ```
 
+Or start only the web application:
+
+```bash
+bun run dev:web
+```
+
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-
-
-
-
-
-
 
 ## Project Structure
 
