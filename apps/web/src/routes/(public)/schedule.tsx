@@ -13,7 +13,7 @@ function SelectedCoursesPage() {
     <div className="container mx-auto min-w-0 max-w-7xl px-4 py-4">
       <div className="flex w-full items-center justify-center">
         <div className="w-fit min-w-0 overflow-x-auto">
-          <Schedule sessions={selected} />
+          <Schedule sessions={selected} size="sm" />
         </div>
       </div>
     </div>

@@ -1,9 +1,4 @@
-import {
-  BASE_MINUTES,
-  CELL_SIZE,
-  DAY_COLUMN_WIDTH,
-  SLOT_DURATION_MINUTES,
-} from "@/constants/schedule";
+import { BASE_MINUTES, SLOT_DURATION_MINUTES } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
 import { parseTime } from "@/lib/parser/time";
@@ -124,7 +119,9 @@ export function calculateSnappedPreview(
 }
 
 export function findDayRowFromMousePosition(
-  mouseEvent: MouseEvent
+  mouseEvent: MouseEvent,
+  cellSize: number,
+  dayColumnWidth: number
 ): { day: string; timeColIndex: number; cellX: number } | null {
   for (const day of DAYS) {
     const dayRowElement = document.querySelector(
@@ -148,19 +145,19 @@ export function findDayRowFromMousePosition(
       continue;
     }
 
-    const x = mouseX - rect.left - DAY_COLUMN_WIDTH;
+    const x = mouseX - rect.left - dayColumnWidth;
 
     if (x < 0) {
       continue;
     }
 
-    const timeColIndex = Math.floor(x / CELL_SIZE);
+    const timeColIndex = Math.floor(x / cellSize);
 
     if (timeColIndex < 0 || timeColIndex >= TIME_SLOTS.length) {
       continue;
     }
 
-    const cellX = x - timeColIndex * CELL_SIZE;
+    const cellX = x - timeColIndex * cellSize;
     return { day, timeColIndex, cellX };
   }
 
@@ -187,7 +184,9 @@ export function parseOverId(overId: string): {
 export function getMousePositionInDayRow(
   day: string,
   mouseEvent: MouseEvent,
-  timeColIndex: number
+  timeColIndex: number,
+  cellSize: number,
+  dayColumnWidth: number
 ): { x: number; cellX: number } | null {
   const dayRowElement = document.querySelector(
     `[data-day-row="${day}"]`
@@ -198,13 +197,13 @@ export function getMousePositionInDayRow(
   }
 
   const rect = dayRowElement.getBoundingClientRect();
-  const x = mouseEvent.clientX - rect.left - DAY_COLUMN_WIDTH;
+  const x = mouseEvent.clientX - rect.left - dayColumnWidth;
 
   if (x < 0) {
     return null;
   }
 
-  const cellX = x - timeColIndex * CELL_SIZE;
+  const cellX = x - timeColIndex * cellSize;
   return { x, cellX };
 }
 
