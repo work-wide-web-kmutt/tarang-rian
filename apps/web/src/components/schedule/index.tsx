@@ -673,7 +673,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
           }}
         >
           <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
-            {t("days.day")}
+            {t("days_time.day")}
           </div>
           {TIME_SLOTS.map((time) => (
             <div
@@ -704,7 +704,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                 className="sticky left-0 z-40 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs"
                 data-day-label
               >
-                {t(`days.${day.toLowerCase()}`)}
+                {t(`days_time.${day.toLowerCase()}`)}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
                 const cellClasses = getClassesForCell(

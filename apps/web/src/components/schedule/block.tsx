@@ -1,5 +1,6 @@
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import CourseVaul from "@/components/course/vaul";
 import {
   getClassKey,
@@ -64,6 +65,8 @@ export function SessionBlock({
     setShowDeleteDialog(false);
   };
 
+  const { t } = useTranslation();
+
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -119,23 +122,25 @@ export function SessionBlock({
         <ContextMenuSeparator />
         <ContextMenuItem onClick={handleDelete} variant="destructive">
           <Trash2Icon />
-          Delete
+          {t("schedule.delete")}
         </ContextMenuItem>
       </ContextMenuContent>
       <AlertDialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove class from schedule?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("schedule.remove_from_schedule")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove {session.courseCode} -{" "}
-              {session.courseName} from your schedule? This action cannot be
-              undone.
+              {t("schedule.remove_from_schedule_description1")}{" "}
+              {session.courseCode} - {session.courseName}{" "}
+              {t("schedule.remove_from_schedule_description2")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("schedule.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmDelete}>
-              Remove
+              {t("schedule.remove")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

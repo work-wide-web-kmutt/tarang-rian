@@ -10,8 +10,16 @@
       "courses": "Courses",
       "schedule": "Schedule"
     },
-    "days": {
+    "form": {
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "days_time": {
       "day": "Day",
+      "time": "Time",
+      "start_time": "Start Time",
+      "end_time": "End Time",
       "monday": "Monday",
       "tuesday": "Tuesday",
       "wednesday": "Wednesday",
@@ -45,6 +53,15 @@
         "afternoon": "Afternoon (12:00+)"
       }
     },
+    "schedule": {
+      "delete": "Delete",
+      "remove_from_select": "Remove from select",
+      "remove_from_schedule": "Remove from schedule?",
+      "remove_from_schedule_description1": "Are you sure you want to remove",
+      "remove_from_schedule_description2": "from your schedule? This action cannot be undone.",
+      "remove": "Remove",
+      "cancel": "Cancel"
+    },
     "courses": {
       "courses": "Courses",
       "show": "Showing",
@@ -56,6 +73,12 @@
       "disclaimer_text2": "the official Facebook page",
       "disclaimer_text3": "and official course documents.",
       "course_info": "Course Information"
+    },
+    "course": {
+      "course_code": "Course Code",
+      "course_name": "Course Name",
+      "group": "Group",
+      "instructor": "Instructor"
     },
     "settings": {
       "title": "Settings",
