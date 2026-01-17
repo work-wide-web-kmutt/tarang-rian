@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { allCourses } from "content-collections";
+import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { CourseFilters } from "@/components/course/course-filters";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
 import { formatDayShort } from "@/lib/formatter/day-short";
@@ -81,6 +83,22 @@ function AllCoursesPage() {
 
   return (
     <div className="container mx-auto px-20 py-4">
+      <Alert className="mb-4" variant="destructive">
+        <AlertTriangle />
+        <AlertTitle>Course Information Disclaimer</AlertTitle>
+        <AlertDescription>
+          Course information displayed here may not be accurate. Always verify
+          details by checking{" "}
+          <a
+            href="https://www.facebook.com/genKMUTTofficial"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            the official Facebook page
+          </a>{" "}
+          and official course documents.
+        </AlertDescription>
+      </Alert>
       <div className="mb-4">
         <h1 className="font-semibold text-3xl">Courses</h1>
       </div>
