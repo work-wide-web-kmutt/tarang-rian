@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { Logo } from "@/components/logo";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Header } from "@/components/header";
 
 export const Route = createFileRoute("/(public)")({
   component: PublicLayout,
@@ -15,12 +14,7 @@ function PublicLayout() {
         </div>
       </div>
       <div className="relative z-10">
-        <div className="w-full">
-          <div className="container mx-auto flex h-fit w-full max-w-8xl items-center justify-between px-16 py-3">
-            <Logo size="sm" />
-            <ThemeSwitcher />
-          </div>
-        </div>
+        <Header />
         <div className="w-full border-border border-t-2 border-dashed">
           <Outlet />
         </div>
