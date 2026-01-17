@@ -28,10 +28,8 @@ import {
 } from "@/components/schedule/utils";
 import {
   ACTIVATION_DISTANCE,
-  CELL_SIZE,
-  DAY_COLUMN_WIDTH,
   MIN_DRAG_DURATION,
-  MIN_WIDTH,
+  SCHEDULE_SIZE,
   SLOT_DURATION_MINUTES,
 } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
@@ -41,8 +39,11 @@ import {
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
 
+type ScheduleSize = keyof typeof SCHEDULE_SIZE;
+
 interface ScheduleProps {
   sessions: SelectedClassSession[];
+  size?: ScheduleSize;
 }
 
 interface DragState {
@@ -94,7 +95,10 @@ function DroppableCell({
   );
 }
 
-export function Schedule({ sessions }: ScheduleProps) {
+export function Schedule({ sessions, size = "md" }: ScheduleProps) {
+  const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE[size];
+  const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
+
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [activeSession, setActiveSession] =
@@ -139,7 +143,11 @@ export function Schedule({ sessions }: ScheduleProps) {
         return;
       }
 
-      const dayRowInfo = findDayRowFromMousePosition(e);
+      const dayRowInfo = findDayRowFromMousePosition(
+        e,
+        cellSize,
+        dayColumnWidth
+      );
       if (!dayRowInfo || dayRowInfo.day !== resizeState.session.day) {
         return;
       }
@@ -147,7 +155,7 @@ export function Schedule({ sessions }: ScheduleProps) {
       const { timeColIndex, cellX } = dayRowInfo;
       const { slotIndex } = get30MinuteSlotFromPosition(
         cellX,
-        CELL_SIZE,
+        cellSize,
         timeColIndex
       );
 
@@ -171,7 +179,7 @@ export function Schedule({ sessions }: ScheduleProps) {
         span,
       });
     },
-    [resizeState]
+    [resizeState, cellSize, dayColumnWidth]
   );
 
   const handleResizeMouseUp = useCallback(() => {
@@ -234,7 +242,11 @@ export function Schedule({ sessions }: ScheduleProps) {
     }
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
-      const dayRowInfo = findDayRowFromMousePosition(e);
+      const dayRowInfo = findDayRowFromMousePosition(
+        e,
+        cellSize,
+        dayColumnWidth
+      );
 
       if (!dayRowInfo) {
         setSnappedPreview(null);
@@ -245,7 +257,7 @@ export function Schedule({ sessions }: ScheduleProps) {
       const { day, timeColIndex, cellX } = dayRowInfo;
       const { slotIndex } = get30MinuteSlotFromPosition(
         cellX,
-        CELL_SIZE,
+        cellSize,
         timeColIndex
       );
 
@@ -276,7 +288,7 @@ export function Schedule({ sessions }: ScheduleProps) {
     return () => {
       document.removeEventListener("mousemove", handleGlobalMouseMove);
     };
-  }, [activeSession]);
+  }, [activeSession, cellSize, dayColumnWidth]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -295,14 +307,20 @@ export function Schedule({ sessions }: ScheduleProps) {
     timeColIndex: number,
     mouseEvent: MouseEvent
   ) => {
-    const position = getMousePositionInDayRow(day, mouseEvent, timeColIndex);
+    const position = getMousePositionInDayRow(
+      day,
+      mouseEvent,
+      timeColIndex,
+      cellSize,
+      dayColumnWidth
+    );
     if (!position) {
       return;
     }
 
     const { slotIndex } = get30MinuteSlotFromPosition(
       position.cellX,
-      CELL_SIZE,
+      cellSize,
       timeColIndex
     );
 
@@ -336,14 +354,20 @@ export function Schedule({ sessions }: ScheduleProps) {
       return;
     }
 
-    const position = getMousePositionInDayRow(day, mouseEvent, timeColIndex);
+    const position = getMousePositionInDayRow(
+      day,
+      mouseEvent,
+      timeColIndex,
+      cellSize,
+      dayColumnWidth
+    );
     if (!position) {
       return;
     }
 
     const { slotIndex } = get30MinuteSlotFromPosition(
       position.cellX,
-      CELL_SIZE,
+      cellSize,
       timeColIndex
     );
 
@@ -408,14 +432,20 @@ export function Schedule({ sessions }: ScheduleProps) {
       return null;
     }
 
-    const position = getMousePositionInDayRow(day, mouseEvent, timeColIndex);
+    const position = getMousePositionInDayRow(
+      day,
+      mouseEvent,
+      timeColIndex,
+      cellSize,
+      dayColumnWidth
+    );
     if (!position) {
       return null;
     }
 
     const { slotIndex } = get30MinuteSlotFromPosition(
       position.cellX,
-      CELL_SIZE,
+      cellSize,
       timeColIndex
     );
 
@@ -527,7 +557,7 @@ export function Schedule({ sessions }: ScheduleProps) {
     const x = e.clientX - rect.left;
     const { slotIndex } = get30MinuteSlotFromPosition(
       x,
-      CELL_SIZE,
+      cellSize,
       timeColIndex
     );
 
@@ -551,21 +581,21 @@ export function Schedule({ sessions }: ScheduleProps) {
     }
 
     const rect = dayRow.getBoundingClientRect();
-    const x = e.clientX - rect.left - DAY_COLUMN_WIDTH;
+    const x = e.clientX - rect.left - dayColumnWidth;
 
     if (x < 0) {
       return;
     }
 
-    const timeColIndex = Math.floor(x / CELL_SIZE);
+    const timeColIndex = Math.floor(x / cellSize);
     if (timeColIndex < 0 || timeColIndex >= TIME_SLOTS.length) {
       return;
     }
 
-    const cellX = x - timeColIndex * CELL_SIZE;
+    const cellX = x - timeColIndex * cellSize;
     const { slotIndex } = get30MinuteSlotFromPosition(
       cellX,
-      CELL_SIZE,
+      cellSize,
       timeColIndex
     );
 
@@ -616,11 +646,11 @@ export function Schedule({ sessions }: ScheduleProps) {
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <div style={{ width: `${MIN_WIDTH}px` }}>
+      <div style={{ width: `${minWidth}px` }}>
         <div
           className="grid border border-border"
           style={{
-            gridTemplateColumns: `${DAY_COLUMN_WIDTH}px repeat(${TIME_SLOTS.length}, ${CELL_SIZE}px)`,
+            gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
           }}
         >
           <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
@@ -648,7 +678,7 @@ export function Schedule({ sessions }: ScheduleProps) {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               style={{
-                gridTemplateColumns: `${DAY_COLUMN_WIDTH}px repeat(${TIME_SLOTS.length}, ${CELL_SIZE}px)`,
+                gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
               }}
             >
               <div
@@ -672,8 +702,9 @@ export function Schedule({ sessions }: ScheduleProps) {
                   <DroppableCell id={dropId} key={dropId}>
                     <div
                       aria-label={`${day} ${time} - Drag to create custom class`}
-                      className="relative h-[80px] border-border border-r bg-background last:border-r-0"
+                      className="relative border-border border-r bg-background last:border-r-0"
                       onMouseDown={(e) => handleMouseDown(e, day, timeColIndex)}
+                      style={{ height: `${rowHeight}px` }}
                     >
                       {firstColClasses.map((session) => {
                         const classKey = getClassKey(session);
