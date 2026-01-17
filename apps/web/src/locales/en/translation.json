@@ -72,7 +72,8 @@
       "disclaimer_text1": "Course information displayed here may not be accurate. Always verify details by checking",
       "disclaimer_text2": "the official Facebook page",
       "disclaimer_text3": "and official course documents.",
-      "course_info": "Course Information"
+      "course_info": "Course Information",
+      "no_course_info": "No course information available"
     },
     "course": {
       "course_code": "Course Code",

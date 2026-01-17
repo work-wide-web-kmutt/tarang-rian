@@ -38,7 +38,7 @@ export function CourseFilters({
   const getDayLabel = (value: string): string => {
     return value === "all"
       ? t("filter.days.all")
-      : t(`days.${value.toLowerCase()}`);
+      : t(`days_time.${value.toLowerCase()}`);
   };
 
   const getTimeSlotLabel = (value: string): string => {
@@ -73,7 +73,7 @@ export function CourseFilters({
             <SelectItem value="all">{t("filter.days.all")}</SelectItem>
             {DAYS.map((day) => (
               <SelectItem key={day} value={day}>
-                {t(`days.${day.toLowerCase()}`)}
+                {t(`days_time.${day.toLowerCase()}`)}
               </SelectItem>
             ))}
           </SelectContent>

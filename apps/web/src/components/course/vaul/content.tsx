@@ -74,17 +74,17 @@ export function CourseVaulContent() {
       {session.type === "fixed" && (
         <Alert className="mb-4" variant="destructive">
           <AlertTriangle />
-          <AlertTitle>{t("course.disclaimer_head")}</AlertTitle>
+          <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
           <AlertDescription>
-            {t("course.disclaimer_description1")}{" "}
+            {t("courses.disclaimer_text1")}{" "}
             <a
               href="https://www.facebook.com/genKMUTTofficial"
               rel="noopener noreferrer"
               target="_blank"
             >
-              {t("course.disclaimer_description2")}
+              {t("courses.disclaimer_text2")}
             </a>{" "}
-            {t("course.disclaimer_description3")}
+            {t("courses.disclaimer_text3")}
           </AlertDescription>
         </Alert>
       )}
