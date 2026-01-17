@@ -122,7 +122,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
           courseName: course.name,
           year: course.year,
           semester: course.semester,
-          instructor: course.instructor,
+          instructor: classSession.instructor,
           group: classSession.group,
           day: classSession.day,
           start: classSession.start,
