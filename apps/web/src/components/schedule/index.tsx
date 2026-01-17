@@ -9,10 +9,11 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SessionBlock } from "@/components/schedule/block";
 import { DraggableBlock } from "@/components/schedule/draggable-block";
 import {
+  calculateResizePreview,
   calculateSnappedPreview,
   findDayRowFromMousePosition,
   formatTimeRange,
@@ -59,6 +60,22 @@ interface SnappedPreview {
   span: number;
 }
 
+interface ResizeState {
+  session: SelectedClassSession;
+  edge: "left" | "right";
+  originalStart: string;
+  originalEnd: string;
+}
+
+interface ResizePreview {
+  session: SelectedClassSession;
+  start: string;
+  end: string;
+  startCol: number;
+  startOffset: number;
+  span: number;
+}
+
 function DroppableCell({
   id,
   children,
@@ -94,6 +111,12 @@ export function Schedule({ sessions }: ScheduleProps) {
     timeColIndex: number;
     x: number;
   } | null>(null);
+
+  const [resizeState, setResizeState] = useState<ResizeState | null>(null);
+  const [resizePreview, setResizePreview] = useState<ResizePreview | null>(
+    null
+  );
+
   const { addCustom, update } = useSelectedGenElectivesActions();
 
   const sensors = useSensors(
@@ -109,6 +132,101 @@ export function Schedule({ sessions }: ScheduleProps) {
       },
     })
   );
+
+  const handleResizeMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!resizeState) {
+        return;
+      }
+
+      const dayRowInfo = findDayRowFromMousePosition(e);
+      if (!dayRowInfo || dayRowInfo.day !== resizeState.session.day) {
+        return;
+      }
+
+      const { timeColIndex, cellX } = dayRowInfo;
+      const { slotIndex } = get30MinuteSlotFromPosition(
+        cellX,
+        CELL_SIZE,
+        timeColIndex
+      );
+
+      const { newStart, newEnd } = calculateResizePreview(
+        resizeState.session,
+        resizeState.edge,
+        slotIndex
+      );
+
+      const { startCol, startOffset, span } = getTimeSlotPosition(
+        newStart,
+        newEnd
+      );
+
+      setResizePreview({
+        session: resizeState.session,
+        start: newStart,
+        end: newEnd,
+        startCol,
+        startOffset,
+        span,
+      });
+    },
+    [resizeState]
+  );
+
+  const handleResizeMouseUp = useCallback(() => {
+    if (resizeState && resizePreview) {
+      update(
+        resizeState.session.id,
+        resizeState.session.day,
+        resizePreview.start,
+        resizePreview.end
+      );
+    }
+
+    setResizeState(null);
+    setResizePreview(null);
+  }, [resizeState, resizePreview, update]);
+
+  useEffect(() => {
+    if (!resizeState) {
+      return;
+    }
+
+    document.addEventListener("mousemove", handleResizeMouseMove);
+    document.addEventListener("mouseup", handleResizeMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleResizeMouseMove);
+      document.removeEventListener("mouseup", handleResizeMouseUp);
+    };
+  }, [resizeState, handleResizeMouseMove, handleResizeMouseUp]);
+
+  const handleResizeStart = (
+    session: SelectedClassSession,
+    edge: "left" | "right"
+  ) => {
+    setResizeState({
+      session,
+      edge,
+      originalStart: session.start,
+      originalEnd: session.end,
+    });
+
+    const { startCol, startOffset, span } = getTimeSlotPosition(
+      session.start,
+      session.end
+    );
+
+    setResizePreview({
+      session,
+      start: session.start,
+      end: session.end,
+      startCol,
+      startOffset,
+      span,
+    });
+  };
 
   useEffect(() => {
     if (!activeSession) {
@@ -394,6 +512,11 @@ export function Schedule({ sessions }: ScheduleProps) {
       return;
     }
 
+    // Don't create new class if resizing
+    if (resizeState !== null) {
+      return;
+    }
+
     // Only allow creating new class if clicking directly on the grid cell background
     // This prevents clicks on children (SessionBlock, etc.) or overlaying elements (sheets, dialogs, etc.)
     if (e.target !== e.currentTarget) {
@@ -554,11 +677,21 @@ export function Schedule({ sessions }: ScheduleProps) {
                     >
                       {firstColClasses.map((session) => {
                         const classKey = getClassKey(session);
+                        const isResizingThis =
+                          resizeState?.session.id === session.id;
+
+                        // Hide the block being resized - we'll show a preview instead
+                        if (isResizingThis) {
+                          return null;
+                        }
+
                         return session.type === "custom" ? (
                           <DraggableBlock
                             allSessions={sessions}
+                            isResizing={resizeState !== null}
                             key={classKey}
                             onOpenChange={setOpenClassKey}
+                            onResizeStart={handleResizeStart}
                             openClassKey={openClassKey}
                             session={session}
                           />
@@ -572,6 +705,29 @@ export function Schedule({ sessions }: ScheduleProps) {
                           />
                         );
                       })}
+                      {/* Resize preview */}
+                      {resizePreview &&
+                        resizePreview.session.day === day &&
+                        timeColIndex === resizePreview.startCol && (
+                          <div
+                            className="absolute inset-y-0 z-30 m-0.5 cursor-ew-resize select-none rounded border border-primary bg-primary p-1.5 text-xs"
+                            style={{
+                              left: `${resizePreview.startOffset * 100}%`,
+                              width: `calc(${resizePreview.span * 100}% - 0.25rem)`,
+                            }}
+                          >
+                            <div className="text-primary-foreground">
+                              <p>{resizePreview.session.courseCode}</p>
+                              <p className="font-bold">
+                                {resizePreview.session.courseName}
+                              </p>
+                            </div>
+                            <div className="text-[10px] text-primary-foreground/80">
+                              {resizePreview.start} - {resizePreview.end}
+                            </div>
+                          </div>
+                        )}
+                      {/* Creating new block preview */}
                       {dragState &&
                         dragState.day === day &&
                         (() => {
@@ -608,6 +764,7 @@ export function Schedule({ sessions }: ScheduleProps) {
                           }
                           return null;
                         })()}
+                      {/* Drag (move) preview */}
                       {snappedPreview &&
                         snappedPreview.day === day &&
                         timeColIndex === snappedPreview.startCol && (
@@ -637,7 +794,7 @@ export function Schedule({ sessions }: ScheduleProps) {
           ))}
         </div>
       </div>
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeSession ? (
           <div className="m-0.5 rounded border border-primary bg-primary/80 p-1.5 text-xs">
             <div className="font-medium text-primary-foreground">
