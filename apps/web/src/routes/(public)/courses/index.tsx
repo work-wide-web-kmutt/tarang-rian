@@ -138,9 +138,6 @@ function AllCoursesPage() {
                       Year {course.year}, Semester {course.semester}
                     </p>
                   </div>
-                  <p className="font-medium text-muted-foreground text-sm">
-                    {course.instructor}
-                  </p>
                 </header>
 
                 <div className="mt-2">

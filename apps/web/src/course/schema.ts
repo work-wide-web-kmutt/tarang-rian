@@ -19,9 +19,9 @@ export const GenElectiveOptionSchema = z.object({
       ]),
       start: z.string().regex(/^\d{2}:\d{2}$/),
       end: z.string().regex(/^\d{2}:\d{2}$/),
+      instructor: z.string(),
     })
   ),
-  instructor: z.string(),
 });
 
 export type GenElectiveOption = z.infer<typeof GenElectiveOptionSchema>;
