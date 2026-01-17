@@ -38,7 +38,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
       {
         property: "og:image",
-        content: "/static/og-image.png",
+        content: "https://tarang-rian.dekcpe.link/static/og-image.png",
       },
       {
         property: "og:type",
@@ -58,7 +58,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
       {
         name: "twitter:image",
-        content: "/static/og-image.png",
+        content: "https://tarang-rian.dekcpe.link/static/og-image.png",
       },
     ],
     links: [
