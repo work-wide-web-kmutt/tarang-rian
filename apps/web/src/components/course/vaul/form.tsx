@@ -4,7 +4,6 @@ import {
   CalendarIcon,
   ClockIcon,
   GraduationCap,
-  User,
   UsersIcon,
 } from "lucide-react";
 import { type FormEvent, useEffect, useMemo } from "react";
@@ -29,6 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputList,
+} from "@/components/ui/tags-input";
 import { DAYS } from "@/constants/times";
 import { parseTime } from "@/lib/parser/time";
 import { useCurrentYear } from "@/stores/academic-context";
@@ -37,7 +42,7 @@ import { useSelectedGenElectivesActions } from "@/stores/selected";
 const editSchema = z.object({
   courseCode: z.string().min(1, "Course code is required."),
   courseName: z.string().min(1, "Course name is required."),
-  instructor: z.string().min(1, "Instructor name is required."),
+  instructor: z.array(z.string()).min(1, "At least one instructor is required"),
   group: z.string().min(1, "Group is required."),
   day: z.enum([
     "Monday",
@@ -82,7 +87,7 @@ export function CourseVaulForm() {
     defaultValues: {
       courseCode: session?.courseCode ?? "",
       courseName: session?.courseName ?? "",
-      instructor: session?.instructor ?? "",
+      instructor: session?.instructor ?? [],
       group: session?.group ?? "",
       day: session?.day ?? "Monday",
       year: session?.year ?? currentYear.toString(),
@@ -456,21 +461,27 @@ export function CourseVaulForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Instructor</FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <User />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    aria-invalid={isInvalid}
-                    id={field.name}
-                    name={field.name}
-                    onBlur={field.handleBlur}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      field.handleChange(event.target.value);
-                    }}
-                    value={field.state.value}
-                  />
-                </InputGroup>
+                <TagsInput
+                  className="w-full"
+                  onValueChange={(newTags) => {
+                    field.handleChange(newTags);
+                  }}
+                  value={field.state.value}
+                >
+                  <TagsInputList>
+                    {field.state.value.map((instructor) => (
+                      <TagsInputItem key={instructor} value={instructor}>
+                        {instructor}
+                      </TagsInputItem>
+                    ))}
+                    <TagsInputInput
+                      aria-invalid={isInvalid}
+                      id={field.name}
+                      onBlur={field.handleBlur}
+                      placeholder="Add instructor..."
+                    />
+                  </TagsInputList>
+                </TagsInput>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
