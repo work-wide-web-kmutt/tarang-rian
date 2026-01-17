@@ -18,15 +18,39 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
       {
-        title: "tarang-rian",
+        title: "Tarang Rian",
       },
       {
         name: "description",
-        content: "tarang-rian is a web application",
+        content: "Tarang Rian - Course management and planning platform",
       },
       {
         name: "apple-mobile-web-app-title",
         content: "Tarang Rian",
+      },
+      {
+        property: "og:title",
+        content: "Tarang Rian",
+      },
+      {
+        property: "og:description",
+        content: "Tarang Rian - Course management and planning platform",
+      },
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        name: "twitter:card",
+        content: "summary",
+      },
+      {
+        name: "twitter:title",
+        content: "Tarang Rian",
+      },
+      {
+        name: "twitter:description",
+        content: "Tarang Rian - Course management and planning platform",
       },
     ],
     links: [
