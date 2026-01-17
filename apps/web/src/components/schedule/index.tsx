@@ -29,6 +29,7 @@ import {
 import {
   ACTIVATION_DISTANCE,
   MIN_DRAG_DURATION,
+  SCHEDULE_SIZE,
   SLOT_DURATION_MINUTES,
 } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
@@ -37,15 +38,6 @@ import {
   type SelectedClassSession,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
-
-const SCHEDULE_SIZE = {
-  sm: { cellSize: 60, dayColumnWidth: 60, rowHeight: 60 },
-  md: { cellSize: 100, dayColumnWidth: 120, rowHeight: 80 }, // Default
-  lg: { cellSize: 140, dayColumnWidth: 160, rowHeight: 100 },
-  xl: { cellSize: 180, dayColumnWidth: 200, rowHeight: 120 },
-  "2xl": { cellSize: 220, dayColumnWidth: 240, rowHeight: 140 },
-  "3xl": { cellSize: 260, dayColumnWidth: 280, rowHeight: 160 },
-} as const;
 
 type ScheduleSize = keyof typeof SCHEDULE_SIZE;
 
