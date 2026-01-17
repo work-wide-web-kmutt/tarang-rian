@@ -33,7 +33,7 @@
 <!-- Please confirm the following before requesting review -->
 
 - [ ] My code follows the project's code style (Ultracite standards)
-- [ ] I have run `bun run check` and it passes
+- [ ] I have run `bun run fix` and it passes
 - [ ] I have run `bun run check-types` and it passes
 - [ ] I have run `bun run build` and it succeeds
 - [ ] I have removed all `console.log` and `debugger` statements

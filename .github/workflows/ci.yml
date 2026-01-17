@@ -25,7 +25,7 @@ jobs:
         run: bun install
 
       - name: Lint and format
-        run: bun run check
+        run: bun run fix
 
       - name: Type check
         run: bun run check-types
