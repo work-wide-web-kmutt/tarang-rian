@@ -12,9 +12,17 @@ const courses = defineCollection({
     const slug = data._meta.path
       .replace(MD_FILE_EXTENSION_REGEX, "")
       .replace(/\//g, "-");
+    const normalizedClass =
+      data.class?.map((cls) => ({
+        ...cls,
+        instructor: Array.isArray(cls.instructor)
+          ? cls.instructor
+          : [cls.instructor],
+      })) ?? [];
     return {
       ...data,
       slug,
+      class: normalizedClass,
     };
   },
 });

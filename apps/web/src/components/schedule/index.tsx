@@ -5,6 +5,7 @@ import {
   DragOverlay,
   type DragStartEvent,
   PointerSensor,
+  TouchSensor,
   useDroppable,
   useSensor,
   useSensors,
@@ -128,17 +129,17 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
       activationConstraint: {
         distance: ACTIVATION_DISTANCE,
       },
-      filter: (event: Event) => {
-        if (event instanceof MouseEvent) {
-          return event.button === 0; // Only allow left mouse button
-        }
-        return true; // Allow touch events
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
       },
     })
   );
 
-  const handleResizeMouseMove = useCallback(
-    (e: MouseEvent) => {
+  const handleResizePointerMove = useCallback(
+    (e: PointerEvent) => {
       if (!resizeState) {
         return;
       }
@@ -182,7 +183,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
     [resizeState, cellSize, dayColumnWidth]
   );
 
-  const handleResizeMouseUp = useCallback(() => {
+  const handleResizePointerUp = useCallback(() => {
     if (resizeState && resizePreview) {
       update(
         resizeState.session.id,
@@ -201,14 +202,16 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
       return;
     }
 
-    document.addEventListener("mousemove", handleResizeMouseMove);
-    document.addEventListener("mouseup", handleResizeMouseUp);
+    document.addEventListener("pointermove", handleResizePointerMove);
+    document.addEventListener("pointerup", handleResizePointerUp);
+    document.addEventListener("pointercancel", handleResizePointerUp);
 
     return () => {
-      document.removeEventListener("mousemove", handleResizeMouseMove);
-      document.removeEventListener("mouseup", handleResizeMouseUp);
+      document.removeEventListener("pointermove", handleResizePointerMove);
+      document.removeEventListener("pointerup", handleResizePointerUp);
+      document.removeEventListener("pointercancel", handleResizePointerUp);
     };
-  }, [resizeState, handleResizeMouseMove, handleResizeMouseUp]);
+  }, [resizeState, handleResizePointerMove, handleResizePointerUp]);
 
   const handleResizeStart = (
     session: SelectedClassSession,
@@ -241,7 +244,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
       return;
     }
 
-    const handleGlobalMouseMove = (e: MouseEvent) => {
+    const handleGlobalPointerMove = (e: PointerEvent) => {
       const dayRowInfo = findDayRowFromMousePosition(
         e,
         cellSize,
@@ -283,10 +286,10 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
       setDragOverPosition({ x: e.clientX, y: e.clientY });
     };
 
-    document.addEventListener("mousemove", handleGlobalMouseMove);
+    document.addEventListener("pointermove", handleGlobalPointerMove);
 
     return () => {
-      document.removeEventListener("mousemove", handleGlobalMouseMove);
+      document.removeEventListener("pointermove", handleGlobalPointerMove);
     };
   }, [activeSession, cellSize, dayColumnWidth]);
 
@@ -528,13 +531,14 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
     setDragState(null);
   };
 
-  const handleMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>,
+  const handlePointerDown = (
+    e: React.PointerEvent<HTMLDivElement>,
     day: GenElectiveOption["class"][number]["day"],
     timeColIndex: number
   ) => {
-    if (e.button !== 0) {
-      return; // Only allow left mouse button (0)
+    // Only allow left mouse button (0) or touch
+    if (e.pointerType === "mouse" && e.button !== 0) {
+      return;
     }
 
     // Don't create new class if vaul/sheet is open
@@ -553,6 +557,11 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
       return;
     }
 
+    // Capture pointer for touch events to receive move events outside element
+    if (e.pointerType === "touch") {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const { slotIndex } = get30MinuteSlotFromPosition(
@@ -565,7 +574,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
     setDragState({ day, startSlot: slotIndex, endSlot: slotIndex });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!(dragStartRef.current && dragState)) {
       return;
     }
@@ -605,7 +614,15 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
     setDragState({ ...dragState, startSlot, endSlot });
   };
 
-  const handleMouseUp = () => {
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Release pointer capture if it was set
+    if (
+      e.pointerType === "touch" &&
+      e.currentTarget.hasPointerCapture(e.pointerId)
+    ) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+
     if (!(dragState && dragStartRef.current)) {
       dragStartRef.current = null;
       setDragState(null);
@@ -674,9 +691,9 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
               }`}
               data-day-row={day}
               key={day}
-              onMouseLeave={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
+              onPointerLeave={handlePointerUp}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
               style={{
                 gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
               }}
@@ -702,8 +719,10 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                   <DroppableCell id={dropId} key={dropId}>
                     <div
                       aria-label={`${day} ${time} - Drag to create custom class`}
-                      className="relative border-border border-r bg-background last:border-r-0"
-                      onMouseDown={(e) => handleMouseDown(e, day, timeColIndex)}
+                      className="relative touch-none border-border border-r bg-background last:border-r-0"
+                      onPointerDown={(e) =>
+                        handlePointerDown(e, day, timeColIndex)
+                      }
                       style={{ height: `${rowHeight}px` }}
                     >
                       {firstColClasses.map((session) => {

@@ -126,7 +126,15 @@ export function CourseVaulContent() {
                 <span>Instructor</span>
               </div>
             </td>
-            <td className="py-1.5">{session.instructor}</td>
+            <td className="py-1.5">
+              <div className="flex flex-wrap gap-2">
+                {session.instructor.map((instructor) => (
+                  <Badge key={instructor} variant="outline">
+                    {instructor}
+                  </Badge>
+                ))}
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

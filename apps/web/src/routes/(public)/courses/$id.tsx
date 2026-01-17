@@ -35,9 +35,6 @@ function CourseDetailPage() {
         <p className="text-muted-foreground">
           Year {course.year}, Semester {course.semester}
         </p>
-        <p className="mt-1 text-muted-foreground text-sm">
-          Instructor: {course.instructor}
-        </p>
       </div>
 
       <Alert className="mb-4" variant="destructive">

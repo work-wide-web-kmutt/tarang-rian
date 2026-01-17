@@ -10,7 +10,7 @@ export interface SelectedClassSession {
   courseName: string;
   year: string;
   semester: GenElectiveOption["semester"];
-  instructor: string;
+  instructor: string[];
   group: string;
   day: GenElectiveOption["class"][number]["day"];
   start: string;
@@ -42,7 +42,7 @@ interface SelectedGenElectivesState {
       updates: {
         courseCode: string;
         courseName: string;
-        instructor: string;
+        instructor: string[];
         group: string;
         day: GenElectiveOption["class"][number]["day"];
         year: string;
@@ -73,7 +73,15 @@ const getStoredSelected = (): SelectedClassSession[] => {
       type: session.type ?? "fixed",
       courseCode: session.courseCode ?? "",
       courseName: session.courseName ?? "",
-      instructor: session.instructor ?? "",
+      instructor: (() => {
+        if (Array.isArray(session.instructor)) {
+          return session.instructor;
+        }
+        if (session.instructor) {
+          return [session.instructor];
+        }
+        return ["TBA"];
+      })(),
       group: session.group ?? "",
       year: session.year ?? "",
     }));
@@ -122,7 +130,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
           courseName: course.name,
           year: course.year,
           semester: course.semester,
-          instructor: course.instructor,
+          instructor: classSession.instructor,
           group: classSession.group,
           day: classSession.day,
           start: classSession.start,
@@ -160,7 +168,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
           courseName: "Unassigned Class",
           year: academicContext.currentYear.toString(),
           semester: academicContext.currentSemester,
-          instructor: "TBA",
+          instructor: ["TBA"],
           group: "TBA",
           day,
           start,
@@ -208,7 +216,7 @@ const selectedGenElectivesStoreCreator: StateCreator<
       updates: {
         courseCode: string;
         courseName: string;
-        instructor: string;
+        instructor: string[];
         group: string;
         day: GenElectiveOption["class"][number]["day"];
         year: string;
