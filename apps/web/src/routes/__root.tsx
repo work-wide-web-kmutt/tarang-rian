@@ -24,11 +24,35 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         name: "description",
         content: "tarang-rian is a web application",
       },
+      {
+        name: "apple-mobile-web-app-title",
+        content: "Tarang Rian",
+      },
     ],
     links: [
       {
         rel: "icon",
-        href: "/favicon.ico",
+        type: "image/png",
+        href: "/static/favicon/favicon-96x96.png",
+        sizes: "96x96",
+      },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "/static/favicon/favicon.svg",
+      },
+      {
+        rel: "shortcut icon",
+        href: "/static/favicon/favicon.ico",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/static/favicon/apple-touch-icon.png",
+      },
+      {
+        rel: "manifest",
+        href: "/static/favicon/site.webmanifest",
       },
     ],
   }),
