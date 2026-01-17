@@ -9,8 +9,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
 import { BreakpointIndicator } from "@/components/breakpoint-indicator";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
 
 // biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
 export interface RouterAppContext {}
@@ -49,12 +47,10 @@ function RootComponent() {
           storageKey="vite-ui-theme"
         >
           <div className="flex flex-col">
-            <Header />
             <main className="flex-1">
               <div className="min-h-screen">
                 <Outlet />
               </div>
-              <Footer />
             </main>
           </div>
         </ThemeProvider>
