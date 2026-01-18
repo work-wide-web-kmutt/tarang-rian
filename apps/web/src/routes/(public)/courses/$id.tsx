@@ -128,7 +128,7 @@ function CourseDetailPage() {
                               </div>
                             </td>
                             <td className="py-1.5">
-                              {t(`days.${cls.day.toLowerCase()}`)}
+                              {t(`days_time.${cls.day.toLowerCase()}`)}
                             </td>
                           </tr>
                           <tr>
