@@ -90,6 +90,25 @@
       "made_with": "Made with",
       "by": "by",
       "team_name": "World Wide Web KMUTT"
+    },
+    "export": {
+      "title": "Export Schedule",
+      "description": "Customize and download your schedule.",
+      "button": "Export",
+      "preview": "Preview",
+      "format": "Format",
+      "appearance": "Appearance",
+      "darkMode": "Dark Mode",
+      "background": "Background",
+      "padding": "Padding",
+      "theme": "Theme Color",
+      "settings": "Settings",
+      "language": "Language",
+      "scale": "Quality",
+      "download": "Download",
+      "processing": "Processing...",
+      "success": "Schedule exported successfully!",
+      "error": "Failed to export schedule"
     }
   }
 }
