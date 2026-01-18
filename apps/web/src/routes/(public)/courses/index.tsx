@@ -24,42 +24,53 @@ function AllCoursesPage() {
 
   return (
     <div className="container mx-auto px-12 pb-20">
-      <Alert className="mb-4" variant="destructive">
-        <AlertTriangle />
-        <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
-        <AlertDescription>
-          {t("courses.disclaimer_text1")}{" "}
-          <a
-            href="https://www.facebook.com/genKMUTTofficial"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {t("courses.disclaimer_text2")}
-          </a>{" "}
-          {t("courses.disclaimer_text3")}
-        </AlertDescription>
-      </Alert>
-      <div className="mb-4">
-        <h1 className="px-4 font-semibold text-3xl">{t("courses.courses")}</h1>
-      </div>
+      <div className="sticky top-0 z-10 border-x-2 border-b-2 border-dashed bg-background pb-4">
+        <div className="py-4">
+          <Alert className="border-destructive" variant="destructive">
+            <AlertTriangle />
+            <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
+            <AlertDescription>
+              {t("courses.disclaimer_text1")}{" "}
+              <a
+                href="https://www.facebook.com/genKMUTTofficial"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t("courses.disclaimer_text2")}
+              </a>{" "}
+              {t("courses.disclaimer_text3")}
+            </AlertDescription>
+          </Alert>
+        </div>
 
-      <div className="mb-4">
-        <CourseFilters filters={filters} setters={setters} />
+        <div className="mb-4">
+          <h1 className="px-4 font-semibold text-3xl">
+            {t("courses.courses")}
+          </h1>
+        </div>
+        <div>
+          <CourseFilters filters={filters} setters={setters} />
+        </div>
+        <p className="mt-4 px-4 text-muted-foreground text-sm">
+          {t("courses.show")} {filteredCourses.length} {t("courses.of")}{" "}
+          {totalCourses} {t("courses.courses")}
+        </p>
       </div>
 
       {filteredCourses.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center">
-          <p className="text-muted-foreground">{t("courses.no_result")}</p>
+        <div className="mt-4 rounded-lg border border-dashed p-8 text-center">
+          <p className="font-bold text-muted-foreground">
+            {t("courses.no_result")}
+          </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          <p className="px-4 text-muted-foreground text-sm">
-            {t("courses.show")} {filteredCourses.length} {t("courses.of")}{" "}
-            {totalCourses} {t("courses.courses")}
-          </p>
+        <div className="mt-4 space-y-4">
           {filteredCourses.map((course) => {
             return (
-              <section className="rounded-lg border p-4" key={course.slug}>
+              <section
+                className="rounded-lg border border-x-0 p-4"
+                key={course.slug}
+              >
                 <header className="mb-2 flex items-baseline justify-between gap-2">
                   <div>
                     <h2 className="font-medium text-lg">

@@ -73,7 +73,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
 
   return (
     <div className="flex flex-col md:flex-row">
-      <InputGroup>
+      <InputGroup className="border-r-0 border-l-0 md:border-r">
         <InputGroupInput
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t("filter.search")}
@@ -93,7 +93,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
           }}
           value={dayFilter}
         >
-          <SelectTrigger className="w-full md:w-35">
+          <SelectTrigger className="w-full border-l-0 md:w-35 md:border">
             <SelectValue>{getDayLabel(dayFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -114,7 +114,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
           }}
           value={timeSlotFilter}
         >
-          <SelectTrigger className="w-full md:w-45">
+          <SelectTrigger className="w-full border-r-0 md:w-35 md:border">
             <SelectValue>{getTimeSlotLabel(timeSlotFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -138,7 +138,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
           }}
           value={yearFilter}
         >
-          <SelectTrigger className="w-full md:w-30">
+          <SelectTrigger className="w-full border-l-0 md:w-35 md:border">
             <SelectValue>{getYearLabel(yearFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -159,7 +159,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
           }}
           value={semesterFilter}
         >
-          <SelectTrigger className="w-full md:w-40">
+          <SelectTrigger className="w-full border-r-0 md:w-35 md:border">
             <SelectValue>{getSemesterLabel(semesterFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
