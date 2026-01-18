@@ -44,7 +44,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/schedule': typeof publicScheduleRoute
   '/courses/$id': typeof publicCoursesIdRoute
-  '/courses': typeof publicCoursesIndexRoute
+  '/courses/': typeof publicCoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,7 +62,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/schedule' | '/courses/$id' | '/courses'
+  fullPaths: '/' | '/schedule' | '/courses/$id' | '/courses/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/schedule' | '/courses/$id' | '/courses'
   id:
@@ -105,7 +105,7 @@ declare module '@tanstack/react-router' {
     '/(public)/courses/': {
       id: '/(public)/courses/'
       path: '/courses'
-      fullPath: '/courses'
+      fullPath: '/courses/'
       preLoaderRoute: typeof publicCoursesIndexRouteImport
       parentRoute: typeof publicRouteRoute
     }

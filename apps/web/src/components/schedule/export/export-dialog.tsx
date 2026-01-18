@@ -96,7 +96,7 @@ export function ScheduleExportDialog() {
         {t("export.button", "Export")}
       </DialogTrigger>
 
-      <DialogContent className="flex max-h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:rounded-lg lg:max-w-[1200px]">
+      <DialogContent className="flex max-h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:rounded-lg lg:max-w-300">
         <DialogHeader className="shrink-0 border-b p-6 pb-2">
           <DialogTitle>{t("export.title", "Export Schedule")}</DialogTitle>
           <DialogDescription>
@@ -215,7 +215,7 @@ export function ScheduleExportDialog() {
                         <span className="font-medium text-muted-foreground text-xs">
                           Color
                         </span>
-                        <div className="group relative h-8 w-8 cursor-pointer overflow-hidden rounded-full border bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 shadow-sm ring-primary hover:ring-2">
+                        <div className="group relative h-8 w-8 cursor-pointer overflow-hidden rounded-full border bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 shadow-sm ring-primary hover:ring-2">
                           <Palette className="pointer-events-none absolute top-1/2 left-1/2 z-10 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-foreground" />
                           <input
                             className="absolute inset-0 -top-1/4 -left-1/4 h-[150%] w-[150%] cursor-pointer border-0 p-0 opacity-0"
@@ -264,7 +264,7 @@ export function ScheduleExportDialog() {
                       }}
                       value={padding}
                     >
-                      <SelectTrigger className="h-8 w-[110px]">
+                      <SelectTrigger className="h-8 w-27.5">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -289,7 +289,7 @@ export function ScheduleExportDialog() {
                       }}
                       value={scale}
                     >
-                      <SelectTrigger className="h-8 w-[110px]">
+                      <SelectTrigger className="h-8 w-27.5">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -327,7 +327,7 @@ export function ScheduleExportDialog() {
 
       {isExporting &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background">
+          <div className="fixed inset-0 z-9999 flex items-center justify-center bg-background">
             <div className="absolute top-10 mb-4 animate-pulse font-medium text-lg">
               Generating High-Quality Export...
             </div>
