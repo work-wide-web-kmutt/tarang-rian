@@ -24,6 +24,9 @@ STASHED=$?
 bun x ultracite fix
 FORMAT_EXIT_CODE=$?
 
+# Run ESLint canonical classes fix on staged files
+bun x eslint apps/web/src --fix || true
+
 # Restore working directory state
 if [ $STASHED -eq 0 ]; then
   # Re-stage the formatted files

@@ -30,7 +30,7 @@ function HomeComponent() {
         <div className="w-full border-border border-t-2 border-dashed">
           <div className="container mx-auto max-w-8xl px-12">
             {mounted && (
-              <div className="overflow-hidden px-[2px]">
+              <div className="overflow-hidden px-0.5">
                 {/* biome-ignore lint/correctness/useImageSize: responsive background image */}
                 <img
                   alt=""
