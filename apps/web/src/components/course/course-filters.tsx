@@ -29,9 +29,14 @@ const SEMESTERS = ["1", "2", "S"] as const;
 interface CourseFiltersProps {
   filters: CourseFiltersType;
   setters: CourseFilterSetters;
+  showYearSemester?: boolean;
 }
 
-export function CourseFilters({ filters, setters }: CourseFiltersProps) {
+export function CourseFilters({
+  filters,
+  setters,
+  showYearSemester = true,
+}: CourseFiltersProps) {
   const { t } = useTranslation();
 
   const {
@@ -129,49 +134,56 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
         </Select>
       </div>
 
-      <div className="flex w-full md:w-fit">
-        <Select
-          onValueChange={(value) => {
-            if (value !== null) {
-              setYearFilter(value);
-            }
-          }}
-          value={yearFilter}
-        >
-          <SelectTrigger className="w-full border-l-0 md:w-35 md:border">
-            <SelectValue>{getYearLabel(yearFilter)}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("filter.years.all")}</SelectItem>
-            {availableYears.map((year) => (
-              <SelectItem key={year} value={year}>
-                {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {showYearSemester &&
+        yearFilter !== undefined &&
+        semesterFilter !== undefined &&
+        availableYears !== undefined &&
+        setYearFilter !== undefined &&
+        setSemesterFilter !== undefined && (
+          <div className="flex w-full md:w-fit">
+            <Select
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setYearFilter(value);
+                }
+              }}
+              value={yearFilter}
+            >
+              <SelectTrigger className="w-full border-l-0 md:w-35 md:border">
+                <SelectValue>{getYearLabel(yearFilter)}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("filter.years.all")}</SelectItem>
+                {availableYears.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-        <Select
-          onValueChange={(value) => {
-            if (value !== null) {
-              setSemesterFilter(value);
-            }
-          }}
-          value={semesterFilter}
-        >
-          <SelectTrigger className="w-full border-r-0 md:w-35 md:border">
-            <SelectValue>{getSemesterLabel(semesterFilter)}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("filter.semesters.all")}</SelectItem>
-            {SEMESTERS.map((semester) => (
-              <SelectItem key={semester} value={semester}>
-                {t(`filter.semesters.${semester}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+            <Select
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setSemesterFilter(value);
+                }
+              }}
+              value={semesterFilter}
+            >
+              <SelectTrigger className="w-full border-r-0 md:w-35 md:border">
+                <SelectValue>{getSemesterLabel(semesterFilter)}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("filter.semesters.all")}</SelectItem>
+                {SEMESTERS.map((semester) => (
+                  <SelectItem key={semester} value={semester}>
+                    {t(`filter.semesters.${semester}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
     </div>
   );
 }
