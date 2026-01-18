@@ -63,6 +63,9 @@
       }
     },
     "schedule": {
+      "drag_to_create": "Drag to create custom class",
+      "unassigned_class": "Unassigned Class",
+      "unassigned_code": "Unassigned ({{number}})",
       "delete": "Delete",
       "remove_from_select": "Remove from select",
       "remove_from_schedule": "Remove from schedule?",

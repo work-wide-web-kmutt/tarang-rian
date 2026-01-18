@@ -734,7 +734,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                 return (
                   <DroppableCell id={dropId} key={dropId}>
                     <div
-                      aria-label={`${day} ${time} - Drag to create custom class`}
+                      aria-label={`${day} ${time} - ${t("schedule.drag_to_create")}`}
                       className="relative touch-none border-border border-r bg-background last:border-r-0"
                       onPointerDown={(e) =>
                         handlePointerDown(e, day, timeColIndex)
@@ -826,7 +826,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                                 }}
                               >
                                 <div className="font-medium text-primary-foreground">
-                                  Unassigned Class
+                                  {t("schedule.unassigned_class")}
                                 </div>
                                 <div
                                   className={`${subTextClass} text-primary-foreground/80`}
@@ -850,7 +850,8 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                             }}
                           >
                             <div className="font-medium text-primary-foreground">
-                              {activeSession?.courseCode || "Unassigned Class"}
+                              {activeSession?.courseCode ||
+                                t("schedule.unassigned_class")}
                             </div>
                             <div
                               className={`${subTextClass} text-primary-foreground/80`}

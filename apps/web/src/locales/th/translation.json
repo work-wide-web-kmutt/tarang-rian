@@ -63,6 +63,9 @@
       }
     },
     "schedule": {
+      "drag_to_create": "ลากเพื่อสร้างคาบเรียนเอง",
+      "unassigned_class": "คาบเรียนที่ยังไม่ได้กำหนด",
+      "unassigned_code": "ยังไม่ได้กำหนด ({{number}})",
       "delete": "ลบ",
       "remove_from_select": "ลบออกจากรายการ",
       "remove_from_schedule": "ลบออกจากตารางเรียน?",

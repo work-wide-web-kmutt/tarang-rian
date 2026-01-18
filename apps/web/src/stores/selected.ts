@@ -1,3 +1,4 @@
+import i18n from "i18next";
 import { v7 } from "uuid";
 import { create, type StateCreator } from "zustand";
 
@@ -168,8 +169,10 @@ const selectedGenElectivesStoreCreator: StateCreator<
         const academicContext = getAcademicContext();
         const newSession: SelectedClassSession = {
           id: v7(),
-          courseCode: `Unassigned (${state.selected.length + 1})`,
-          courseName: "Unassigned Class",
+          courseCode: i18n.t("translation:schedule.unassigned_code", {
+            number: state.selected.length + 1,
+          }),
+          courseName: i18n.t("translation:schedule.unassigned_class"),
           year: academicContext.currentYear.toString(),
           semester: academicContext.currentSemester,
           instructor: ["TBA"],
