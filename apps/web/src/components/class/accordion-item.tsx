@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { GenElectiveOption } from "@/course/schema";
 import { formatLabel, useSelection } from "@/hooks/use-selection";
+import { cn } from "@/lib/utils";
 
 interface AccordionItemProps {
   course: GenElectiveOption;
@@ -21,14 +22,22 @@ export function AccordionItem({ course, cls, index }: AccordionItemProps) {
   const { isSelected } = useSelection(course, cls);
 
   return (
-    <AccordionItemPrimitive
-      className={isSelected ? "border-primary" : undefined}
-      value={index}
-    >
-      <AccordionTrigger className="px-4">
+    <AccordionItemPrimitive value={index}>
+      <AccordionTrigger
+        className={cn(
+          "px-4 transition-all",
+          isSelected && "border border-primary",
+          "hover:cursor-pointer hover:no-underline"
+        )}
+      >
         {formatLabel(cls, t)}
       </AccordionTrigger>
-      <AccordionContent className="px-4">
+      <AccordionContent
+        className={cn(
+          "px-4 transition-all",
+          isSelected && "border border-primary border-t-0 pt-4"
+        )}
+      >
         <div className="space-y-4">
           <h2 className="font-bold text-xl">
             <span>{t("course.group")}</span> <span>{cls.group}</span>{" "}
