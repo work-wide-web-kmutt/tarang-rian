@@ -85,7 +85,7 @@ function AllCoursesPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="container mx-auto px-20 py-4">
+    <div className="container mx-auto px-12 pb-20">
       <Alert className="mb-4" variant="destructive">
         <AlertTriangle />
         <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
@@ -102,7 +102,7 @@ function AllCoursesPage() {
         </AlertDescription>
       </Alert>
       <div className="mb-4">
-        <h1 className="font-semibold text-3xl">{t("courses.courses")}</h1>
+        <h1 className="px-4 font-semibold text-3xl">{t("courses.courses")}</h1>
       </div>
 
       <CourseFilters
@@ -120,7 +120,7 @@ function AllCoursesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-muted-foreground text-sm">
+          <p className="px-4 text-muted-foreground text-sm">
             {t("courses.show")} {filteredCourses.length} {t("courses.of")}{" "}
             {sortedCourses.length} {t("courses.courses")}
           </p>
