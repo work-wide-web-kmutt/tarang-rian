@@ -85,6 +85,11 @@
       "title": "Settings",
       "language": "Language",
       "select_language": "Select Language"
+    },
+    "footer": {
+      "made_with": "Made with",
+      "by": "by",
+      "team_name": "World Wide Web KMUTT"
     }
   }
 }

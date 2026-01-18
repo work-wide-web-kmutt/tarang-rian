@@ -85,6 +85,11 @@
       "title": "ตั้งค่า",
       "language": "ภาษา",
       "select_language": "เลือกภาษา"
+    },
+    "footer": {
+      "made_with": "สร้างด้วย",
+      "by": "โดย",
+      "team_name": "เวิลด์ ไวด์ เว็บ KMUTT."
     }
   }
 }
