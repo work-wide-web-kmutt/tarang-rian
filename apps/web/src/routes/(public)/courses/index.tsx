@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
+import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import { Button } from "@/components/ui/button";
 import { useCourseFilters } from "@/hooks/use-course-filters";
 import { ClassSelectButton } from "@/routes/(public)/courses/_components/class-select-button";
 import { ClassSelectDropdown } from "@/routes/(public)/courses/_components/class-select-dropdown";
-import { DisclaimerAlert } from "@/routes/(public)/courses/_components/disclaimer-alert";
 
 export const Route = createFileRoute("/(public)/courses/")({
   component: AllCoursesPage,

@@ -3,6 +3,7 @@ import { allCourses, type Course } from "content-collections";
 import { ClockIcon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
+import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import {
   Accordion,
   AccordionContent,
@@ -12,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { GenElectiveOption } from "@/course/schema";
 import { ClassSelectButton } from "@/routes/(public)/courses/_components/class-select-button";
-import { DisclaimerAlert } from "@/routes/(public)/courses/_components/disclaimer-alert";
 import { formatClassLabel } from "@/routes/(public)/courses/_components/use-class-selection";
 
 export const Route = createFileRoute("/(public)/courses/$id")({
@@ -33,7 +33,7 @@ function CourseDetailPage() {
   return (
     <div className="container mx-auto px-12 pb-20">
       <div className="relative border-dashed pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
-        <div className="py-4">
+        <div className="p-4">
           <DisclaimerAlert />
         </div>
         <div className="mb-4">

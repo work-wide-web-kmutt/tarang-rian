@@ -1,12 +1,20 @@
 import { AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
-export function DisclaimerAlert() {
+interface DisclaimerAlertProps {
+  className?: string;
+}
+
+export function DisclaimerAlert({ className }: DisclaimerAlertProps) {
   const { t } = useTranslation();
 
   return (
-    <Alert className="border-destructive" variant="destructive">
+    <Alert
+      className={cn("border-destructive", className)}
+      variant="destructive"
+    >
       <AlertTriangle />
       <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
       <AlertDescription>
