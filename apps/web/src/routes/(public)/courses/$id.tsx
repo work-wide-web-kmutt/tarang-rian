@@ -3,8 +3,13 @@ import { allCourses, type Course } from "content-collections";
 import { ClockIcon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 import type { GenElectiveOption } from "@/course/schema";
 import { ClassSelectButton } from "@/routes/(public)/courses/_components/class-select-button";
 import { DisclaimerAlert } from "@/routes/(public)/courses/_components/disclaimer-alert";
@@ -55,82 +60,71 @@ function CourseDetailPage() {
           <header className="mb-2">
             <h2>{t("courses.group_section_info")}</h2>
           </header>
-          <Tabs
-            className="mt-4 border"
-            defaultValue={course.class[0] ? "class-0" : undefined}
-          >
-            <div className="border-b">
-              <TabsList variant="underline">
-                {course.class.map(
-                  (cls: GenElectiveOption["class"][number], index: number) => (
-                    <TabsTab
-                      key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                      value={`class-${index}`}
-                    >
-                      {formatClassLabel(cls, t)}
-                    </TabsTab>
-                  )
-                )}
-              </TabsList>
-            </div>
+          <Accordion className="mt-4 border" defaultValue={[0]}>
             {course.class.map(
               (cls: GenElectiveOption["class"][number], index: number) => (
-                <TabsPanel
-                  key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}-panel`}
-                  value={`class-${index}`}
+                <AccordionItem
+                  key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                  value={index}
                 >
-                  <div className="space-y-4 p-4">
-                    <h2 className="font-bold text-xl">
-                      <span>{t("course.group")}</span> <span>{cls.group}</span>{" "}
-                      <span>{t("days_time.day")}</span>
-                      {t(`days_time.${cls.day.toLowerCase()}`)}
-                    </h2>
-                    <table className="table-fixed text-sm">
-                      <tbody>
-                        <tr>
-                          <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <ClockIcon className="h-3.5 w-3.5" />
-                              <span>{t("days_time.time")}</span>
-                            </div>
-                          </td>
-                          <td className="py-1.5">
-                            {cls.start} - {cls.end}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <User className="h-3.5 w-3.5" />
-                              <span>{t("course.instructor")}</span>
-                            </div>
-                          </td>
-                          <td className="py-1.5">
-                            <div className="flex flex-wrap gap-2">
-                              {cls.instructor.map((instructor) => (
-                                <Badge key={instructor} variant="outline">
-                                  {instructor}
-                                </Badge>
-                              ))}
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div className="flex justify-end">
-                      <ClassSelectButton
-                        cls={cls}
-                        course={course}
-                        deselectLabel={t("courses.deselect_class")}
-                        selectLabel={t("courses.select_class")}
-                        showSelectPrefix={false}
-                      />
+                  <AccordionTrigger className="px-4">
+                    {formatClassLabel(cls, t)}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4">
+                    <div className="space-y-4">
+                      <h2 className="font-bold text-xl">
+                        <span>{t("course.group")}</span>{" "}
+                        <span>{cls.group}</span>{" "}
+                        <span>{t("days_time.day")}</span>
+                        {t(`days_time.${cls.day.toLowerCase()}`)}
+                      </h2>
+                      <table className="table-fixed text-sm">
+                        <tbody>
+                          <tr>
+                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <ClockIcon className="h-3.5 w-3.5" />
+                                <span>{t("days_time.time")}</span>
+                              </div>
+                            </td>
+                            <td className="py-1.5">
+                              {cls.start} - {cls.end}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <User className="h-3.5 w-3.5" />
+                                <span>{t("course.instructor")}</span>
+                              </div>
+                            </td>
+                            <td className="py-1.5">
+                              <div className="flex flex-wrap gap-2">
+                                {cls.instructor.map((instructor) => (
+                                  <Badge key={instructor} variant="outline">
+                                    {instructor}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div className="flex justify-end">
+                        <ClassSelectButton
+                          cls={cls}
+                          course={course}
+                          deselectLabel={t("courses.deselect_class")}
+                          selectLabel={t("courses.select_class")}
+                          showSelectPrefix={false}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </TabsPanel>
+                  </AccordionContent>
+                </AccordionItem>
               )
             )}
-          </Tabs>
+          </Accordion>
         </section>
       </div>
     </div>
