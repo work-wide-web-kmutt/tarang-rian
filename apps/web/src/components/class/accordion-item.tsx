@@ -15,9 +15,15 @@ interface AccordionItemProps {
   course: GenElectiveOption;
   cls: GenElectiveOption["class"][number];
   index: number;
+  openIndexs?: number[];
 }
 
-export function AccordionItem({ course, cls, index }: AccordionItemProps) {
+export function AccordionItem({
+  course,
+  cls,
+  index,
+  openIndexs,
+}: AccordionItemProps) {
   const { t, i18n } = useTranslation();
   const { isSelected } = useSelection(course, cls);
 
@@ -27,6 +33,7 @@ export function AccordionItem({ course, cls, index }: AccordionItemProps) {
         className={cn(
           "px-4 transition-all",
           isSelected && "border border-primary",
+          isSelected && openIndexs?.includes(index) && "border-b-0",
           "hover:cursor-pointer hover:no-underline"
         )}
       >
@@ -35,7 +42,7 @@ export function AccordionItem({ course, cls, index }: AccordionItemProps) {
       <AccordionContent
         className={cn(
           "px-4 transition-all",
-          isSelected && "border border-primary border-t-0 pt-4"
+          isSelected && "border border-primary border-t-0"
         )}
       >
         <div className="space-y-4">

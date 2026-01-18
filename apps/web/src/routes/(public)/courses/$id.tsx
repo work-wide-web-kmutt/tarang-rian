@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
 import { AccordionItem } from "@/components/class/accordion-item";
@@ -23,6 +24,8 @@ export const Route = createFileRoute("/(public)/courses/$id")({
 function CourseDetailPage() {
   const { course } = Route.useLoaderData();
   const { t } = useTranslation();
+
+  const [openItems, setOpenItems] = useState<number[]>([0]);
 
   return (
     <div className="container mx-auto px-12 pb-20">
@@ -62,7 +65,11 @@ function CourseDetailPage() {
               {t("courses.group_section_info")}
             </h2>
           </header>
-          <Accordion className="border" defaultValue={[0]}>
+          <Accordion
+            className="border"
+            onValueChange={setOpenItems}
+            value={openItems}
+          >
             {course.class.map(
               (cls: GenElectiveOption["class"][number], index: number) => (
                 <AccordionItem
@@ -70,6 +77,7 @@ function CourseDetailPage() {
                   course={course}
                   index={index}
                   key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                  openIndexs={openItems}
                 />
               )
             )}
