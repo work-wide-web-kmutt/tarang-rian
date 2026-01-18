@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, CheckCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -116,6 +116,7 @@ function AllCoursesPage() {
                           }}
                           variant={isClassSelected ? "secondary" : "outline"}
                         >
+                          {isClassSelected && <CheckCircleIcon />}
                           {isClassSelected
                             ? classLabel
                             : `${t("courses.select_class")} ${classLabel}`}

@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
-import { AlertTriangle, ClockIcon, User } from "lucide-react";
+import { AlertTriangle, CheckCircleIcon, ClockIcon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -161,6 +161,7 @@ function CourseDetailPage() {
                           }}
                           variant={isClassSelected ? "secondary" : "outline"}
                         >
+                          {isClassSelected && <CheckCircleIcon />}
                           {isClassSelected
                             ? t("courses.deselect_class")
                             : t("courses.select_class")}
