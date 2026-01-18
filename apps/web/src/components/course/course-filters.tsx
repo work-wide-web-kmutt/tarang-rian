@@ -71,7 +71,7 @@ export function CourseFilters({
           }}
           value={dayFilter}
         >
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-35">
             <SelectValue>{getDayLabel(dayFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -92,7 +92,7 @@ export function CourseFilters({
           }}
           value={timeSlotFilter}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue>{getTimeSlotLabel(timeSlotFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
