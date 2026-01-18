@@ -2,9 +2,9 @@ import { CheckCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
-import { useClassSelection } from "@/routes/(public)/courses/_components/use-class-selection";
+import { useSelection } from "@/hooks/use-selection";
 
-interface ClassSelectButtonProps {
+interface SelectButtonProps {
   course: GenElectiveOption;
   cls: GenElectiveOption["class"][number];
   showSelectPrefix?: boolean;
@@ -12,15 +12,15 @@ interface ClassSelectButtonProps {
   deselectLabel?: string;
 }
 
-export function ClassSelectButton({
+export function SelectButton({
   course,
   cls,
   showSelectPrefix = true,
   selectLabel,
   deselectLabel,
-}: ClassSelectButtonProps) {
+}: SelectButtonProps) {
   const { t } = useTranslation();
-  const { isSelected, label, toggle } = useClassSelection(course, cls);
+  const { isSelected, label, toggle } = useSelection(course, cls);
 
   const getButtonText = () => {
     if (isSelected) {

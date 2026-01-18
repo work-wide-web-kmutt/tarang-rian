@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { SelectButton } from "@/components/class/select-button";
+import { SelectDropdown } from "@/components/class/select-dropdown";
 import { CourseFilters } from "@/components/course/course-filters";
 import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import { Button } from "@/components/ui/button";
 import { useCourseFilters } from "@/hooks/use-course-filters";
-import { ClassSelectButton } from "@/routes/(public)/courses/_components/class-select-button";
-import { ClassSelectDropdown } from "@/routes/(public)/courses/_components/class-select-dropdown";
 
 export const Route = createFileRoute("/(public)/courses/")({
   component: AllCoursesPage,
@@ -64,9 +64,9 @@ function AllCoursesPage() {
 
               <div className="mt-4 flex justify-end gap-2">
                 {course.class.length === 1 ? (
-                  <ClassSelectButton cls={course.class[0]} course={course} />
+                  <SelectButton cls={course.class[0]} course={course} />
                 ) : (
-                  <ClassSelectDropdown course={course} />
+                  <SelectDropdown course={course} />
                 )}
                 <Link params={{ id: course.slug }} to="/courses/$id">
                   <Button variant="outline">{t("courses.view")}</Button>

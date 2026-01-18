@@ -7,17 +7,17 @@ import {
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
 
-export interface ClassSelectionResult {
+export interface SelectionResult {
   isSelected: boolean;
   selectedSession: SelectedClassSession | undefined;
   label: string;
   toggle: () => void;
 }
 
-export function useClassSelection(
+export function useSelection(
   course: GenElectiveOption,
   cls: GenElectiveOption["class"][number]
-): ClassSelectionResult {
+): SelectionResult {
   const { t } = useTranslation();
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
@@ -55,7 +55,7 @@ export function useClassSelection(
   };
 }
 
-export function formatClassLabel(
+export function formatLabel(
   cls: GenElectiveOption["class"][number],
   t: (key: string) => string
 ): string {

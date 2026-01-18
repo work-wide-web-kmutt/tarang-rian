@@ -7,17 +7,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { GenElectiveOption } from "@/course/schema";
-import { formatClassLabel } from "@/routes/(public)/courses/_components/use-class-selection";
+import { formatLabel } from "@/hooks/use-selection";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
 
-interface ClassSelectDropdownProps {
+interface SelectDropdownProps {
   course: GenElectiveOption;
 }
 
-export function ClassSelectDropdown({ course }: ClassSelectDropdownProps) {
+export function SelectDropdown({ course }: SelectDropdownProps) {
   const { t } = useTranslation();
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
@@ -41,7 +41,7 @@ export function ClassSelectDropdown({ course }: ClassSelectDropdownProps) {
     }
     if (selectedCount === 1) {
       const cls = selectedClasses[0];
-      return formatClassLabel(cls, t);
+      return formatLabel(cls, t);
     }
     return t("courses.selected_count", { count: selectedCount });
   };
@@ -75,7 +75,7 @@ export function ClassSelectDropdown({ course }: ClassSelectDropdownProps) {
                 }
               }}
             >
-              {formatClassLabel(cls, t)}
+              {formatLabel(cls, t)}
             </DropdownMenuCheckboxItem>
           );
         })}
