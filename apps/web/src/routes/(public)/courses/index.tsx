@@ -43,7 +43,9 @@ function AllCoursesPage() {
         <h1 className="px-4 font-semibold text-3xl">{t("courses.courses")}</h1>
       </div>
 
-      <CourseFilters filters={filters} setters={setters} />
+      <div className="mb-4">
+        <CourseFilters filters={filters} setters={setters} />
+      </div>
 
       {filteredCourses.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
@@ -57,10 +59,7 @@ function AllCoursesPage() {
           </p>
           {filteredCourses.map((course) => {
             return (
-              <section
-                className="rounded-lg border p-4 shadow-sm"
-                key={course.slug}
-              >
+              <section className="rounded-lg border p-4" key={course.slug}>
                 <header className="mb-2 flex items-baseline justify-between gap-2">
                   <div>
                     <h2 className="font-medium text-lg">
