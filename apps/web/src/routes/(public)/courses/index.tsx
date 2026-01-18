@@ -1,29 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, CheckCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { GenElectiveOption } from "@/course/schema";
 import { useCourseFilters } from "@/hooks/use-course-filters";
-import {
-  useSelectedGenElectives,
-  useSelectedGenElectivesActions,
-} from "@/stores/selected";
+import { ClassSelectButton } from "@/routes/(public)/courses/_components/class-select-button";
+import { ClassSelectDropdown } from "@/routes/(public)/courses/_components/class-select-dropdown";
+import { DisclaimerAlert } from "@/routes/(public)/courses/_components/disclaimer-alert";
 
 export const Route = createFileRoute("/(public)/courses/")({
   component: AllCoursesPage,
 });
 
 function AllCoursesPage() {
-  const selected = useSelectedGenElectives();
-  const { add, remove } = useSelectedGenElectivesActions();
   const { filters, setters, filteredCourses, totalCourses } =
     useCourseFilters();
   const { t } = useTranslation();
@@ -32,21 +20,7 @@ function AllCoursesPage() {
     <div className="container mx-auto px-12 pb-20">
       <div className="sticky top-0 z-10 border-x-2 border-dashed bg-background pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <div className="py-4">
-          <Alert className="border-destructive" variant="destructive">
-            <AlertTriangle />
-            <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
-            <AlertDescription>
-              {t("courses.disclaimer_text1")}{" "}
-              <a
-                href="https://www.facebook.com/genKMUTTofficial"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {t("courses.disclaimer_text2")}
-              </a>{" "}
-              {t("courses.disclaimer_text3")}
-            </AlertDescription>
-          </Alert>
+          <DisclaimerAlert />
         </div>
 
         <div className="mb-4">
@@ -71,141 +45,35 @@ function AllCoursesPage() {
         </div>
       ) : (
         <div className="mt-4 space-y-4">
-          {filteredCourses.map((course) => {
-            return (
-              <section
-                className="rounded-lg border border-x-0 p-4"
-                key={course.slug}
-              >
-                <header className="mb-2 flex items-baseline justify-between gap-2">
-                  <div>
-                    <h2 className="font-medium text-lg">
-                      {course.code} — {course.name}
-                    </h2>
-                    <p className="text-muted-foreground text-sm">
-                      {t("academic.year")} {course.year},{" "}
-                      {t("academic.semester")} {course.semester}
-                    </p>
-                  </div>
-                </header>
-
-                <div className="mt-4 flex justify-end gap-2">
-                  {course.class.length === 1 ? (
-                    (() => {
-                      const cls = course.class[0];
-                      const selectedSession = selected.find(
-                        (s) =>
-                          s.courseCode === course.code &&
-                          s.group === cls.group &&
-                          s.day === cls.day &&
-                          s.start === cls.start &&
-                          s.end === cls.end
-                      );
-                      const isClassSelected = selectedSession !== undefined;
-
-                      const classLabel = `${t(`days_short.${cls.day.toLowerCase()}`)} ${cls.start} - ${cls.end}`;
-
-                      return (
-                        <Button
-                          onClick={() => {
-                            if (isClassSelected && selectedSession) {
-                              remove(selectedSession.id);
-                            } else {
-                              add(course, cls);
-                            }
-                          }}
-                          variant={isClassSelected ? "secondary" : "outline"}
-                        >
-                          {isClassSelected && <CheckCircleIcon />}
-                          {isClassSelected
-                            ? classLabel
-                            : `${t("courses.select_class")} ${classLabel}`}
-                        </Button>
-                      );
-                    })()
-                  ) : (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={(props) => {
-                          const selectedClasses = course.class.filter(
-                            (cls: GenElectiveOption["class"][number]) =>
-                              selected.some(
-                                (s) =>
-                                  s.courseCode === course.code &&
-                                  s.group === cls.group &&
-                                  s.day === cls.day &&
-                                  s.start === cls.start &&
-                                  s.end === cls.end
-                              )
-                          );
-                          const selectedCount = selectedClasses.length;
-
-                          let buttonLabel: string;
-                          if (selectedCount === 0) {
-                            buttonLabel = t("courses.select_class");
-                          } else if (selectedCount === 1) {
-                            const cls = selectedClasses[0];
-                            buttonLabel = `${t(`days_short.${cls.day.toLowerCase()}`)} ${cls.start} - ${cls.end}`;
-                          } else {
-                            buttonLabel = t("courses.selected_count", {
-                              count: selectedCount,
-                            });
-                          }
-
-                          return (
-                            <Button
-                              {...props}
-                              variant={
-                                selectedCount > 0 ? "secondary" : "outline"
-                              }
-                            >
-                              {buttonLabel}
-                            </Button>
-                          );
-                        }}
-                      />
-                      <DropdownMenuContent>
-                        {course.class.map(
-                          (cls: GenElectiveOption["class"][number]) => {
-                            const selectedSession = selected.find(
-                              (s) =>
-                                s.courseCode === course.code &&
-                                s.group === cls.group &&
-                                s.day === cls.day &&
-                                s.start === cls.start &&
-                                s.end === cls.end
-                            );
-                            const isClassSelected =
-                              selectedSession !== undefined;
-
-                            return (
-                              <DropdownMenuCheckboxItem
-                                checked={isClassSelected}
-                                key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                                onCheckedChange={() => {
-                                  if (isClassSelected && selectedSession) {
-                                    remove(selectedSession.id);
-                                  } else {
-                                    add(course, cls);
-                                  }
-                                }}
-                              >
-                                {t(`days_short.${cls.day.toLowerCase()}`)}{" "}
-                                {cls.start} - {cls.end}
-                              </DropdownMenuCheckboxItem>
-                            );
-                          }
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                  <Link params={{ id: course.slug }} to="/courses/$id">
-                    <Button variant="outline">{t("courses.view")}</Button>
-                  </Link>
+          {filteredCourses.map((course) => (
+            <section
+              className="rounded-lg border border-x-0 p-4"
+              key={course.slug}
+            >
+              <header className="mb-2 flex items-baseline justify-between gap-2">
+                <div>
+                  <h2 className="font-medium text-lg">
+                    {course.code} — {course.name}
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
+                    {t("academic.year")} {course.year}, {t("academic.semester")}{" "}
+                    {course.semester}
+                  </p>
                 </div>
-              </section>
-            );
-          })}
+              </header>
+
+              <div className="mt-4 flex justify-end gap-2">
+                {course.class.length === 1 ? (
+                  <ClassSelectButton cls={course.class[0]} course={course} />
+                ) : (
+                  <ClassSelectDropdown course={course} />
+                )}
+                <Link params={{ id: course.slug }} to="/courses/$id">
+                  <Button variant="outline">{t("courses.view")}</Button>
+                </Link>
+              </div>
+            </section>
+          ))}
         </div>
       )}
     </div>
