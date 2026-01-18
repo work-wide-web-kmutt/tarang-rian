@@ -4,6 +4,12 @@ import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { GenElectiveOption } from "@/course/schema";
 import { useCourseFilters } from "@/hooks/use-course-filters";
 import {
@@ -83,44 +89,115 @@ function AllCoursesPage() {
                   </div>
                 </header>
 
-                <div className="mt-2">
-                  <p className="font-medium text-sm">{t("academic.classes")}</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {course.class.map(
-                      (cls: GenElectiveOption["class"][number]) => {
-                        const selectedSession = selected.find(
-                          (s) =>
-                            s.courseCode === course.code &&
-                            s.group === cls.group &&
-                            s.day === cls.day &&
-                            s.start === cls.start &&
-                            s.end === cls.end
-                        );
-                        const isClassSelected = selectedSession !== undefined;
-
-                        return (
-                          <Button
-                            key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                            onClick={() => {
-                              if (isClassSelected && selectedSession) {
-                                remove(selectedSession.id);
-                              } else {
-                                add(course, cls);
-                              }
-                            }}
-                            size="sm"
-                            variant={isClassSelected ? "secondary" : "outline"}
-                          >
-                            {t(`days_short.${cls.day.toLowerCase()}`)}{" "}
-                            {cls.start} - {cls.end}
-                          </Button>
-                        );
-                      }
-                    )}
-                  </div>
-                </div>
-
                 <div className="mt-4 flex justify-end gap-2">
+                  {course.class.length === 1 ? (
+                    (() => {
+                      const cls = course.class[0];
+                      const selectedSession = selected.find(
+                        (s) =>
+                          s.courseCode === course.code &&
+                          s.group === cls.group &&
+                          s.day === cls.day &&
+                          s.start === cls.start &&
+                          s.end === cls.end
+                      );
+                      const isClassSelected = selectedSession !== undefined;
+
+                      const classLabel = `${t(`days_short.${cls.day.toLowerCase()}`)} ${cls.start} - ${cls.end}`;
+
+                      return (
+                        <Button
+                          onClick={() => {
+                            if (isClassSelected && selectedSession) {
+                              remove(selectedSession.id);
+                            } else {
+                              add(course, cls);
+                            }
+                          }}
+                          variant={isClassSelected ? "secondary" : "outline"}
+                        >
+                          {isClassSelected
+                            ? classLabel
+                            : `${t("courses.select_class")} ${classLabel}`}
+                        </Button>
+                      );
+                    })()
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={(props) => {
+                          const selectedClasses = course.class.filter(
+                            (cls: GenElectiveOption["class"][number]) =>
+                              selected.some(
+                                (s) =>
+                                  s.courseCode === course.code &&
+                                  s.group === cls.group &&
+                                  s.day === cls.day &&
+                                  s.start === cls.start &&
+                                  s.end === cls.end
+                              )
+                          );
+                          const selectedCount = selectedClasses.length;
+
+                          let buttonLabel: string;
+                          if (selectedCount === 0) {
+                            buttonLabel = t("courses.select_class");
+                          } else if (selectedCount === 1) {
+                            const cls = selectedClasses[0];
+                            buttonLabel = `${t(`days_short.${cls.day.toLowerCase()}`)} ${cls.start} - ${cls.end}`;
+                          } else {
+                            buttonLabel = t("courses.selected_count", {
+                              count: selectedCount,
+                            });
+                          }
+
+                          return (
+                            <Button
+                              {...props}
+                              variant={
+                                selectedCount > 0 ? "secondary" : "outline"
+                              }
+                            >
+                              {buttonLabel}
+                            </Button>
+                          );
+                        }}
+                      />
+                      <DropdownMenuContent>
+                        {course.class.map(
+                          (cls: GenElectiveOption["class"][number]) => {
+                            const selectedSession = selected.find(
+                              (s) =>
+                                s.courseCode === course.code &&
+                                s.group === cls.group &&
+                                s.day === cls.day &&
+                                s.start === cls.start &&
+                                s.end === cls.end
+                            );
+                            const isClassSelected =
+                              selectedSession !== undefined;
+
+                            return (
+                              <DropdownMenuCheckboxItem
+                                checked={isClassSelected}
+                                key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                                onCheckedChange={() => {
+                                  if (isClassSelected && selectedSession) {
+                                    remove(selectedSession.id);
+                                  } else {
+                                    add(course, cls);
+                                  }
+                                }}
+                              >
+                                {t(`days_short.${cls.day.toLowerCase()}`)}{" "}
+                                {cls.start} - {cls.end}
+                              </DropdownMenuCheckboxItem>
+                            );
+                          }
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                   <Link params={{ id: course.slug }} to="/courses/$id">
                     <Button variant="outline">{t("courses.view")}</Button>
                   </Link>

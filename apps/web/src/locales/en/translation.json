@@ -75,14 +75,16 @@
       "courses": "Courses",
       "show": "Showing",
       "of": "of",
-      "view": "view",
+      "view": "Learn more",
       "no_result": "No courses found matching your filters.",
       "disclaimer_head": "Course Information Disclaimer",
       "disclaimer_text1": "Course information displayed here may not be accurate. Always verify details by checking",
       "disclaimer_text2": "the official Facebook page",
       "disclaimer_text3": "and official course documents.",
       "course_info": "Course Information",
-      "no_course_info": "No course information available"
+      "no_course_info": "No course information available",
+      "select_class": "Select class",
+      "selected_count": "{{count}} selected"
     },
     "course": {
       "course_code": "Course Code",
