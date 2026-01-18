@@ -105,7 +105,8 @@ function DroppableCell({
 }
 
 export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
-  const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE[size];
+  const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
+    SCHEDULE_SIZE[size];
   const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
   const { t } = useTranslation();
 
@@ -759,6 +760,8 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                             onResizeStart={handleResizeStart}
                             openClassKey={openClassKey}
                             session={session}
+                            subTextClass={subTextClass}
+                            textClass={textClass}
                           />
                         ) : (
                           <SessionBlock
@@ -767,6 +770,8 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                             onOpenChange={setOpenClassKey}
                             openClassKey={openClassKey}
                             session={session}
+                            subTextClass={subTextClass}
+                            textClass={textClass}
                           />
                         );
                       })}
@@ -775,7 +780,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                         resizePreview.session.day === day &&
                         timeColIndex === resizePreview.startCol && (
                           <div
-                            className="absolute inset-y-0 z-30 m-0.5 cursor-ew-resize select-none rounded border border-primary bg-primary p-1.5 text-xs"
+                            className={`absolute inset-y-0 z-30 m-0.5 cursor-ew-resize select-none rounded border border-primary bg-primary p-1.5 ${textClass}`}
                             style={{
                               left: `${resizePreview.startOffset * 100}%`,
                               width: `calc(${resizePreview.span * 100}% - 0.25rem)`,
@@ -787,7 +792,9 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                                 {resizePreview.session.courseName}
                               </p>
                             </div>
-                            <div className="text-[10px] text-primary-foreground/80">
+                            <div
+                              className={`${subTextClass} text-primary-foreground/80`}
+                            >
                               {resizePreview.start} - {resizePreview.end}
                             </div>
                           </div>
@@ -812,7 +819,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                           if (timeColIndex === startCol) {
                             return (
                               <div
-                                className="absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                                className={`absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 ${textClass}`}
                                 style={{
                                   left: `${startOffset * 100}%`,
                                   width: `calc(${span * 100}% - 0.25rem)`,
@@ -821,7 +828,9 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                                 <div className="font-medium text-primary-foreground">
                                   Unassigned Class
                                 </div>
-                                <div className="text-[10px] text-primary-foreground/80">
+                                <div
+                                  className={`${subTextClass} text-primary-foreground/80`}
+                                >
                                   {formatTimeRange(startTime, endTime)}
                                 </div>
                               </div>
@@ -834,7 +843,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                         snappedPreview.day === day &&
                         timeColIndex === snappedPreview.startCol && (
                           <div
-                            className="absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                            className={`absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 ${textClass}`}
                             style={{
                               left: `${snappedPreview.startOffset * 100}%`,
                               width: `calc(${snappedPreview.span * 100}% - 0.25rem)`,
@@ -843,7 +852,9 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                             <div className="font-medium text-primary-foreground">
                               {activeSession?.courseCode || "Unassigned Class"}
                             </div>
-                            <div className="text-[10px] text-primary-foreground/80">
+                            <div
+                              className={`${subTextClass} text-primary-foreground/80`}
+                            >
                               {formatTimeRange(
                                 snappedPreview.start,
                                 snappedPreview.end
@@ -861,11 +872,13 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
       </div>
       <DragOverlay dropAnimation={null}>
         {activeSession ? (
-          <div className="m-0.5 rounded border border-primary bg-primary/80 p-1.5 text-xs">
+          <div
+            className={`m-0.5 rounded border border-primary bg-primary/80 p-1.5 ${textClass}`}
+          >
             <div className="font-medium text-primary-foreground">
               {activeSession.courseCode}
             </div>
-            <div className="text-[10px] text-primary-foreground/80">
+            <div className={`${subTextClass} text-primary-foreground/80`}>
               {activeSession.start}–{activeSession.end}
             </div>
           </div>

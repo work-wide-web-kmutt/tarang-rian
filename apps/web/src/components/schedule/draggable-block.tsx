@@ -14,6 +14,8 @@ interface DraggableBlockProps {
     edge: "left" | "right"
   ) => void;
   isResizing?: boolean;
+  textClass?: string;
+  subTextClass?: string;
 }
 
 export function DraggableBlock({
@@ -23,6 +25,8 @@ export function DraggableBlock({
   onOpenChange,
   onResizeStart,
   isResizing,
+  textClass,
+  subTextClass,
 }: DraggableBlockProps) {
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
@@ -104,6 +108,8 @@ export function DraggableBlock({
         onOpenChange={onOpenChange}
         openClassKey={openClassKey}
         session={session}
+        subTextClass={subTextClass}
+        textClass={textClass}
       />
     </div>
   );

@@ -37,6 +37,8 @@ interface SessionBlockProps {
   onOpenChange: (classKey: string | null) => void;
   extraLeftPadding?: string;
   isCustom?: boolean;
+  textClass?: string;
+  subTextClass?: string;
 }
 
 export function SessionBlock({
@@ -45,6 +47,8 @@ export function SessionBlock({
   openClassKey,
   onOpenChange,
   extraLeftPadding,
+  textClass = "text-xs",
+  subTextClass = "text-[10px]",
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
@@ -71,7 +75,7 @@ export function SessionBlock({
     <ContextMenu>
       <ContextMenuTrigger>
         <CourseVaul
-          className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 text-xs ${
+          className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 ${textClass} ${
             hasOverlapping
               ? "border-destructive bg-destructive/40"
               : "border-primary bg-primary"
@@ -102,7 +106,7 @@ export function SessionBlock({
               <p className="font-bold">{session.courseName}</p>
             </div>
             <div
-              className={`text-[10px] ${
+              className={`${subTextClass} ${
                 hasOverlapping
                   ? "text-destructive-foreground/80"
                   : "text-primary-foreground/80"

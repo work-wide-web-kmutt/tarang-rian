@@ -8,10 +8,46 @@ export const SLOT_DURATION_MINUTES = 30;
 export const MIN_DRAG_DURATION = 30;
 export const ACTIVATION_DISTANCE = 8;
 export const SCHEDULE_SIZE = {
-  sm: { cellSize: 60, dayColumnWidth: 40, rowHeight: 60 },
-  md: { cellSize: 100, dayColumnWidth: 56, rowHeight: 80 }, // Default
-  lg: { cellSize: 140, dayColumnWidth: 64, rowHeight: 100 },
-  xl: { cellSize: 180, dayColumnWidth: 72, rowHeight: 120 },
-  "2xl": { cellSize: 220, dayColumnWidth: 80, rowHeight: 140 },
-  "3xl": { cellSize: 260, dayColumnWidth: 88, rowHeight: 160 },
+  sm: {
+    cellSize: 60,
+    dayColumnWidth: 40,
+    rowHeight: 60,
+    textClass: "text-[10px]",
+    subTextClass: "text-[8px]",
+  },
+  md: {
+    cellSize: 100,
+    dayColumnWidth: 56,
+    rowHeight: 80,
+    textClass: "text-xs",
+    subTextClass: "text-[10px]",
+  }, // Default
+  lg: {
+    cellSize: 140,
+    dayColumnWidth: 64,
+    rowHeight: 100,
+    textClass: "text-xs",
+    subTextClass: "text-[10px]",
+  },
+  xl: {
+    cellSize: 180,
+    dayColumnWidth: 72,
+    rowHeight: 120,
+    textClass: "text-xs",
+    subTextClass: "text-[10px]",
+  },
+  "2xl": {
+    cellSize: 220,
+    dayColumnWidth: 80,
+    rowHeight: 140,
+    textClass: "text-xs",
+    subTextClass: "text-[10px]",
+  },
+  "3xl": {
+    cellSize: 260,
+    dayColumnWidth: 88,
+    rowHeight: 160,
+    textClass: "text-xs",
+    subTextClass: "text-[10px]",
+  },
 } as const;
