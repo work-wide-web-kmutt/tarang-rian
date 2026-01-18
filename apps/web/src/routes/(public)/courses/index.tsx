@@ -1,14 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { allCourses } from "content-collections";
 import { AlertTriangle } from "lucide-react";
-import { parseAsString, useQueryState } from "nuqs";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
-
+import { useCourseFilters } from "@/hooks/use-course-filters";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
@@ -21,100 +18,8 @@ export const Route = createFileRoute("/(public)/courses/")({
 function AllCoursesPage() {
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
-
-  const [searchQuery, setSearchQuery] = useQueryState(
-    "q",
-    parseAsString.withDefault("")
-  );
-  const [dayFilter, setDayFilter] = useQueryState(
-    "day",
-    parseAsString.withDefault("all")
-  );
-  const [timeSlotFilter, setTimeSlotFilter] = useQueryState(
-    "time",
-    parseAsString.withDefault("all")
-  );
-  const [yearFilter, setYearFilter] = useQueryState(
-    "year",
-    parseAsString.withDefault("all")
-  );
-  const [semesterFilter, setSemesterFilter] = useQueryState(
-    "semester",
-    parseAsString.withDefault("all")
-  );
-
-  const availableYears = useMemo(() => {
-    const years = [...new Set(allCourses.map((course) => course.year))];
-    return years.sort((a, b) => a.localeCompare(b));
-  }, []);
-
-  const sortedCourses = [...allCourses].sort((a, b) => {
-    if (a.year === b.year) {
-      if (a.semester === b.semester) {
-        return a.code.localeCompare(b.code);
-      }
-      return a.semester.localeCompare(b.semester);
-    }
-    return a.year.localeCompare(b.year);
-  });
-
-  const filteredCourses = useMemo(() => {
-    return sortedCourses.filter((course) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        searchQuery === "" ||
-        course.code.toLowerCase().includes(searchLower) ||
-        course.name.toLowerCase().includes(searchLower);
-
-      if (!matchesSearch) {
-        return false;
-      }
-
-      const matchesDay =
-        dayFilter === "all" ||
-        course.class.some((cls) => cls.day === dayFilter);
-
-      if (!matchesDay) {
-        return false;
-      }
-
-      const matchesTimeSlot =
-        timeSlotFilter === "all" ||
-        course.class.some((cls) => {
-          const startHour = Number.parseInt(cls.start.split(":")[0], 10);
-          if (timeSlotFilter === "morning") {
-            return startHour < 12;
-          }
-          if (timeSlotFilter === "afternoon") {
-            return startHour >= 12;
-          }
-          return true;
-        });
-
-      if (!matchesTimeSlot) {
-        return false;
-      }
-
-      const matchesYear = yearFilter === "all" || course.year === yearFilter;
-
-      if (!matchesYear) {
-        return false;
-      }
-
-      const matchesSemester =
-        semesterFilter === "all" || course.semester === semesterFilter;
-
-      return matchesSemester;
-    });
-  }, [
-    sortedCourses,
-    searchQuery,
-    dayFilter,
-    timeSlotFilter,
-    yearFilter,
-    semesterFilter,
-  ]);
-
+  const { filters, setters, filteredCourses, totalCourses } =
+    useCourseFilters();
   const { t } = useTranslation();
 
   return (
@@ -138,19 +43,7 @@ function AllCoursesPage() {
         <h1 className="px-4 font-semibold text-3xl">{t("courses.courses")}</h1>
       </div>
 
-      <CourseFilters
-        availableYears={availableYears}
-        dayFilter={dayFilter}
-        onDayChange={setDayFilter}
-        onSearchChange={setSearchQuery}
-        onSemesterChange={setSemesterFilter}
-        onTimeSlotChange={setTimeSlotFilter}
-        onYearChange={setYearFilter}
-        searchQuery={searchQuery}
-        semesterFilter={semesterFilter}
-        timeSlotFilter={timeSlotFilter}
-        yearFilter={yearFilter}
-      />
+      <CourseFilters filters={filters} setters={setters} />
 
       {filteredCourses.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
@@ -160,7 +53,7 @@ function AllCoursesPage() {
         <div className="space-y-4">
           <p className="px-4 text-muted-foreground text-sm">
             {t("courses.show")} {filteredCourses.length} {t("courses.of")}{" "}
-            {sortedCourses.length} {t("courses.courses")}
+            {totalCourses} {t("courses.courses")}
           </p>
           {filteredCourses.map((course) => {
             return (

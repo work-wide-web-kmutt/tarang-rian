@@ -13,6 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DAYS } from "@/constants/times";
+import type {
+  CourseFilterSetters,
+  CourseFilters as CourseFiltersType,
+} from "@/hooks/use-course-filters";
 
 const TIME_SLOTS = [
   { value: "all", label: "All Times" },
@@ -23,33 +27,29 @@ const TIME_SLOTS = [
 const SEMESTERS = ["1", "2", "S"] as const;
 
 interface CourseFiltersProps {
-  searchQuery: string;
-  onSearchChange: (value: string) => void;
-  dayFilter: string;
-  onDayChange: (value: string) => void;
-  timeSlotFilter: string;
-  onTimeSlotChange: (value: string) => void;
-  yearFilter: string;
-  onYearChange: (value: string) => void;
-  semesterFilter: string;
-  onSemesterChange: (value: string) => void;
-  availableYears: string[];
+  filters: CourseFiltersType;
+  setters: CourseFilterSetters;
 }
 
-export function CourseFilters({
-  searchQuery,
-  onSearchChange,
-  dayFilter,
-  onDayChange,
-  timeSlotFilter,
-  onTimeSlotChange,
-  yearFilter,
-  onYearChange,
-  semesterFilter,
-  onSemesterChange,
-  availableYears,
-}: CourseFiltersProps) {
+export function CourseFilters({ filters, setters }: CourseFiltersProps) {
   const { t } = useTranslation();
+
+  const {
+    searchQuery,
+    dayFilter,
+    timeSlotFilter,
+    yearFilter,
+    semesterFilter,
+    availableYears,
+  } = filters;
+
+  const {
+    setSearchQuery,
+    setDayFilter,
+    setTimeSlotFilter,
+    setYearFilter,
+    setSemesterFilter,
+  } = setters;
 
   const getDayLabel = (value: string): string => {
     return value === "all"
@@ -75,7 +75,7 @@ export function CourseFilters({
     <div className="flex flex-col md:flex-row">
       <InputGroup>
         <InputGroupInput
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t("filter.search")}
           value={searchQuery}
         />
@@ -88,7 +88,7 @@ export function CourseFilters({
         <Select
           onValueChange={(value) => {
             if (value !== null) {
-              onDayChange(value);
+              setDayFilter(value);
             }
           }}
           value={dayFilter}
@@ -109,7 +109,7 @@ export function CourseFilters({
         <Select
           onValueChange={(value) => {
             if (value !== null) {
-              onTimeSlotChange(value);
+              setTimeSlotFilter(value);
             }
           }}
           value={timeSlotFilter}
@@ -133,7 +133,7 @@ export function CourseFilters({
         <Select
           onValueChange={(value) => {
             if (value !== null) {
-              onYearChange(value);
+              setYearFilter(value);
             }
           }}
           value={yearFilter}
@@ -154,7 +154,7 @@ export function CourseFilters({
         <Select
           onValueChange={(value) => {
             if (value !== null) {
-              onSemesterChange(value);
+              setSemesterFilter(value);
             }
           }}
           value={semesterFilter}
