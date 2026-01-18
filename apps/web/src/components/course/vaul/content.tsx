@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   CalendarIcon,
   ClockIcon,
   PencilIcon,
@@ -10,7 +9,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,23 +70,7 @@ export function CourseVaulContent() {
           )}
         </div>
       </div>
-      {session.type === "fixed" && (
-        <Alert className="mb-4" variant="destructive">
-          <AlertTriangle />
-          <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
-          <AlertDescription>
-            {t("courses.disclaimer_text1")}{" "}
-            <a
-              href="https://www.facebook.com/genKMUTTofficial"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {t("courses.disclaimer_text2")}
-            </a>{" "}
-            {t("courses.disclaimer_text3")}
-          </AlertDescription>
-        </Alert>
-      )}
+      {session.type === "fixed" && <DisclaimerAlert className="mb-4" />}
 
       <table className="table-fixed text-sm">
         <tbody>

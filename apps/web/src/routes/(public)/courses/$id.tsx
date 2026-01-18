@@ -1,14 +1,14 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
-import { AlertTriangle } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import Markdown from "react-markdown";
+import { AccordionItem } from "@/components/class/accordion-item";
+import { DisclaimerAlert } from "@/components/disclaimer-alert";
+import { Accordion } from "@/components/ui/accordion";
 import type { GenElectiveOption } from "@/course/schema";
-import {
-  useSelectedGenElectives,
-  useSelectedGenElectivesActions,
-} from "@/stores/selected";
+
+const H1_REGEX = /^#\s+(.+)$/m;
 
 export const Route = createFileRoute("/(public)/courses/$id")({
   component: CourseDetailPage,
@@ -25,77 +25,63 @@ function CourseDetailPage() {
   const { course } = Route.useLoaderData();
   const { t } = useTranslation();
 
-  const selected = useSelectedGenElectives();
-  const { add, remove } = useSelectedGenElectivesActions();
+  const [openItems, setOpenItems] = useState<number[]>([0]);
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-4">
-      <div className="mb-4">
-        <h1 className="font-semibold text-2xl">
-          {course.code} — {course.name}
-        </h1>
-        <p className="text-muted-foreground">
-          {t("academic.year")} {course.year}, {t("academic.semester")}{" "}
-          {course.semester}
-        </p>
+    <div className="container mx-auto px-12 pb-20">
+      <div className="relative border-dashed pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+        <div className="p-4">
+          <DisclaimerAlert />
+        </div>
+        <div className="mb-4">
+          <h1 className="px-4 font-semibold text-3xl">
+            {course.code} — {course.name}
+          </h1>
+          <p className="px-4 text-muted-foreground">
+            {t("academic.year")} {course.year}, {t("academic.semester")}{" "}
+            {course.semester}
+          </p>
+        </div>
       </div>
 
-      <Alert className="mb-4" variant="destructive">
-        <AlertTriangle />
-        <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
-        <AlertDescription>
-          {t("courses.disclaimer_text1")}{" "}
-          <a
-            href="https://www.facebook.com/genKMUTTofficial"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {t("courses.disclaimer_text2")}
-          </a>{" "}
-          {t("courses.disclaimer_text3")}
-        </AlertDescription>
-      </Alert>
-
-      <div className="space-y-4">
-        <section className="rounded-lg border p-4 shadow-sm">
-          <header className="mb-2">
-            <h2 className="font-medium text-lg">{t("courses.course_info")}</h2>
+      <div className="space-y-0 p-0 md:px-4">
+        <section className="px-0 md:px-4">
+          <header className="px-4 py-6 md:px-0">
+            <h2 className="font-bold text-xl">{t("courses.course_info")}</h2>
           </header>
-
-          <div className="mt-2">
-            <p className="font-medium text-sm">{t("academic.classes")}</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {course.class.map((cls: GenElectiveOption["class"][number]) => {
-                const selectedSession = selected.find(
-                  (s) =>
-                    s.courseCode === course.code &&
-                    s.group === cls.group &&
-                    s.day === cls.day &&
-                    s.start === cls.start &&
-                    s.end === cls.end
-                );
-                const isClassSelected = !!selectedSession;
-
-                return (
-                  <Button
-                    key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                    onClick={() => {
-                      if (isClassSelected && selectedSession) {
-                        remove(selectedSession.id);
-                      } else {
-                        add(course, cls);
-                      }
-                    }}
-                    size="sm"
-                    variant={isClassSelected ? "secondary" : "outline"}
-                  >
-                    {t(`days_short.${cls.day.toLowerCase()}`)} {cls.start} -{" "}
-                    {cls.end}
-                  </Button>
-                );
-              })}
+          <div className="border-0 md:border">
+            <div className="border-b p-4 font-semibold text-xl">
+              <Markdown>{course.content.match(H1_REGEX)?.[1] ?? ""}</Markdown>
+            </div>
+            <div className="prose prose-sm dark:prose-invert max-w-none p-4">
+              <Markdown>{course.content.replace(H1_REGEX, "")}</Markdown>
             </div>
           </div>
+        </section>
+
+        <section className="px-0 md:px-4">
+          <header className="px-4 py-6 md:px-0">
+            <h2 className="font-bold text-xl">
+              {t("courses.group_section_info")}
+            </h2>
+          </header>
+          <Accordion
+            className="border"
+            onValueChange={setOpenItems}
+            value={openItems}
+          >
+            {course.class.map(
+              (cls: GenElectiveOption["class"][number], index: number) => (
+                <AccordionItem
+                  cls={cls}
+                  course={course}
+                  index={index}
+                  key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                  openIndexs={openItems}
+                />
+              )
+            )}
+          </Accordion>
         </section>
       </div>
     </div>
