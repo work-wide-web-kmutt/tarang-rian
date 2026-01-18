@@ -115,7 +115,9 @@ export function ScheduleExportDialog() {
                 )}
               >
                 <div
-                  key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
+                  // Remove padding from key to enable transition
+                  className="transition-all duration-300 ease-in-out"
+                  key={`${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
                   style={{
                     padding: `${padding}px`,
                     backgroundColor: showBackground ? bgColor : "transparent",
@@ -312,12 +314,12 @@ export function ScheduleExportDialog() {
                 size="lg"
               >
                 {isExporting ? (
-                  <>Processing...</>
+                  <div>{t("export.processing")}</div>
                 ) : (
-                  <>
+                  <div className="flex">
                     <Download className="mr-2 h-4 w-4" />
-                    {t("export.download", "Download Export")}
-                  </>
+                    {t("export.download")}
+                  </div>
                 )}
               </Button>
             </div>
@@ -325,34 +327,38 @@ export function ScheduleExportDialog() {
         </div>
       </DialogContent>
 
-      {isExporting &&
-        createPortal(
-          <div className="fixed inset-0 z-9999 flex items-center justify-center bg-background">
-            <div className="absolute top-10 mb-4 animate-pulse font-medium text-lg">
-              Generating High-Quality Export...
-            </div>
+      {createPortal(
+        <div
+          style={{
+            position: "fixed",
+            left: "200vw",
+            top: 0,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            id="schedule-export-target"
+            key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
+            style={{
+              minWidth: "1000px",
+              width: "fit-content",
+              height: "fit-content",
+            }}
+          >
             <div
-              id="schedule-export-target"
-              key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
               style={{
-                minWidth: "1000px",
-                width: "fit-content",
+                padding: `${padding}px`,
+                backgroundColor: showBackground ? bgColor : "transparent",
+                width: "100%",
+                height: "100%",
               }}
             >
-              <div
-                style={{
-                  padding: `${padding}px`,
-                  backgroundColor: showBackground ? bgColor : "transparent",
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <SchedulePreview darkMode={darkMode} sessions={sessions} />
-              </div>
+              <SchedulePreview darkMode={darkMode} sessions={sessions} />
             </div>
-          </div>,
-          document.body
-        )}
+          </div>
+        </div>,
+        document.body
+      )}
     </Dialog>
   );
 }

@@ -105,7 +105,8 @@
       "settings": "Settings",
       "language": "Language",
       "scale": "Quality",
-      "download": "Download Export",
+      "download": "Download",
+      "processing": "Processing...",
       "success": "Schedule exported successfully!",
       "error": "Failed to export schedule"
     }
