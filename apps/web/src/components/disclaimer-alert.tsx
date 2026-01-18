@@ -16,17 +16,33 @@ export function DisclaimerAlert({ className }: DisclaimerAlertProps) {
       variant="destructive"
     >
       <AlertTriangle />
-      <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
+      <AlertTitle className="font-bold text-lg">
+        {t("courses.disclaimer_head")}
+      </AlertTitle>
       <AlertDescription>
-        {t("courses.disclaimer_text1")}{" "}
-        <a
-          href="https://www.facebook.com/genKMUTTofficial"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          {t("courses.disclaimer_text2")}
-        </a>{" "}
-        {t("courses.disclaimer_text3")}
+        <ul className="list-disc space-y-1 pl-4 text-sm">
+          <li>
+            {t("courses.disclaimer_text1")}{" "}
+            <a
+              href="https://www.facebook.com/genKMUTTofficial"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {t("courses.disclaimer_text2")}
+            </a>{" "}
+            {t("courses.disclaimer_text3")}
+          </li>
+          <li>
+            {t("courses.disclaimer_text4")}{" "}
+            <a
+              href="https://sinfo.kmutt.ac.th/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {t("courses.disclaimer_text5")}
+            </a>
+          </li>
+        </ul>
       </AlertDescription>
     </Alert>
   );
