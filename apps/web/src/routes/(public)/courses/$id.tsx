@@ -29,34 +29,37 @@ function CourseDetailPage() {
   const { add, remove } = useSelectedGenElectivesActions();
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-4">
-      <div className="mb-4">
-        <h1 className="font-semibold text-2xl">
-          {course.code} — {course.name}
-        </h1>
-        <p className="text-muted-foreground">
-          {t("academic.year")} {course.year}, {t("academic.semester")}{" "}
-          {course.semester}
-        </p>
+    <div className="container mx-auto px-12 pb-20">
+      <div className="sticky top-0 z-10 border-x-2 border-dashed bg-background pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+        <div className="py-4">
+          <Alert className="border-destructive" variant="destructive">
+            <AlertTriangle />
+            <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
+            <AlertDescription>
+              {t("courses.disclaimer_text1")}{" "}
+              <a
+                href="https://www.facebook.com/genKMUTTofficial"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t("courses.disclaimer_text2")}
+              </a>{" "}
+              {t("courses.disclaimer_text3")}
+            </AlertDescription>
+          </Alert>
+        </div>
+        <div className="mb-4">
+          <h1 className="px-4 font-semibold text-3xl">
+            {course.code} — {course.name}
+          </h1>
+          <p className="px-4 text-muted-foreground">
+            {t("academic.year")} {course.year}, {t("academic.semester")}{" "}
+            {course.semester}
+          </p>
+        </div>
       </div>
 
-      <Alert className="mb-4" variant="destructive">
-        <AlertTriangle />
-        <AlertTitle>{t("courses.disclaimer_head")}</AlertTitle>
-        <AlertDescription>
-          {t("courses.disclaimer_text1")}{" "}
-          <a
-            href="https://www.facebook.com/genKMUTTofficial"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {t("courses.disclaimer_text2")}
-          </a>{" "}
-          {t("courses.disclaimer_text3")}
-        </AlertDescription>
-      </Alert>
-
-      <div className="space-y-4">
+      <div className="mt-4 space-y-4">
         <section className="rounded-lg border p-4 shadow-sm">
           <header className="mb-2">
             <h2 className="font-medium text-lg">{t("courses.course_info")}</h2>
