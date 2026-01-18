@@ -1,6 +1,10 @@
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Select,
   SelectContent,
@@ -47,15 +51,16 @@ export function CourseFilters({
 
   return (
     <div className="mb-6 space-y-4">
-      <div className="relative">
-        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          className="pl-9"
+      <InputGroup>
+        <InputGroupInput
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={t("filter.search")}
           value={searchQuery}
         />
-      </div>
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+      </InputGroup>
 
       <div className="flex flex-wrap gap-3">
         <Select
