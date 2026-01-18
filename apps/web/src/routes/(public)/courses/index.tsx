@@ -24,7 +24,7 @@ function AllCoursesPage() {
 
   return (
     <div className="container mx-auto px-12 pb-20">
-      <div className="sticky top-0 z-10 border-x-2 border-b-2 border-dashed bg-background pb-4">
+      <div className="sticky top-0 z-10 border-x-2 border-dashed bg-background pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <div className="py-4">
           <Alert className="border-destructive" variant="destructive">
             <AlertTriangle />

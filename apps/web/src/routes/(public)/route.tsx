@@ -17,7 +17,7 @@ function PublicLayout() {
         </div>
         <div className="relative z-10">
           <Header />
-          <div className="w-full border-border border-t-2 border-dashed">
+          <div className="w-full overflow-x-clip border-border border-t-2 border-dashed">
             <Outlet />
           </div>
         </div>
