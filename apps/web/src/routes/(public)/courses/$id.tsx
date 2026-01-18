@@ -15,6 +15,8 @@ import type { GenElectiveOption } from "@/course/schema";
 import { ClassSelectButton } from "@/routes/(public)/courses/_components/class-select-button";
 import { formatClassLabel } from "@/routes/(public)/courses/_components/use-class-selection";
 
+const H1_REGEX = /^#\s+(.+)$/m;
+
 export const Route = createFileRoute("/(public)/courses/$id")({
   component: CourseDetailPage,
   loader: ({ params }) => {
@@ -47,20 +49,28 @@ function CourseDetailPage() {
         </div>
       </div>
 
-      <div className="space-y-0">
-        <section className="p-4">
-          <header className="mb-2">
-            <h2>{t("courses.course_info")}</h2>
+      <div className="space-y-0 px-0 md:px-4">
+        <section className="px-0 md:px-4">
+          <header className="px-4 py-6 md:px-0">
+            <h2 className="font-bold text-xl">{t("courses.course_info")}</h2>
           </header>
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            <Markdown>{course.content}</Markdown>
+          <div className="border">
+            <div className="border-b p-4 font-semibold text-xl">
+              <Markdown>{course.content.match(H1_REGEX)?.[1] ?? ""}</Markdown>
+            </div>
+            <div className="prose prose-sm dark:prose-invert max-w-none p-4">
+              <Markdown>{course.content.replace(H1_REGEX, "")}</Markdown>
+            </div>
           </div>
         </section>
-        <section className="p-4">
-          <header className="mb-2">
-            <h2>{t("courses.group_section_info")}</h2>
+
+        <section className="px-0 md:px-4">
+          <header className="px-4 py-6 md:px-0">
+            <h2 className="font-bold text-xl">
+              {t("courses.group_section_info")}
+            </h2>
           </header>
-          <Accordion className="mt-4 border" defaultValue={[0]}>
+          <Accordion className="border" defaultValue={[0]}>
             {course.class.map(
               (cls: GenElectiveOption["class"][number], index: number) => (
                 <AccordionItem

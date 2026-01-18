@@ -33,7 +33,11 @@ export function ClassSelectButton({
   };
 
   return (
-    <Button onClick={toggle} variant={isSelected ? "secondary" : "outline"}>
+    <Button
+      onClick={toggle}
+      size="lg"
+      variant={isSelected ? "secondary" : "outline"}
+    >
       {isSelected && <CheckCircleIcon />}
       {getButtonText()}
     </Button>
