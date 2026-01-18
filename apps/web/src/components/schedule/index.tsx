@@ -36,6 +36,7 @@ import {
 } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
+import { cn } from "@/lib/utils";
 import {
   type SelectedClassSession,
   useSelectedGenElectivesActions,
@@ -43,9 +44,15 @@ import {
 
 type ScheduleSize = keyof typeof SCHEDULE_SIZE;
 
+interface ScheduleStyles {
+  borderTop?: string;
+  borderBottom?: string;
+}
+
 interface ScheduleProps {
   sessions: SelectedClassSession[];
   size?: ScheduleSize;
+  styles?: ScheduleStyles;
 }
 
 interface DragState {
@@ -97,7 +104,7 @@ function DroppableCell({
   );
 }
 
-export function Schedule({ sessions, size = "md" }: ScheduleProps) {
+export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
   const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE[size];
   const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
   const { t } = useTranslation();
@@ -667,7 +674,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
     >
       <div style={{ width: `${minWidth}px` }}>
         <div
-          className="grid border border-border"
+          className={cn("grid border border-border", styles?.borderTop)}
           style={{
             gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
           }}
@@ -685,12 +692,18 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
           ))}
         </div>
 
-        <div className="border-border border-r border-b border-l">
+        <div
+          className={cn(
+            "border-border border-r border-b border-l",
+            styles?.borderBottom
+          )}
+        >
           {DAYS.map((day) => (
             <div
-              className={`grid border-border border-b last:border-b-0 ${
-                dragState ? "cursor-crosshair select-none" : ""
-              }`}
+              className={cn(
+                "grid border-border border-b last:border-b-0",
+                dragState && "cursor-crosshair select-none"
+              )}
               data-day-row={day}
               key={day}
               onPointerLeave={handlePointerUp}
