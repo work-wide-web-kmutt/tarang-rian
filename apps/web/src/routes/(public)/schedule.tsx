@@ -12,13 +12,13 @@ function SelectedCoursesPage() {
   const selected = useSelectedGenElectives();
 
   return (
-    <div className="container mx-auto min-w-0 max-w-7xl px-4 py-4">
-      <div className="relative flex w-full justify-end gap-2 pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+    <div className="container mx-auto px-12 pb-20">
+      <div className="relative flex w-full justify-end gap-2 border-dashed pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <ScheduleImportDialog />
         <ScheduleExportDialog />
       </div>
-      <div className="relative flex w-full items-center justify-center pb-0.5 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
-        <div className="w-full min-w-0 overflow-x-auto">
+      <div className="relative flex w-full items-center justify-center px-2 pb-0.5 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+        <div className="min-w-0 overflow-x-auto">
           <Schedule
             sessions={selected}
             size="md"
