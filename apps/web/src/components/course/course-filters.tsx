@@ -50,7 +50,7 @@ export function CourseFilters({
   };
 
   return (
-    <div className="mb-6 space-y-4">
+    <div className="flex flex-col md:flex-row">
       <InputGroup>
         <InputGroupInput
           onChange={(e) => onSearchChange(e.target.value)}
@@ -62,7 +62,7 @@ export function CourseFilters({
         </InputGroupAddon>
       </InputGroup>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex w-full md:w-fit">
         <Select
           onValueChange={(value) => {
             if (value !== null) {
@@ -71,7 +71,7 @@ export function CourseFilters({
           }}
           value={dayFilter}
         >
-          <SelectTrigger className="w-35">
+          <SelectTrigger className="w-full md:w-35">
             <SelectValue>{getDayLabel(dayFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -92,7 +92,7 @@ export function CourseFilters({
           }}
           value={timeSlotFilter}
         >
-          <SelectTrigger className="w-45">
+          <SelectTrigger className="w-full md:w-45">
             <SelectValue>{getTimeSlotLabel(timeSlotFilter)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
