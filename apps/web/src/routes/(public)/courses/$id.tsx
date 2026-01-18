@@ -8,6 +8,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import Markdown from "react-markdown";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,12 +68,14 @@ function CourseDetailPage() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-0">
         <section className="p-4">
           <header className="mb-2">
             <h2 className="font-medium text-lg">{t("courses.course_info")}</h2>
           </header>
-          <div>Display Course Information here</div>
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            <Markdown>{course.content}</Markdown>
+          </div>
         </section>
         <section className="p-4">
           <header className="mb-2">
