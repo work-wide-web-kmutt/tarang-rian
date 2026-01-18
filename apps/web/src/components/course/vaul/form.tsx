@@ -1,11 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import {
-  BookOpen,
-  CalendarIcon,
-  ClockIcon,
-  GraduationCap,
-  UsersIcon,
-} from "lucide-react";
+import { BookOpen, GraduationCap, UsersIcon } from "lucide-react";
 import { type FormEvent, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import z from "zod";
@@ -215,34 +209,29 @@ export function CourseVaulForm() {
                 <FieldLabel htmlFor={field.name}>
                   {t("academic.year")}
                 </FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <CalendarIcon />
-                  </InputGroupAddon>
-                  <Select
-                    onValueChange={(value) => {
-                      if (value) {
-                        field.handleChange(value);
-                      }
-                    }}
-                    value={field.state.value}
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      field.handleChange(value);
+                    }
+                  }}
+                  value={field.state.value}
+                >
+                  <SelectTrigger
+                    aria-invalid={isInvalid}
+                    className="w-full"
+                    id={field.name}
                   >
-                    <SelectTrigger
-                      aria-invalid={isInvalid}
-                      className="w-full border-0 shadow-none"
-                      id={field.name}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {yearOptions.map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </InputGroup>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -258,32 +247,27 @@ export function CourseVaulForm() {
                 <FieldLabel htmlFor={field.name}>
                   {t("academic.semester")}
                 </FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <BookOpen />
-                  </InputGroupAddon>
-                  <Select
-                    onValueChange={(value) => {
-                      if (value) {
-                        field.handleChange(value as typeof field.state.value);
-                      }
-                    }}
-                    value={field.state.value}
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      field.handleChange(value as typeof field.state.value);
+                    }
+                  }}
+                  value={field.state.value}
+                >
+                  <SelectTrigger
+                    aria-invalid={isInvalid}
+                    className="w-full"
+                    id={field.name}
                   >
-                    <SelectTrigger
-                      aria-invalid={isInvalid}
-                      className="w-full border-0 shadow-none"
-                      id={field.name}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1</SelectItem>
-                      <SelectItem value="2">2</SelectItem>
-                      <SelectItem value="S">S</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </InputGroup>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="S">S</SelectItem>
+                  </SelectContent>
+                </Select>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -300,34 +284,29 @@ export function CourseVaulForm() {
                 <FieldLabel htmlFor={field.name}>
                   {t("days_time.day")}
                 </FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <CalendarIcon />
-                  </InputGroupAddon>
-                  <Select
-                    onValueChange={(value) => {
-                      if (value) {
-                        field.handleChange(value as typeof field.state.value);
-                      }
-                    }}
-                    value={field.state.value}
+                <Select
+                  onValueChange={(value) => {
+                    if (value) {
+                      field.handleChange(value as typeof field.state.value);
+                    }
+                  }}
+                  value={field.state.value}
+                >
+                  <SelectTrigger
+                    aria-invalid={isInvalid}
+                    className="w-full"
+                    id={field.name}
                   >
-                    <SelectTrigger
-                      aria-invalid={isInvalid}
-                      className="w-full border-0 shadow-none"
-                      id={field.name}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DAYS.map((day: (typeof DAYS)[number]) => (
-                        <SelectItem key={day} value={day}>
-                          {t(`days.${day.toLowerCase()}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </InputGroup>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DAYS.map((day: (typeof DAYS)[number]) => (
+                      <SelectItem key={day} value={day}>
+                        {t(`days.${day.toLowerCase()}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
             );
@@ -345,43 +324,38 @@ export function CourseVaulForm() {
                   <FieldLabel htmlFor={field.name}>
                     {t("days_time.start_time")}
                   </FieldLabel>
-                  <InputGroup>
-                    <InputGroupAddon>
-                      <ClockIcon />
-                    </InputGroupAddon>
-                    <Select
-                      onValueChange={(value) => {
-                        if (value) {
-                          field.handleChange(value);
-                        }
-                      }}
-                      value={field.state.value}
+                  <Select
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.handleChange(value);
+                      }
+                    }}
+                    value={field.state.value}
+                  >
+                    <SelectTrigger
+                      aria-invalid={isInvalid}
+                      className="w-full"
+                      id={field.name}
                     >
-                      <SelectTrigger
-                        aria-invalid={isInvalid}
-                        className="w-full border-0 shadow-none"
-                        id={field.name}
-                      >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {timeSlots.map((time) => {
-                          const isDisabled = endTime
-                            ? parseTime(time) >= parseTime(endTime)
-                            : false;
-                          return (
-                            <SelectItem
-                              disabled={isDisabled}
-                              key={time}
-                              value={time}
-                            >
-                              {time}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </InputGroup>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeSlots.map((time) => {
+                        const isDisabled = endTime
+                          ? parseTime(time) >= parseTime(endTime)
+                          : false;
+                        return (
+                          <SelectItem
+                            disabled={isDisabled}
+                            key={time}
+                            value={time}
+                          >
+                            {time}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               );
@@ -398,43 +372,38 @@ export function CourseVaulForm() {
                   <FieldLabel htmlFor={field.name}>
                     {t("days_time.end_time")}
                   </FieldLabel>
-                  <InputGroup>
-                    <InputGroupAddon>
-                      <ClockIcon />
-                    </InputGroupAddon>
-                    <Select
-                      onValueChange={(value) => {
-                        if (value) {
-                          field.handleChange(value);
-                        }
-                      }}
-                      value={field.state.value}
+                  <Select
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.handleChange(value);
+                      }
+                    }}
+                    value={field.state.value}
+                  >
+                    <SelectTrigger
+                      aria-invalid={isInvalid}
+                      className="w-full"
+                      id={field.name}
                     >
-                      <SelectTrigger
-                        aria-invalid={isInvalid}
-                        className="w-full border-0 shadow-none"
-                        id={field.name}
-                      >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {timeSlots.map((time) => {
-                          const isDisabled = startTime
-                            ? parseTime(time) <= parseTime(startTime)
-                            : false;
-                          return (
-                            <SelectItem
-                              disabled={isDisabled}
-                              key={time}
-                              value={time}
-                            >
-                              {time}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </InputGroup>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeSlots.map((time) => {
+                        const isDisabled = startTime
+                          ? parseTime(time) <= parseTime(startTime)
+                          : false;
+                        return (
+                          <SelectItem
+                            disabled={isDisabled}
+                            key={time}
+                            value={time}
+                          >
+                            {time}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               );
