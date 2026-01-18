@@ -50,7 +50,6 @@ export function SchedulePreview({ sessions, darkMode }: SchedulePreviewProps) {
           gridTemplateColumns: `${scaledDayColumnWidth}px repeat(${TIME_SLOTS.length}, ${scaledCellSize}px)`,
         }}
       >
-        {/* Header Row */}
         <div
           className={cn(
             "flex items-center justify-center border-r p-2 text-center font-medium text-xs",
@@ -75,10 +74,8 @@ export function SchedulePreview({ sessions, darkMode }: SchedulePreviewProps) {
           </div>
         ))}
 
-        {/* Days Rows */}
         {DAYS.map((day) => (
           <>
-            {/* Day Label */}
             <div
               className={cn(
                 "flex items-center justify-center border-t border-r p-2 text-center font-medium text-xs",
@@ -91,7 +88,6 @@ export function SchedulePreview({ sessions, darkMode }: SchedulePreviewProps) {
               {t(`days_time.${day.toLowerCase()}`)}
             </div>
 
-            {/* Time Slots */}
             {TIME_SLOTS.map((_time, timeColIndex) => {
               const cellClasses = getClassesForCell(
                 day,

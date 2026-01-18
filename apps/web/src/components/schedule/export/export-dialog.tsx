@@ -96,7 +96,6 @@ export function ScheduleExportDialog() {
         {t("export.button", "Export")}
       </DialogTrigger>
 
-      {/* Updated Layout: Fixed height, Split view */}
       <DialogContent className="flex h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:h-[90vh] sm:rounded-lg lg:max-w-[1200px]">
         <DialogHeader className="shrink-0 border-b p-6 pb-2">
           <DialogTitle>{t("export.title", "Export Schedule")}</DialogTitle>
@@ -105,9 +104,7 @@ export function ScheduleExportDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Main Content Area: Split View */}
         <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-          {/* Left: Preview (Scrollable) */}
           <div className="relative flex-1 overflow-auto bg-muted/30 p-4">
             <div className="flex min-h-full w-fit min-w-full items-start justify-center p-8">
               <div
@@ -117,7 +114,6 @@ export function ScheduleExportDialog() {
                     "bg-[image:repeating-conic-gradient(#e2e8f0_0%_25%,transparent_0%_50%)] bg-[length:20px_20px] bg-white"
                 )}
               >
-                {/* Visual Preview (Scaled) */}
                 <div
                   key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
                   style={{
@@ -133,10 +129,8 @@ export function ScheduleExportDialog() {
             </div>
           </div>
 
-          {/* Right: Controls (Sidebar) */}
           <div className="flex w-full shrink-0 flex-col border-t bg-background lg:w-[320px] lg:border-t-0 lg:border-l">
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
-              {/* Format Selection */}
               <div className="space-y-3">
                 <Label>{t("export.format", "Format")}</Label>
                 <div className="grid grid-cols-3 gap-2">
@@ -169,7 +163,6 @@ export function ScheduleExportDialog() {
 
               <Separator />
 
-              {/* Appearance */}
               <div className="space-y-3">
                 <Label>{t("export.appearance", "Appearance")}</Label>
                 <div className="flex flex-col gap-2">
@@ -216,7 +209,6 @@ export function ScheduleExportDialog() {
                     </span>
                   </Button>
 
-                  {/* Background Color Picker */}
                   {showBackground && (
                     <div className="flex flex-col gap-2 rounded-md border p-3">
                       <div className="flex items-center justify-between">
@@ -257,7 +249,6 @@ export function ScheduleExportDialog() {
 
               <Separator />
 
-              {/* Settings */}
               <div className="space-y-3">
                 <Label>{t("export.settings", "Settings")}</Label>
                 <div className="grid gap-3">
@@ -313,7 +304,6 @@ export function ScheduleExportDialog() {
               </div>
             </div>
 
-            {/* Footer Action */}
             <div className="border-t bg-muted/10 p-6">
               <Button
                 className="w-full"
@@ -335,14 +325,12 @@ export function ScheduleExportDialog() {
         </div>
       </DialogContent>
 
-      {/* Export Portal: Renders full-size overlay during export only */}
       {isExporting &&
         createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background">
             <div className="absolute top-10 mb-4 animate-pulse font-medium text-lg">
               Generating High-Quality Export...
             </div>
-            {/* Capture Target (ID) - Structural Only */}
             <div
               id="schedule-export-target"
               key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
@@ -351,7 +339,6 @@ export function ScheduleExportDialog() {
                 width: "fit-content",
               }}
             >
-              {/* Style Wrapper - Visuals Only (Protected from root overrides) */}
               <div
                 style={{
                   padding: `${padding}px`,
