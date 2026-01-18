@@ -20,6 +20,86 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-Thin.woff2")
+    format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-ExtraLight.woff2")
+    format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-Light.woff2")
+    format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-Regular.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-Text.woff2")
+    format("woff2");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-Medium.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-SemiBold.woff2")
+    format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Thai";
+  src: url("/static/fonts/ibm-flex-sans/IBMPlexSansThai-Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.2686 0 0);
@@ -53,7 +133,7 @@
   --sidebar-accent-foreground: oklch(0.4732 0.1247 46.2007);
   --sidebar-border: oklch(0.9276 0.0058 264.5313);
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
-  --font-sans: "Geist", sans-serif;
+  --font-sans: "IBM Plex Sans Thai", "Geist", sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.2rem;
@@ -118,7 +198,7 @@
   --sidebar-accent-foreground: oklch(0.9243 0.1151 95.7459);
   --sidebar-border: oklch(0.3715 0 0);
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
-  --font-sans: "Geist", sans-serif;
+  --font-sans: "IBM Plex Sans Thai", "Geist", sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.2rem;
