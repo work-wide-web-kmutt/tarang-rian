@@ -71,7 +71,7 @@ function CourseDetailPage() {
       <div className="space-y-0">
         <section className="p-4">
           <header className="mb-2">
-            <h2 className="font-medium text-lg">{t("courses.course_info")}</h2>
+            <h2>{t("courses.course_info")}</h2>
           </header>
           <div className="prose prose-sm dark:prose-invert max-w-none">
             <Markdown>{course.content}</Markdown>
@@ -79,9 +79,7 @@ function CourseDetailPage() {
         </section>
         <section className="p-4">
           <header className="mb-2">
-            <h2 className="font-medium text-lg">
-              {t("courses.group_section_info")}
-            </h2>
+            <h2>{t("courses.group_section_info")}</h2>
           </header>
           <Tabs
             className="mt-4 border"
