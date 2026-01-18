@@ -1,12 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
-import {
-  AlertTriangle,
-  CalendarIcon,
-  ClockIcon,
-  User,
-  UsersIcon,
-} from "lucide-react";
+import { AlertTriangle, ClockIcon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -118,19 +112,14 @@ function CourseDetailPage() {
                     value={`class-${index}`}
                   >
                     <div className="space-y-4 p-4">
+                      <h2 className="font-bold text-xl">
+                        <span>{t("course.group")}</span>{" "}
+                        <span>{cls.group}</span>{" "}
+                        <span>{t("days_time.day")}</span>
+                        {t(`days_time.${cls.day.toLowerCase()}`)}
+                      </h2>
                       <table className="table-fixed text-sm">
                         <tbody>
-                          <tr>
-                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
-                              <div className="flex items-center gap-1.5 text-muted-foreground">
-                                <CalendarIcon className="h-3.5 w-3.5" />
-                                <span>{t("days_time.day")}</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
-                              {t(`days_time.${cls.day.toLowerCase()}`)}
-                            </td>
-                          </tr>
                           <tr>
                             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
                               <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -141,15 +130,6 @@ function CourseDetailPage() {
                             <td className="py-1.5">
                               {cls.start} - {cls.end}
                             </td>
-                          </tr>
-                          <tr>
-                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
-                              <div className="flex items-center gap-1.5 text-muted-foreground">
-                                <UsersIcon className="h-3.5 w-3.5" />
-                                <span>{t("course.group")}</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">{cls.group}</td>
                           </tr>
                           <tr>
                             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
@@ -170,20 +150,22 @@ function CourseDetailPage() {
                           </tr>
                         </tbody>
                       </table>
-                      <Button
-                        onClick={() => {
-                          if (isClassSelected && selectedSession) {
-                            remove(selectedSession.id);
-                          } else {
-                            add(course, cls);
-                          }
-                        }}
-                        variant={isClassSelected ? "secondary" : "outline"}
-                      >
-                        {isClassSelected
-                          ? t("courses.deselect_class")
-                          : t("courses.select_class")}
-                      </Button>
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={() => {
+                            if (isClassSelected && selectedSession) {
+                              remove(selectedSession.id);
+                            } else {
+                              add(course, cls);
+                            }
+                          }}
+                          variant={isClassSelected ? "secondary" : "outline"}
+                        >
+                          {isClassSelected
+                            ? t("courses.deselect_class")
+                            : t("courses.select_class")}
+                        </Button>
+                      </div>
                     </div>
                   </TabsPanel>
                 );
