@@ -96,7 +96,7 @@ export function ScheduleExportDialog() {
         {t("export.button", "Export")}
       </DialogTrigger>
 
-      <DialogContent className="flex h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:h-[90vh] sm:rounded-lg lg:max-w-[1200px]">
+      <DialogContent className="flex max-h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:rounded-lg lg:max-w-[1200px]">
         <DialogHeader className="shrink-0 border-b p-6 pb-2">
           <DialogTitle>{t("export.title", "Export Schedule")}</DialogTitle>
           <DialogDescription>
