@@ -34,6 +34,19 @@ function AllCoursesPage() {
     "time",
     parseAsString.withDefault("all")
   );
+  const [yearFilter, setYearFilter] = useQueryState(
+    "year",
+    parseAsString.withDefault("all")
+  );
+  const [semesterFilter, setSemesterFilter] = useQueryState(
+    "semester",
+    parseAsString.withDefault("all")
+  );
+
+  const availableYears = useMemo(() => {
+    const years = [...new Set(allCourses.map((course) => course.year))];
+    return years.sort((a, b) => a.localeCompare(b));
+  }, []);
 
   const sortedCourses = [...allCourses].sort((a, b) => {
     if (a.year === b.year) {
@@ -78,9 +91,29 @@ function AllCoursesPage() {
           return true;
         });
 
-      return matchesTimeSlot;
+      if (!matchesTimeSlot) {
+        return false;
+      }
+
+      const matchesYear = yearFilter === "all" || course.year === yearFilter;
+
+      if (!matchesYear) {
+        return false;
+      }
+
+      const matchesSemester =
+        semesterFilter === "all" || course.semester === semesterFilter;
+
+      return matchesSemester;
     });
-  }, [sortedCourses, searchQuery, dayFilter, timeSlotFilter]);
+  }, [
+    sortedCourses,
+    searchQuery,
+    dayFilter,
+    timeSlotFilter,
+    yearFilter,
+    semesterFilter,
+  ]);
 
   const { t } = useTranslation();
 
@@ -106,12 +139,17 @@ function AllCoursesPage() {
       </div>
 
       <CourseFilters
+        availableYears={availableYears}
         dayFilter={dayFilter}
         onDayChange={setDayFilter}
         onSearchChange={setSearchQuery}
+        onSemesterChange={setSemesterFilter}
         onTimeSlotChange={setTimeSlotFilter}
+        onYearChange={setYearFilter}
         searchQuery={searchQuery}
+        semesterFilter={semesterFilter}
         timeSlotFilter={timeSlotFilter}
+        yearFilter={yearFilter}
       />
 
       {filteredCourses.length === 0 ? (

@@ -20,6 +20,8 @@ const TIME_SLOTS = [
   { value: "afternoon", label: "Afternoon (12:00+)" },
 ] as const;
 
+const SEMESTERS = ["1", "2", "S"] as const;
+
 interface CourseFiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -27,6 +29,11 @@ interface CourseFiltersProps {
   onDayChange: (value: string) => void;
   timeSlotFilter: string;
   onTimeSlotChange: (value: string) => void;
+  yearFilter: string;
+  onYearChange: (value: string) => void;
+  semesterFilter: string;
+  onSemesterChange: (value: string) => void;
+  availableYears: string[];
 }
 
 export function CourseFilters({
@@ -36,6 +43,11 @@ export function CourseFilters({
   onDayChange,
   timeSlotFilter,
   onTimeSlotChange,
+  yearFilter,
+  onYearChange,
+  semesterFilter,
+  onSemesterChange,
+  availableYears,
 }: CourseFiltersProps) {
   const { t } = useTranslation();
 
@@ -47,6 +59,16 @@ export function CourseFilters({
 
   const getTimeSlotLabel = (value: string): string => {
     return value === "all" ? t("filter.times.all") : t(`filter.times.${value}`);
+  };
+
+  const getYearLabel = (value: string): string => {
+    return value === "all" ? t("filter.years.all") : value;
+  };
+
+  const getSemesterLabel = (value: string): string => {
+    return value === "all"
+      ? t("filter.semesters.all")
+      : t(`filter.semesters.${value}`);
   };
 
   return (
@@ -101,6 +123,50 @@ export function CourseFilters({
                 {slot.value === "all"
                   ? t("filter.times.all")
                   : t(`filter.times.${slot.value}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex w-full md:w-fit">
+        <Select
+          onValueChange={(value) => {
+            if (value !== null) {
+              onYearChange(value);
+            }
+          }}
+          value={yearFilter}
+        >
+          <SelectTrigger className="w-full md:w-30">
+            <SelectValue>{getYearLabel(yearFilter)}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("filter.years.all")}</SelectItem>
+            {availableYears.map((year) => (
+              <SelectItem key={year} value={year}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          onValueChange={(value) => {
+            if (value !== null) {
+              onSemesterChange(value);
+            }
+          }}
+          value={semesterFilter}
+        >
+          <SelectTrigger className="w-full md:w-40">
+            <SelectValue>{getSemesterLabel(semesterFilter)}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("filter.semesters.all")}</SelectItem>
+            {SEMESTERS.map((semester) => (
+              <SelectItem key={semester} value={semester}>
+                {t(`filter.semesters.${semester}`)}
               </SelectItem>
             ))}
           </SelectContent>
