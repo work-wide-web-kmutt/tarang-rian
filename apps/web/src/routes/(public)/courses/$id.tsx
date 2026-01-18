@@ -44,12 +44,12 @@ function CourseDetailPage() {
         </div>
       </div>
 
-      <div className="space-y-0">
+      <div className="space-y-0 p-0 md:px-4">
         <section className="px-0 md:px-4">
           <header className="px-4 py-6 md:px-0">
             <h2 className="font-bold text-xl">{t("courses.course_info")}</h2>
           </header>
-          <div className="border">
+          <div className="border-0 md:border">
             <div className="border-b p-4 font-semibold text-xl">
               <Markdown>{course.content.match(H1_REGEX)?.[1] ?? ""}</Markdown>
             </div>
