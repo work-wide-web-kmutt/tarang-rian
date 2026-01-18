@@ -7,11 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { GenElectiveOption } from "@/course/schema";
+import { formatClassLabel } from "@/routes/(public)/courses/_components/use-class-selection";
 import {
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
-import { formatClassLabel } from "./use-class-selection";
 
 interface ClassSelectDropdownProps {
   course: GenElectiveOption;

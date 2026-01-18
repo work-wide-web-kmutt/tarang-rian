@@ -2,7 +2,7 @@ import { CheckCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
-import { useClassSelection } from "./use-class-selection";
+import { useClassSelection } from "@/routes/(public)/courses/_components/use-class-selection";
 
 interface ClassSelectButtonProps {
   course: GenElectiveOption;
