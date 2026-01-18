@@ -82,8 +82,10 @@
       "disclaimer_text2": "เพจ Facebook หลัก",
       "disclaimer_text3": "และ เอกสารของรายวิชา",
       "course_info": "ข้อมูลรายวิชา",
+      "group_section_info": "ข้อมูลกลุ่ม/ตอนเรียน",
       "no_course_info": "ไม่มีข้อมูลรายวิชา",
       "select_class": "เลือกคาบเรียน",
+      "deselect_class": "ยกเลิกการเลือก",
       "selected_count": "เลือกแล้ว {{count}} คาบ"
     },
     "course": {

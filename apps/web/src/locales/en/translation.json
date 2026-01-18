@@ -82,8 +82,10 @@
       "disclaimer_text2": "the official Facebook page",
       "disclaimer_text3": "and official course documents.",
       "course_info": "Course Information",
+      "group_section_info": "Group/Section Information",
       "no_course_info": "No course information available",
       "select_class": "Select class",
+      "deselect_class": "Deselect class",
       "selected_count": "{{count}} selected"
     },
     "course": {

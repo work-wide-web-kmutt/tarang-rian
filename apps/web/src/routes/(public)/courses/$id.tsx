@@ -1,9 +1,17 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { allCourses, type Course } from "content-collections";
-import { AlertTriangle } from "lucide-react";
+import {
+  AlertTriangle,
+  CalendarIcon,
+  ClockIcon,
+  User,
+  UsersIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 import type { GenElectiveOption } from "@/course/schema";
 import {
   useSelectedGenElectives,
@@ -59,16 +67,40 @@ function CourseDetailPage() {
         </div>
       </div>
 
-      <div className="mt-4 space-y-4">
-        <section className="rounded-lg border p-4 shadow-sm">
+      <div className="space-y-4">
+        <section className="p-4">
           <header className="mb-2">
             <h2 className="font-medium text-lg">{t("courses.course_info")}</h2>
           </header>
-
-          <div className="mt-2">
-            <p className="font-medium text-sm">{t("academic.classes")}</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {course.class.map((cls: GenElectiveOption["class"][number]) => {
+          <div>Display Course Information here</div>
+        </section>
+        <section className="p-4">
+          <header className="mb-2">
+            <h2 className="font-medium text-lg">
+              {t("courses.group_section_info")}
+            </h2>
+          </header>
+          <Tabs
+            className="mt-4 border"
+            defaultValue={course.class[0] ? "class-0" : undefined}
+          >
+            <div className="border-b">
+              <TabsList variant="underline">
+                {course.class.map(
+                  (cls: GenElectiveOption["class"][number], index: number) => (
+                    <TabsTab
+                      key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
+                      value={`class-${index}`}
+                    >
+                      {t(`days_short.${cls.day.toLowerCase()}`)} {cls.start} -{" "}
+                      {cls.end}
+                    </TabsTab>
+                  )
+                )}
+              </TabsList>
+            </div>
+            {course.class.map(
+              (cls: GenElectiveOption["class"][number], index: number) => {
                 const selectedSession = selected.find(
                   (s) =>
                     s.courseCode === course.code &&
@@ -80,25 +112,83 @@ function CourseDetailPage() {
                 const isClassSelected = !!selectedSession;
 
                 return (
-                  <Button
-                    key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
-                    onClick={() => {
-                      if (isClassSelected && selectedSession) {
-                        remove(selectedSession.id);
-                      } else {
-                        add(course, cls);
-                      }
-                    }}
-                    size="sm"
-                    variant={isClassSelected ? "secondary" : "outline"}
+                  <TabsPanel
+                    key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}-panel`}
+                    value={`class-${index}`}
                   >
-                    {t(`days_short.${cls.day.toLowerCase()}`)} {cls.start} -{" "}
-                    {cls.end}
-                  </Button>
+                    <div className="space-y-4 p-4">
+                      <table className="table-fixed text-sm">
+                        <tbody>
+                          <tr>
+                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <CalendarIcon className="h-3.5 w-3.5" />
+                                <span>{t("days_time.day")}</span>
+                              </div>
+                            </td>
+                            <td className="py-1.5">
+                              {t(`days.${cls.day.toLowerCase()}`)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <ClockIcon className="h-3.5 w-3.5" />
+                                <span>{t("days_time.time")}</span>
+                              </div>
+                            </td>
+                            <td className="py-1.5">
+                              {cls.start} - {cls.end}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <UsersIcon className="h-3.5 w-3.5" />
+                                <span>{t("course.group")}</span>
+                              </div>
+                            </td>
+                            <td className="py-1.5">{cls.group}</td>
+                          </tr>
+                          <tr>
+                            <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <User className="h-3.5 w-3.5" />
+                                <span>{t("course.instructor")}</span>
+                              </div>
+                            </td>
+                            <td className="py-1.5">
+                              <div className="flex flex-wrap gap-2">
+                                {cls.instructor.map((instructor) => (
+                                  <Badge key={instructor} variant="outline">
+                                    {instructor}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <Button
+                        onClick={() => {
+                          if (isClassSelected && selectedSession) {
+                            remove(selectedSession.id);
+                          } else {
+                            add(course, cls);
+                          }
+                        }}
+                        variant={isClassSelected ? "secondary" : "outline"}
+                      >
+                        {isClassSelected
+                          ? t("courses.deselect_class")
+                          : t("courses.select_class")}
+                      </Button>
+                    </div>
+                  </TabsPanel>
                 );
-              })}
-            </div>
-          </div>
+              }
+            )}
+          </Tabs>
         </section>
       </div>
     </div>
