@@ -96,10 +96,7 @@ export function ScheduleExportDialog() {
   return (
     <Dialog>
       <DialogTrigger
-        className={cn(
-          buttonVariants({ variant: "outline", size: "sm" }),
-          "gap-2"
-        )}
+        className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
       >
         <Download className="h-4 w-4" />
         {t("export.button", "Export")}
