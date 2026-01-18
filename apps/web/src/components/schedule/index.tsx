@@ -714,10 +714,10 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
               }}
             >
               <div
-                className="sticky left-0 z-40 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs"
+                className="sticky left-0 z-40 flex items-center justify-center border-border border-r bg-muted font-medium text-muted-foreground text-xs"
                 data-day-label
               >
-                {t(`days_time.${day.toLowerCase()}`)}
+                {t(`days_short.${day.toLowerCase()}`)}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
                 const cellClasses = getClassesForCell(
