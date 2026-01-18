@@ -42,8 +42,7 @@ export interface UseSelectedFiltersReturn extends UseCourseFiltersReturnBase {
   totalSessions: number;
 }
 
-export function useCourseFilters(): UseCourseFiltersReturn;
-export function useCourseFilters(options: {
+export function useCourseFilters(options?: {
   showYearSemester: true;
 }): UseCourseFiltersReturn;
 export function useCourseFilters(options: {
