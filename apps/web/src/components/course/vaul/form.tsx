@@ -302,7 +302,7 @@ export function CourseVaulForm() {
                   <SelectContent>
                     {DAYS.map((day: (typeof DAYS)[number]) => (
                       <SelectItem key={day} value={day}>
-                        {t(`days.${day.toLowerCase()}`)}
+                        {t(`days_time.${day.toLowerCase()}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
