@@ -1,4 +1,4 @@
-import { ClockIcon, User } from "lucide-react";
+import { CheckCircleIcon, ClockIcon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SelectButton } from "@/components/class/select-button";
 import {
@@ -28,16 +28,25 @@ export function AccordionItem({
   const { isSelected } = useSelection(course, cls);
 
   return (
-    <AccordionItemPrimitive value={index}>
+    <AccordionItemPrimitive
+      className={cn(
+        isSelected && "border-b-0!",
+        isSelected && index > 0 && "-mt-px"
+      )}
+      value={index}
+    >
       <AccordionTrigger
         className={cn(
           "px-4 transition-all",
           isSelected && "border border-primary",
           isSelected && openIndexs?.includes(index) && "border-b-0",
-          "hover:cursor-pointer hover:no-underline"
+          "flex items-center justify-center gap-2 hover:cursor-pointer hover:no-underline"
         )}
       >
-        {formatLabel(cls, t)}
+        {isSelected && <CheckCircleIcon className="size-5 text-primary" />}{" "}
+        <span className={cn("font-bold", isSelected && "text-primary")}>
+          {formatLabel(cls, t)}
+        </span>
       </AccordionTrigger>
       <AccordionContent
         className={cn(
