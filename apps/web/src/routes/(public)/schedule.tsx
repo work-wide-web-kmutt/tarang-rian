@@ -1,4 +1,6 @@
+import NumberFlow from "@number-flow/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
 import { Schedule } from "@/components/schedule";
@@ -17,6 +19,15 @@ function SelectedCoursesPage() {
   const { filters, setters, filteredSessions, totalSessions } =
     useCourseFilters({ showYearSemester: false });
   const { t } = useTranslation();
+
+  const totalHours = useMemo(() => {
+    return selected.reduce((acc, session) => {
+      const [startH, startM] = session.start.split(":").map(Number);
+      const [endH, endM] = session.end.split(":").map(Number);
+      const hours = endH - startH + (endM - startM) / 60;
+      return acc + hours;
+    }, 0);
+  }, [selected]);
 
   return (
     <div className="container mx-auto px-12 pb-20">
@@ -41,6 +52,31 @@ function SelectedCoursesPage() {
           />
         </div>
       </div>
+      <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+        <h1 className="flex items-center pl-4 font-semibold text-xl md:text-2xl">
+          {t("nav.selected_classes")}
+        </h1>
+        <div className="flex items-center pr-4">
+          <div className="flex size-18 flex-col items-center justify-center border border-y-0 border-r-0">
+            <NumberFlow
+              className="font-bold text-2xl tabular-nums"
+              value={selected.length}
+            />
+            <span className="text-muted-foreground text-xs">
+              {t("courses.courses")}
+            </span>
+          </div>
+          <div className="flex size-18 flex-col items-center justify-center border border-y-0">
+            <NumberFlow
+              className="font-bold text-2xl tabular-nums"
+              value={totalHours}
+            />
+            <span className="text-muted-foreground text-xs">
+              {t("academic.hours")}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div className="mt-4">
         <CourseFilters
@@ -56,9 +92,7 @@ function SelectedCoursesPage() {
 
       {filteredSessions.length === 0 ? (
         <div className="mt-4 rounded-lg border border-dashed p-8 text-center">
-          <p className="font-bold text-muted-foreground">
-            {t("courses.no_result")}
-          </p>
+          <p className="text-muted-foreground">{t("courses.no_result")}</p>
         </div>
       ) : (
         <div className="mt-4 space-y-4">

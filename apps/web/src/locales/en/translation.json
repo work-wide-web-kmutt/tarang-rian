@@ -8,7 +8,8 @@
     "course_management": "Course management and planning platform",
     "nav": {
       "courses": "Courses",
-      "schedule": "Schedule"
+      "schedule": "Schedule",
+      "selected_classes": "Selected Classes"
     },
     "form": {
       "save": "Save",
@@ -40,7 +41,8 @@
     "academic": {
       "year": "Year",
       "semester": "Semester",
-      "classes": "Classes"
+      "classes": "Classes",
+      "hours": "Hours"
     },
     "filter": {
       "search": "Search by course code or name...",
