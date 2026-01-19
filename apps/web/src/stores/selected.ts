@@ -52,6 +52,10 @@ interface SelectedGenElectivesState {
       }
     ) => void;
     clear: () => void;
+    importSchedule: (
+      sessions: SelectedClassSession[],
+      mode: "replace" | "merge"
+    ) => void;
   };
 }
 
@@ -250,6 +254,39 @@ const selectedGenElectivesStoreCreator: StateCreator<
       saveToStorage([]);
       set({ selected: [] });
     },
+    importSchedule: (
+      sessions: SelectedClassSession[],
+      mode: "replace" | "merge"
+    ) =>
+      set((state) => {
+        // Regenerate IDs to avoid conflicts
+        const importedSessions = sessions.map((session) => ({
+          ...session,
+          id: v7(),
+          type: session.type ?? "fixed",
+          courseCode: session.courseCode ?? "",
+          courseName: session.courseName ?? "",
+          instructor: (() => {
+            if (Array.isArray(session.instructor)) {
+              return session.instructor;
+            }
+            if (session.instructor) {
+              return [session.instructor];
+            }
+            return ["TBA"];
+          })(),
+          group: session.group ?? "",
+          year: session.year ?? "",
+        }));
+
+        const updated =
+          mode === "replace"
+            ? importedSessions
+            : [...state.selected, ...importedSessions];
+
+        saveToStorage(updated);
+        return { selected: updated };
+      }),
   },
 });
 

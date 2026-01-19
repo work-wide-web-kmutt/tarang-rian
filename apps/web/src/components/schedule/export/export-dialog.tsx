@@ -58,21 +58,30 @@ export function ScheduleExportDialog() {
 
   const handleExport = async () => {
     setIsExporting(true);
-    // Allow time for the Portal to render the export target
-    await new Promise((resolve) => setTimeout(resolve, 100));
 
     try {
-      if (format === "pdf") {
-        const pdf = await exportAsPdf("schedule-export-target");
-        pdf.save("schedule.pdf");
+      if (format === "json") {
+        const jsonData = JSON.stringify(sessions, null, 2);
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        downloadFile(url, "schedule.json");
+        URL.revokeObjectURL(url);
       } else {
-        const dataUrl = await exportAsImage(
-          "schedule-export-target",
-          format,
-          Number.parseInt(scale, 10)
-        );
-        if (dataUrl) {
-          downloadFile(dataUrl, `schedule.${format}`);
+        // Allow time for the Portal to render the export target
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        if (format === "pdf") {
+          const pdf = await exportAsPdf("schedule-export-target");
+          pdf.save("schedule.pdf");
+        } else {
+          const dataUrl = await exportAsImage(
+            "schedule-export-target",
+            format,
+            Number.parseInt(scale, 10)
+          );
+          if (dataUrl) {
+            downloadFile(dataUrl, `schedule.${format}`);
+          }
         }
       }
       toast.success(t("export.success", "Schedule exported successfully!"));
@@ -111,7 +120,7 @@ export function ScheduleExportDialog() {
                 className={cn(
                   "min-w-fit origin-top scale-[0.45] shadow-lg transition-all sm:scale-[0.6] lg:scale-[0.75]",
                   !showBackground &&
-                    "bg-[image:repeating-conic-gradient(#e2e8f0_0%_25%,transparent_0%_50%)] bg-[length:20px_20px] bg-white"
+                    "bg-[repeating-conic-gradient(#e2e8f0_0%_25%,transparent_0%_50%)] bg-size-[20px_20px] bg-white"
                 )}
               >
                 <div
@@ -135,7 +144,7 @@ export function ScheduleExportDialog() {
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
               <div className="space-y-3">
                 <Label>{t("export.format", "Format")}</Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   <Button
                     className="w-full"
                     onClick={() => setFormat("png")}
@@ -159,6 +168,14 @@ export function ScheduleExportDialog() {
                     variant={format === "pdf" ? "default" : "outline"}
                   >
                     PDF
+                  </Button>
+                  <Button
+                    className="w-full"
+                    onClick={() => setFormat("json")}
+                    size="sm"
+                    variant={format === "json" ? "default" : "outline"}
+                  >
+                    JSON
                   </Button>
                 </div>
               </div>

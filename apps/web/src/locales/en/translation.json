@@ -124,6 +124,23 @@
       "processing": "Processing...",
       "success": "Schedule exported successfully!",
       "error": "Failed to export schedule"
+    },
+    "import": {
+      "title": "Import Schedule",
+      "description": "Import a schedule from a JSON file.",
+      "button": "Import",
+      "file": "File",
+      "dropzone": "Click to select JSON file",
+      "mode": "Import Mode",
+      "replace": "Replace",
+      "merge": "Merge",
+      "replace_hint": "Replace current schedule with imported data",
+      "merge_hint": "Add imported sessions to current schedule",
+      "sessions_count": "{{count}} sessions found",
+      "confirm": "Import",
+      "success": "Schedule imported successfully!",
+      "error": "Failed to import schedule",
+      "invalid_format": "Invalid JSON format"
     }
   }
 }
