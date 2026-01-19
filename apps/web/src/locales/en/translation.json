@@ -76,6 +76,11 @@
       "remove": "Remove",
       "cancel": "Cancel"
     },
+    "not_found": {
+      "title": "Sorry!",
+      "no_courses": "We couldn't find any courses matching your filters.",
+      "no_selected_classes": "We couldn't find any selected classes yet."
+    },
     "courses": {
       "courses": "Courses",
       "show": "Showing",

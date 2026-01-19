@@ -4,6 +4,7 @@ import { SelectButton } from "@/components/class/select-button";
 import { SelectDropdown } from "@/components/class/select-dropdown";
 import { CourseFilters } from "@/components/course/course-filters";
 import { DisclaimerAlert } from "@/components/disclaimer-alert";
+import { NotFound } from "@/components/not-found";
 import { Button } from "@/components/ui/button";
 import { useCourseFilters } from "@/hooks/use-course-filters";
 
@@ -38,11 +39,7 @@ function AllCoursesPage() {
       </div>
 
       {filteredCourses.length === 0 ? (
-        <div className="mt-4 rounded-lg border border-dashed p-8 text-center">
-          <p className="font-bold text-muted-foreground">
-            {t("courses.no_result")}
-          </p>
-        </div>
+        <NotFound className="mt-8" description={t("not_found.no_courses")} />
       ) : (
         <div className="mt-4 space-y-4">
           {filteredCourses.map((course) => (

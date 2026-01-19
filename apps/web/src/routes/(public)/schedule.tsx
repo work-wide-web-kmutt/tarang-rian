@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CourseFilters } from "@/components/course/course-filters";
+import { NotFound } from "@/components/not-found";
 import { Schedule } from "@/components/schedule";
 import { ScheduleExportDialog } from "@/components/schedule/export/export-dialog";
 import { ScheduleImportDialog } from "@/components/schedule/export/import-dialog";
@@ -90,17 +91,26 @@ function SelectedCoursesPage() {
         </p>
       </div>
 
-      {filteredSessions.length === 0 ? (
-        <div className="mt-4 rounded-lg border border-dashed p-8 text-center">
-          <p className="text-muted-foreground">{t("courses.no_result")}</p>
-        </div>
-      ) : (
-        <div className="mt-4 space-y-4">
-          {filteredSessions.map((session) => (
-            <SelectedCourseCard key={session.id} session={session} />
-          ))}
-        </div>
-      )}
+      <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+        {filteredSessions.length === 0 ? (
+          <div className="flex w-full items-center justify-center">
+            <NotFound
+              className="my-8"
+              description={
+                selected.length === 0
+                  ? t("not_found.no_selected_classes")
+                  : t("not_found.no_courses")
+              }
+            />
+          </div>
+        ) : (
+          <div className="my-4 w-full space-y-4">
+            {filteredSessions.map((session) => (
+              <SelectedCourseCard key={session.id} session={session} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
