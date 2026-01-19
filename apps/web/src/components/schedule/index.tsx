@@ -786,6 +786,12 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                               width: `calc(${resizePreview.span * 100}% - 0.25rem)`,
                             }}
                           >
+                            {resizeState?.edge === "left" && (
+                              <div className="absolute inset-y-1 -left-2 w-1 rounded-full bg-primary" />
+                            )}
+                            {resizeState?.edge === "right" && (
+                              <div className="absolute inset-y-1 -right-2 w-1 rounded-full bg-primary" />
+                            )}
                             <div className="min-w-0">
                               <div className="truncate text-primary-foreground">
                                 {resizePreview.session.courseCode}
