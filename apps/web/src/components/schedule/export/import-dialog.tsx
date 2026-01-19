@@ -22,7 +22,13 @@ import {
 
 type ImportMode = "replace" | "merge";
 
-export function ScheduleImportDialog() {
+interface ScheduleImportDialogProps {
+  triggerClassName?: string;
+}
+
+export function ScheduleImportDialog({
+  triggerClassName,
+}: ScheduleImportDialogProps) {
   const { t } = useTranslation();
   const { importSchedule } = useSelectedGenElectivesActions();
 
@@ -95,7 +101,7 @@ export function ScheduleImportDialog() {
       <DialogTrigger
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
-          "gap-2"
+          triggerClassName
         )}
       >
         <Upload className="size-4" />
