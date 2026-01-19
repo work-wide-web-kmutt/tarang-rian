@@ -39,6 +39,7 @@ interface SessionBlockProps {
   isCustom?: boolean;
   textClass?: string;
   subTextClass?: string;
+  defaultEditMode?: boolean;
 }
 
 export function SessionBlock({
@@ -49,6 +50,7 @@ export function SessionBlock({
   extraLeftPadding,
   textClass = "text-xs",
   subTextClass = "text-[10px]",
+  defaultEditMode = false,
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
@@ -81,6 +83,7 @@ export function SessionBlock({
               : "border-primary bg-primary"
           }`}
           data-session-block
+          defaultEditMode={defaultEditMode}
           key={classKey}
           onOpenChange={(open) => {
             onOpenChange(open ? classKey : null);

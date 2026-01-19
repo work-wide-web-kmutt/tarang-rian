@@ -16,6 +16,7 @@ interface DraggableBlockProps {
   isResizing?: boolean;
   textClass?: string;
   subTextClass?: string;
+  defaultEditMode?: boolean;
 }
 
 export function DraggableBlock({
@@ -27,6 +28,7 @@ export function DraggableBlock({
   isResizing,
   textClass,
   subTextClass,
+  defaultEditMode = false,
 }: DraggableBlockProps) {
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
@@ -108,6 +110,7 @@ export function DraggableBlock({
 
       <SessionBlock
         allSessions={allSessions}
+        defaultEditMode={defaultEditMode}
         extraLeftPadding={isSmallBlock ? "1rem" : "1.5rem"}
         isCustom={isCustom}
         onOpenChange={onOpenChange}

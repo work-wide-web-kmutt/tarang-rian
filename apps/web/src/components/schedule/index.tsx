@@ -111,6 +111,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
   const { t } = useTranslation();
 
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
+  const [newClassKey, setNewClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [activeSession, setActiveSession] =
     useState<SelectedClassSession | null>(null);
@@ -657,6 +658,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
 
       if (createdSession) {
         const classKey = getClassKey(createdSession);
+        setNewClassKey(classKey);
         setOpenClassKey(classKey);
       }
     }
@@ -751,12 +753,20 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                           return null;
                         }
 
+                        const handleOpenChange = (key: string | null) => {
+                          setOpenClassKey(key);
+                          if (key === null) {
+                            setNewClassKey(null);
+                          }
+                        };
+
                         return session.type === "custom" ? (
                           <DraggableBlock
                             allSessions={sessions}
+                            defaultEditMode={classKey === newClassKey}
                             isResizing={resizeState !== null}
                             key={classKey}
-                            onOpenChange={setOpenClassKey}
+                            onOpenChange={handleOpenChange}
                             onResizeStart={handleResizeStart}
                             openClassKey={openClassKey}
                             session={session}
@@ -767,7 +777,7 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                           <SessionBlock
                             allSessions={sessions}
                             key={classKey}
-                            onOpenChange={setOpenClassKey}
+                            onOpenChange={handleOpenChange}
                             openClassKey={openClassKey}
                             session={session}
                             subTextClass={subTextClass}
