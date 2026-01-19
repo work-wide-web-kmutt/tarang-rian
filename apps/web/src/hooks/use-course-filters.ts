@@ -1,32 +1,60 @@
 import { allCourses, type Course } from "content-collections";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
+import {
+  type SelectedClassSession,
+  useSelectedGenElectives,
+} from "@/stores/selected";
 
 export interface CourseFilters {
   searchQuery: string;
   dayFilter: string;
   timeSlotFilter: string;
-  yearFilter: string;
-  semesterFilter: string;
-  availableYears: string[];
+  yearFilter?: string;
+  semesterFilter?: string;
+  availableYears?: string[];
 }
 
 export interface CourseFilterSetters {
   setSearchQuery: (value: string) => void;
   setDayFilter: (value: string) => void;
   setTimeSlotFilter: (value: string) => void;
-  setYearFilter: (value: string) => void;
-  setSemesterFilter: (value: string) => void;
+  setYearFilter?: (value: string) => void;
+  setSemesterFilter?: (value: string) => void;
 }
 
-export interface UseCourseFiltersReturn {
+interface UseCourseFiltersOptions {
+  showYearSemester?: boolean;
+}
+
+interface UseCourseFiltersReturnBase {
   filters: CourseFilters;
   setters: CourseFilterSetters;
+}
+
+export interface UseCourseFiltersReturn extends UseCourseFiltersReturnBase {
   filteredCourses: Course[];
   totalCourses: number;
 }
 
-export function useCourseFilters(): UseCourseFiltersReturn {
+export interface UseSelectedFiltersReturn extends UseCourseFiltersReturnBase {
+  filteredSessions: SelectedClassSession[];
+  totalSessions: number;
+}
+
+export function useCourseFilters(options?: {
+  showYearSemester: true;
+}): UseCourseFiltersReturn;
+export function useCourseFilters(options: {
+  showYearSemester: false;
+}): UseSelectedFiltersReturn;
+export function useCourseFilters(
+  options: UseCourseFiltersOptions = {}
+): UseCourseFiltersReturn | UseSelectedFiltersReturn {
+  const { showYearSemester = true } = options;
+
+  const selected = useSelectedGenElectives();
+
   const [searchQuery, setSearchQuery] = useQueryState(
     "q",
     parseAsString.withDefault("")
@@ -122,27 +150,75 @@ export function useCourseFilters(): UseCourseFiltersReturn {
     semesterFilter,
   ]);
 
-  const filters: CourseFilters = {
+  const filteredSessions = useMemo(() => {
+    return selected.filter((session) => {
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch =
+        searchQuery === "" ||
+        session.courseCode.toLowerCase().includes(searchLower) ||
+        session.courseName.toLowerCase().includes(searchLower);
+
+      if (!matchesSearch) {
+        return false;
+      }
+
+      const matchesDay = dayFilter === "all" || session.day === dayFilter;
+
+      if (!matchesDay) {
+        return false;
+      }
+
+      const matchesTimeSlot =
+        timeSlotFilter === "all" ||
+        (() => {
+          const startHour = Number.parseInt(session.start.split(":")[0], 10);
+          if (timeSlotFilter === "morning") {
+            return startHour < 12;
+          }
+          if (timeSlotFilter === "afternoon") {
+            return startHour >= 12;
+          }
+          return true;
+        })();
+
+      return matchesTimeSlot;
+    });
+  }, [selected, searchQuery, dayFilter, timeSlotFilter]);
+
+  const baseFilters: CourseFilters = {
     searchQuery,
     dayFilter,
     timeSlotFilter,
-    yearFilter,
-    semesterFilter,
-    availableYears,
   };
 
-  const setters: CourseFilterSetters = {
+  const baseSetters: CourseFilterSetters = {
     setSearchQuery,
     setDayFilter,
     setTimeSlotFilter,
-    setYearFilter,
-    setSemesterFilter,
   };
 
+  if (showYearSemester) {
+    return {
+      filters: {
+        ...baseFilters,
+        yearFilter,
+        semesterFilter,
+        availableYears,
+      },
+      setters: {
+        ...baseSetters,
+        setYearFilter,
+        setSemesterFilter,
+      },
+      filteredCourses,
+      totalCourses: sortedCourses.length,
+    };
+  }
+
   return {
-    filters,
-    setters,
-    filteredCourses,
-    totalCourses: sortedCourses.length,
+    filters: baseFilters,
+    setters: baseSetters,
+    filteredSessions,
+    totalSessions: selected.length,
   };
 }

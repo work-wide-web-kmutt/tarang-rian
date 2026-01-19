@@ -8,7 +8,8 @@
     "course_management": "แพลตฟอร์มจัดการรายวิชาและวางแผนการเรียน",
     "nav": {
       "courses": "รายวิชา",
-      "schedule": "ตารางเรียน"
+      "schedule": "ตารางเรียน",
+      "selected_classes": "รายวิชาที่เลือก"
     },
     "form": {
       "save": "บันทึก",
@@ -40,7 +41,8 @@
     "academic": {
       "year": "ปี",
       "semester": "ภาคการศึกษา",
-      "classes": "คาบเรียน"
+      "classes": "คาบเรียน",
+      "hours": "ชั่วโมง"
     },
     "filter": {
       "search": "ค้นหาด้วยรหัสหรือชื่อวิชา...",
@@ -63,6 +65,9 @@
       }
     },
     "schedule": {
+      "drag_to_create": "ลากเพื่อสร้างคาบเรียนเอง",
+      "unassigned_class": "คาบเรียนที่ยังไม่ได้กำหนด",
+      "unassigned_code": "ยังไม่ได้กำหนด ({{number}})",
       "delete": "ลบ",
       "remove_from_select": "ลบออกจากรายการ",
       "remove_from_schedule": "ลบออกจากตารางเรียน?",
@@ -70,6 +75,11 @@
       "remove_from_schedule_description2": "ออกจากตารางเรียนของคุณ? การดำเนินการนี้จะไม่สามารถย้อนกลับได้ในภายหลัง",
       "remove": "ลบ",
       "cancel": "ยกเลิก"
+    },
+    "not_found": {
+      "title": "ขออภัย!",
+      "no_courses": "เราไม่พบรายวิชาที่ตรงกับข้อมูลการกรองของคุณ",
+      "no_selected_classes": "คุณยังไม่เลือกวิชาอะไรเลย"
     },
     "courses": {
       "courses": "รายวิชา",

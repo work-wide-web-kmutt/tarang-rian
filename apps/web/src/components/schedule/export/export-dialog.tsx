@@ -31,7 +31,13 @@ import {
   exportAsPdf,
 } from "./utils";
 
-export function ScheduleExportDialog() {
+interface ScheduleExportDialogProps {
+  triggerClassName?: string;
+}
+
+export function ScheduleExportDialog({
+  triggerClassName,
+}: ScheduleExportDialogProps) {
   const { t } = useTranslation();
   const sessions = useSelectedGenElectives();
 
@@ -98,7 +104,7 @@ export function ScheduleExportDialog() {
       <DialogTrigger
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
-          "gap-2"
+          triggerClassName
         )}
       >
         <Download className="h-4 w-4" />

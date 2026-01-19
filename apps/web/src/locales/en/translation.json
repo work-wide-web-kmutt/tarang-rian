@@ -8,7 +8,8 @@
     "course_management": "Course management and planning platform",
     "nav": {
       "courses": "Courses",
-      "schedule": "Schedule"
+      "schedule": "Schedule",
+      "selected_classes": "Selected Classes"
     },
     "form": {
       "save": "Save",
@@ -40,7 +41,8 @@
     "academic": {
       "year": "Year",
       "semester": "Semester",
-      "classes": "Classes"
+      "classes": "Classes",
+      "hours": "Hours"
     },
     "filter": {
       "search": "Search by course code or name...",
@@ -63,6 +65,9 @@
       }
     },
     "schedule": {
+      "drag_to_create": "Drag to create custom class",
+      "unassigned_class": "Unassigned Class",
+      "unassigned_code": "Unassigned ({{number}})",
       "delete": "Delete",
       "remove_from_select": "Remove from select",
       "remove_from_schedule": "Remove from schedule?",
@@ -70,6 +75,11 @@
       "remove_from_schedule_description2": "from your schedule? This action cannot be undone.",
       "remove": "Remove",
       "cancel": "Cancel"
+    },
+    "not_found": {
+      "title": "Sorry!",
+      "no_courses": "We couldn't find any courses matching your filters.",
+      "no_selected_classes": "We couldn't find any selected classes yet."
     },
     "courses": {
       "courses": "Courses",

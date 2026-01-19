@@ -36,6 +36,7 @@ import {
 } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
+import { cn } from "@/lib/utils";
 import {
   type SelectedClassSession,
   useSelectedGenElectivesActions,
@@ -43,9 +44,15 @@ import {
 
 type ScheduleSize = keyof typeof SCHEDULE_SIZE;
 
+interface ScheduleStyles {
+  borderTop?: string;
+  borderBottom?: string;
+}
+
 interface ScheduleProps {
   sessions: SelectedClassSession[];
   size?: ScheduleSize;
+  styles?: ScheduleStyles;
 }
 
 interface DragState {
@@ -97,12 +104,14 @@ function DroppableCell({
   );
 }
 
-export function Schedule({ sessions, size = "md" }: ScheduleProps) {
-  const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE[size];
+export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
+  const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
+    SCHEDULE_SIZE[size];
   const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
   const { t } = useTranslation();
 
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
+  const [newClassKey, setNewClassKey] = useState<string | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [activeSession, setActiveSession] =
     useState<SelectedClassSession | null>(null);
@@ -649,6 +658,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
 
       if (createdSession) {
         const classKey = getClassKey(createdSession);
+        setNewClassKey(classKey);
         setOpenClassKey(classKey);
       }
     }
@@ -667,7 +677,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
     >
       <div style={{ width: `${minWidth}px` }}>
         <div
-          className="grid border border-border"
+          className={cn("grid border border-border", styles?.borderTop)}
           style={{
             gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
           }}
@@ -685,12 +695,18 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
           ))}
         </div>
 
-        <div className="border-border border-r border-b border-l">
+        <div
+          className={cn(
+            "border-border border-r border-b border-l",
+            styles?.borderBottom
+          )}
+        >
           {DAYS.map((day) => (
             <div
-              className={`grid border-border border-b last:border-b-0 ${
-                dragState ? "cursor-crosshair select-none" : ""
-              }`}
+              className={cn(
+                "grid border-border border-b last:border-b-0",
+                dragState && "cursor-crosshair select-none"
+              )}
               data-day-row={day}
               key={day}
               onPointerLeave={handlePointerUp}
@@ -701,10 +717,10 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
               }}
             >
               <div
-                className="sticky left-0 z-40 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs"
+                className="sticky left-0 z-40 flex items-center justify-center border-border border-r bg-muted font-medium text-muted-foreground text-xs"
                 data-day-label
               >
-                {t(`days_time.${day.toLowerCase()}`)}
+                {t(`days_short.${day.toLowerCase()}`)}
               </div>
               {TIME_SLOTS.map((time, timeColIndex) => {
                 const cellClasses = getClassesForCell(
@@ -720,7 +736,7 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                 return (
                   <DroppableCell id={dropId} key={dropId}>
                     <div
-                      aria-label={`${day} ${time} - Drag to create custom class`}
+                      aria-label={`${day} ${time} - ${t("schedule.drag_to_create")}`}
                       className="relative touch-none border-border border-r bg-background last:border-r-0"
                       onPointerDown={(e) =>
                         handlePointerDown(e, day, timeColIndex)
@@ -737,23 +753,35 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                           return null;
                         }
 
+                        const handleOpenChange = (key: string | null) => {
+                          setOpenClassKey(key);
+                          if (key === null) {
+                            setNewClassKey(null);
+                          }
+                        };
+
                         return session.type === "custom" ? (
                           <DraggableBlock
                             allSessions={sessions}
+                            defaultEditMode={classKey === newClassKey}
                             isResizing={resizeState !== null}
                             key={classKey}
-                            onOpenChange={setOpenClassKey}
+                            onOpenChange={handleOpenChange}
                             onResizeStart={handleResizeStart}
                             openClassKey={openClassKey}
                             session={session}
+                            subTextClass={subTextClass}
+                            textClass={textClass}
                           />
                         ) : (
                           <SessionBlock
                             allSessions={sessions}
                             key={classKey}
-                            onOpenChange={setOpenClassKey}
+                            onOpenChange={handleOpenChange}
                             openClassKey={openClassKey}
                             session={session}
+                            subTextClass={subTextClass}
+                            textClass={textClass}
                           />
                         );
                       })}
@@ -762,20 +790,32 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                         resizePreview.session.day === day &&
                         timeColIndex === resizePreview.startCol && (
                           <div
-                            className="absolute inset-y-0 z-30 m-0.5 cursor-ew-resize select-none rounded border border-primary bg-primary p-1.5 text-xs"
+                            className={`absolute inset-y-0 z-30 m-0.5 cursor-ew-resize select-none rounded border border-primary bg-primary p-1.5 ${textClass}`}
                             style={{
                               left: `${resizePreview.startOffset * 100}%`,
                               width: `calc(${resizePreview.span * 100}% - 0.25rem)`,
                             }}
                           >
-                            <div className="text-primary-foreground">
-                              <p>{resizePreview.session.courseCode}</p>
-                              <p className="font-bold">
-                                {resizePreview.session.courseName}
-                              </p>
-                            </div>
-                            <div className="text-[10px] text-primary-foreground/80">
-                              {resizePreview.start} - {resizePreview.end}
+                            {resizeState?.edge === "left" && (
+                              <div className="absolute inset-y-1 -left-2 w-1 rounded-full bg-primary" />
+                            )}
+                            {resizeState?.edge === "right" && (
+                              <div className="absolute inset-y-1 -right-2 w-1 rounded-full bg-primary" />
+                            )}
+                            <div className="min-w-0">
+                              <div className="truncate text-primary-foreground">
+                                {resizePreview.session.courseCode}
+                              </div>
+                              <div className="truncate">
+                                <span className="font-bold text-primary-foreground">
+                                  {resizePreview.session.courseName}
+                                </span>
+                              </div>
+                              <div
+                                className={`truncate ${subTextClass} text-primary-foreground/80`}
+                              >
+                                {resizePreview.start} - {resizePreview.end}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -799,17 +839,21 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                           if (timeColIndex === startCol) {
                             return (
                               <div
-                                className="absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                                className={`absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 ${textClass}`}
                                 style={{
                                   left: `${startOffset * 100}%`,
                                   width: `calc(${span * 100}% - 0.25rem)`,
                                 }}
                               >
-                                <div className="font-medium text-primary-foreground">
-                                  Unassigned Class
-                                </div>
-                                <div className="text-[10px] text-primary-foreground/80">
-                                  {formatTimeRange(startTime, endTime)}
+                                <div className="min-w-0">
+                                  <div className="truncate font-medium text-primary-foreground">
+                                    {t("schedule.unassigned_class")}
+                                  </div>
+                                  <div
+                                    className={`truncate ${subTextClass} text-primary-foreground/80`}
+                                  >
+                                    {formatTimeRange(startTime, endTime)}
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -821,20 +865,25 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
                         snappedPreview.day === day &&
                         timeColIndex === snappedPreview.startCol && (
                           <div
-                            className="absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 text-xs"
+                            className={`absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 ${textClass}`}
                             style={{
                               left: `${snappedPreview.startOffset * 100}%`,
                               width: `calc(${snappedPreview.span * 100}% - 0.25rem)`,
                             }}
                           >
-                            <div className="font-medium text-primary-foreground">
-                              {activeSession?.courseCode || "Unassigned Class"}
-                            </div>
-                            <div className="text-[10px] text-primary-foreground/80">
-                              {formatTimeRange(
-                                snappedPreview.start,
-                                snappedPreview.end
-                              )}
+                            <div className="min-w-0">
+                              <div className="truncate font-medium text-primary-foreground">
+                                {activeSession?.courseCode ||
+                                  t("schedule.unassigned_class")}
+                              </div>
+                              <div
+                                className={`truncate ${subTextClass} text-primary-foreground/80`}
+                              >
+                                {formatTimeRange(
+                                  snappedPreview.start,
+                                  snappedPreview.end
+                                )}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -848,11 +897,13 @@ export function Schedule({ sessions, size = "md" }: ScheduleProps) {
       </div>
       <DragOverlay dropAnimation={null}>
         {activeSession ? (
-          <div className="m-0.5 rounded border border-primary bg-primary/80 p-1.5 text-xs">
+          <div
+            className={`m-0.5 rounded border border-primary bg-primary/80 p-1.5 ${textClass}`}
+          >
             <div className="font-medium text-primary-foreground">
               {activeSession.courseCode}
             </div>
-            <div className="text-[10px] text-primary-foreground/80">
+            <div className={`${subTextClass} text-primary-foreground/80`}>
               {activeSession.start}–{activeSession.end}
             </div>
           </div>

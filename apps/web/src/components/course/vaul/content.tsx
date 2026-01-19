@@ -1,6 +1,9 @@
+import { Link } from "@tanstack/react-router";
+import { allCourses } from "content-collections";
 import {
   CalendarIcon,
   ClockIcon,
+  ExternalLinkIcon,
   PencilIcon,
   Trash2Icon,
   User,
@@ -21,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export function CourseVaulContent() {
   const { session, overlappingSessions, setIsEditing, handleRemove } =
@@ -32,6 +35,9 @@ export function CourseVaulContent() {
   if (!session) {
     return null;
   }
+
+  const course = allCourses.find((c) => c.code === session.courseCode);
+  const courseSlug = course?.slug;
 
   const handleConfirmRemove = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.stopPropagation();
@@ -138,11 +144,21 @@ export function CourseVaulContent() {
           </div>
         </div>
       )}
-      <div className="flex">
+      <div className="flex gap-2">
         <Button onClick={() => setShowRemoveDialog(true)} variant="destructive">
           <Trash2Icon />
           {t("schedule.remove_from_select")}
         </Button>
+        {session.type !== "custom" && courseSlug && (
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            params={{ id: courseSlug }}
+            to="/courses/$id"
+          >
+            <ExternalLinkIcon />
+            {t("courses.view")}
+          </Link>
+        )}
         <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>

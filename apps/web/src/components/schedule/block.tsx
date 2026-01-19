@@ -37,6 +37,9 @@ interface SessionBlockProps {
   onOpenChange: (classKey: string | null) => void;
   extraLeftPadding?: string;
   isCustom?: boolean;
+  textClass?: string;
+  subTextClass?: string;
+  defaultEditMode?: boolean;
 }
 
 export function SessionBlock({
@@ -45,6 +48,9 @@ export function SessionBlock({
   openClassKey,
   onOpenChange,
   extraLeftPadding,
+  textClass = "text-xs",
+  subTextClass = "text-[10px]",
+  defaultEditMode = false,
 }: SessionBlockProps) {
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
   const classKey = getClassKey(session);
@@ -71,12 +77,13 @@ export function SessionBlock({
     <ContextMenu>
       <ContextMenuTrigger>
         <CourseVaul
-          className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 text-xs ${
+          className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 ${textClass} ${
             hasOverlapping
               ? "border-destructive bg-destructive/40"
               : "border-primary bg-primary"
           }`}
           data-session-block
+          defaultEditMode={defaultEditMode}
           key={classKey}
           onOpenChange={(open) => {
             onOpenChange(open ? classKey : null);
@@ -90,25 +97,33 @@ export function SessionBlock({
             paddingLeft: extraLeftPadding,
           }}
         >
-          <div>
+          <div className="min-w-0">
             <div
-              className={`${
+              className={`truncate ${
                 hasOverlapping
                   ? "text-destructive-foreground"
                   : "text-primary-foreground"
               }`}
             >
-              <p>{session.courseCode}</p>{" "}
-              <p className="font-bold">{session.courseName}</p>
+              <span>{session.courseCode}</span>{" "}
             </div>
             <div
-              className={`text-[10px] ${
+              className={`truncate ${
+                hasOverlapping
+                  ? "text-destructive-foreground"
+                  : "text-primary-foreground"
+              }`}
+            >
+              <span className="font-bold">{session.courseName}</span>
+            </div>
+            <div
+              className={`truncate ${subTextClass} ${
                 hasOverlapping
                   ? "text-destructive-foreground/80"
                   : "text-primary-foreground/80"
               }`}
             >
-              {session.start} - {session.end}
+              {session.start} - {session.end} ({span}h)
             </div>
           </div>
         </CourseVaul>
