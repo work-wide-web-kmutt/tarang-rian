@@ -31,6 +31,7 @@ export function DraggableBlock({
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
   const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
+  const isSmallBlock = span < 1;
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: classKey,
@@ -76,7 +77,9 @@ export function DraggableBlock({
       <div
         {...(isCustom && !isResizing ? attributes : {})}
         {...(isCustom && !isResizing ? listeners : {})}
-        className={`absolute top-0 z-30 flex h-full w-6 items-center justify-center rounded-l bg-primary/20 ${
+        className={`absolute top-0 z-30 flex h-full items-center justify-center rounded-l bg-primary/20 ${
+          isSmallBlock ? "w-4" : "w-6"
+        } ${
           isCustom && !isResizing
             ? "cursor-grab active:cursor-grabbing"
             : "cursor-default opacity-50"
@@ -86,7 +89,9 @@ export function DraggableBlock({
           left: `${startOffset * 100}%`,
         }}
       >
-        <GripVertical className="h-3 w-3 text-primary-foreground" />
+        <GripVertical
+          className={`text-primary-foreground ${isSmallBlock ? "size-2.5" : "h-3 w-3"}`}
+        />
       </div>
 
       {/* Right resize handle (adjust end time) */}
@@ -103,7 +108,7 @@ export function DraggableBlock({
 
       <SessionBlock
         allSessions={allSessions}
-        extraLeftPadding="1.5rem"
+        extraLeftPadding={isSmallBlock ? "1rem" : "1.5rem"}
         isCustom={isCustom}
         onOpenChange={onOpenChange}
         openClassKey={openClassKey}

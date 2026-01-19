@@ -786,16 +786,20 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                               width: `calc(${resizePreview.span * 100}% - 0.25rem)`,
                             }}
                           >
-                            <div className="text-primary-foreground">
-                              <p>{resizePreview.session.courseCode}</p>
-                              <p className="font-bold">
-                                {resizePreview.session.courseName}
-                              </p>
-                            </div>
-                            <div
-                              className={`${subTextClass} text-primary-foreground/80`}
-                            >
-                              {resizePreview.start} - {resizePreview.end}
+                            <div className="min-w-0">
+                              <div className="truncate text-primary-foreground">
+                                {resizePreview.session.courseCode}
+                              </div>
+                              <div className="truncate">
+                                <span className="font-bold text-primary-foreground">
+                                  {resizePreview.session.courseName}
+                                </span>
+                              </div>
+                              <div
+                                className={`truncate ${subTextClass} text-primary-foreground/80`}
+                              >
+                                {resizePreview.start} - {resizePreview.end}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -825,13 +829,15 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                                   width: `calc(${span * 100}% - 0.25rem)`,
                                 }}
                               >
-                                <div className="font-medium text-primary-foreground">
-                                  {t("schedule.unassigned_class")}
-                                </div>
-                                <div
-                                  className={`${subTextClass} text-primary-foreground/80`}
-                                >
-                                  {formatTimeRange(startTime, endTime)}
+                                <div className="min-w-0">
+                                  <div className="truncate font-medium text-primary-foreground">
+                                    {t("schedule.unassigned_class")}
+                                  </div>
+                                  <div
+                                    className={`truncate ${subTextClass} text-primary-foreground/80`}
+                                  >
+                                    {formatTimeRange(startTime, endTime)}
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -849,17 +855,19 @@ export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
                               width: `calc(${snappedPreview.span * 100}% - 0.25rem)`,
                             }}
                           >
-                            <div className="font-medium text-primary-foreground">
-                              {activeSession?.courseCode ||
-                                t("schedule.unassigned_class")}
-                            </div>
-                            <div
-                              className={`${subTextClass} text-primary-foreground/80`}
-                            >
-                              {formatTimeRange(
-                                snappedPreview.start,
-                                snappedPreview.end
-                              )}
+                            <div className="min-w-0">
+                              <div className="truncate font-medium text-primary-foreground">
+                                {activeSession?.courseCode ||
+                                  t("schedule.unassigned_class")}
+                              </div>
+                              <div
+                                className={`truncate ${subTextClass} text-primary-foreground/80`}
+                              >
+                                {formatTimeRange(
+                                  snappedPreview.start,
+                                  snappedPreview.end
+                                )}
+                              </div>
                             </div>
                           </div>
                         )}

@@ -94,25 +94,33 @@ export function SessionBlock({
             paddingLeft: extraLeftPadding,
           }}
         >
-          <div>
+          <div className="min-w-0">
             <div
-              className={`${
+              className={`truncate ${
                 hasOverlapping
                   ? "text-destructive-foreground"
                   : "text-primary-foreground"
               }`}
             >
-              <p>{session.courseCode}</p>{" "}
-              <p className="font-bold">{session.courseName}</p>
+              <span>{session.courseCode}</span>{" "}
             </div>
             <div
-              className={`${subTextClass} ${
+              className={`truncate ${
+                hasOverlapping
+                  ? "text-destructive-foreground"
+                  : "text-primary-foreground"
+              }`}
+            >
+              <span className="font-bold">{session.courseName}</span>
+            </div>
+            <div
+              className={`truncate ${subTextClass} ${
                 hasOverlapping
                   ? "text-destructive-foreground/80"
                   : "text-primary-foreground/80"
               }`}
             >
-              {session.start} - {session.end}
+              {session.start} - {session.end} ({span}h)
             </div>
           </div>
         </CourseVaul>
