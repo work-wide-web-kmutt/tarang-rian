@@ -1,6 +1,9 @@
+import { Link } from "@tanstack/react-router";
+import { allCourses } from "content-collections";
 import {
   CalendarIcon,
   ClockIcon,
+  ExternalLinkIcon,
   PencilIcon,
   Trash2Icon,
   User,
@@ -32,6 +35,9 @@ export function CourseVaulContent() {
   if (!session) {
     return null;
   }
+
+  const course = allCourses.find((c) => c.code === session.courseCode);
+  const courseSlug = course?.slug;
 
   const handleConfirmRemove = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.stopPropagation();
@@ -138,11 +144,19 @@ export function CourseVaulContent() {
           </div>
         </div>
       )}
-      <div className="flex">
+      <div className="flex gap-2">
         <Button onClick={() => setShowRemoveDialog(true)} variant="destructive">
           <Trash2Icon />
           {t("schedule.remove_from_select")}
         </Button>
+        {session.type !== "custom" && courseSlug && (
+          <Button asChild variant="outline">
+            <Link params={{ id: courseSlug }} to="/courses/$id">
+              <ExternalLinkIcon />
+              {t("courses.view")}
+            </Link>
+          </Button>
+        )}
         <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>

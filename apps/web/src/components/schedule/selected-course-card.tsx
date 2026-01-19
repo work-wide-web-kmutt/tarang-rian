@@ -1,4 +1,6 @@
-import { Eye, Pencil, Trash2, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { allCourses } from "content-collections";
+import { ExternalLink, Eye, Pencil, Trash2, User } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CourseVaul from "@/components/course/vaul";
@@ -27,6 +29,8 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
   const [defaultEditMode, setDefaultEditMode] = useState(false);
 
   const isCustom = session.type === "custom";
+  const course = allCourses.find((c) => c.code === session.courseCode);
+  const courseSlug = course?.slug;
 
   const handleDeleteClick = () => {
     setShowDeleteDialog(true);
@@ -105,7 +109,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
       <div className="flex w-12 flex-col border-l">
         <button
           aria-label={t("schedule.delete")}
-          className="flex h-1/2 items-center justify-center bg-destructive text-destructive-foreground transition-colors hover:bg-destructive/90"
+          className={`flex items-center justify-center bg-destructive text-destructive-foreground transition-colors hover:bg-destructive/90 ${!isCustom && courseSlug ? "h-1/3" : "h-1/2"}`}
           onClick={handleDeleteClick}
           type="button"
         >
@@ -114,7 +118,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
 
         <button
           aria-label={isCustom ? t("form.save") : t("courses.view")}
-          className="flex h-1/2 items-center justify-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+          className={`flex items-center justify-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90 ${!isCustom && courseSlug ? "h-1/3" : "h-1/2"}`}
           onClick={isCustom ? handleEditClick : handleViewClick}
           type="button"
         >
@@ -124,6 +128,17 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
             <Eye className="size-5" />
           )}
         </button>
+
+        {!isCustom && courseSlug && (
+          <Link
+            aria-label={t("courses.view")}
+            className="flex h-1/3 items-center justify-center bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/80"
+            params={{ id: courseSlug }}
+            to="/courses/$id"
+          >
+            <ExternalLink className="size-5" />
+          </Link>
+        )}
       </div>
 
       {/* CourseVaul for view/edit sheet */}
