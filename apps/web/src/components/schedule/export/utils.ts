@@ -1,7 +1,7 @@
 import { toJpeg, toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 
-export type ExportFormat = "png" | "jpg" | "pdf";
+export type ExportFormat = "png" | "jpg" | "pdf" | "json";
 
 export const exportAsImage = (
   elementId: string,
