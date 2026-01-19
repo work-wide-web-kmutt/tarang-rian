@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export function CourseVaulContent() {
   const { session, overlappingSessions, setIsEditing, handleRemove } =
@@ -150,12 +150,14 @@ export function CourseVaulContent() {
           {t("schedule.remove_from_select")}
         </Button>
         {session.type !== "custom" && courseSlug && (
-          <Button asChild variant="outline">
-            <Link params={{ id: courseSlug }} to="/courses/$id">
-              <ExternalLinkIcon />
-              {t("courses.view")}
-            </Link>
-          </Button>
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            params={{ id: courseSlug }}
+            to="/courses/$id"
+          >
+            <ExternalLinkIcon />
+            {t("courses.view")}
+          </Link>
         )}
         <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
           <AlertDialogContent>
