@@ -11,6 +11,7 @@ interface CourseVaulProps {
   session?: SelectedClassSession;
   overlappingSessions?: SelectedClassSession[];
   shouldOpen?: boolean;
+  defaultEditMode?: boolean;
 }
 
 export default function CourseVaul({
@@ -21,10 +22,12 @@ export default function CourseVaul({
   session,
   overlappingSessions = [],
   shouldOpen = false,
+  defaultEditMode = false,
 }: CourseVaulProps) {
   return (
     <CourseVaulProvider
       className={className}
+      defaultEditMode={defaultEditMode}
       onOpenChange={onOpenChange}
       overlappingSessions={overlappingSessions}
       session={session}
