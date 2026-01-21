@@ -1,4 +1,12 @@
-import { Download, Grid, Moon, Palette, Sun } from "lucide-react";
+import {
+  CalendarMinus2,
+  CalendarPlus2,
+  Download,
+  Grid,
+  Moon,
+  Palette,
+  Sun,
+} from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -48,6 +56,7 @@ export function ScheduleExportDialog({
   const [padding, setPadding] = useState("16");
   const [scale, setScale] = useState("2");
   const [isExporting, setIsExporting] = useState(false);
+  const [isShorthand, setIsShorthand] = useState(true);
 
   // Background Color Presets
   const BG_PRESETS = [
@@ -140,7 +149,11 @@ export function ScheduleExportDialog({
                     minWidth: "1000px",
                   }}
                 >
-                  <SchedulePreview darkMode={darkMode} sessions={sessions} />
+                  <SchedulePreview
+                    darkMode={darkMode}
+                    sessions={sessions}
+                    shorthand={isShorthand}
+                  />
                 </div>
               </div>
             </div>
@@ -191,6 +204,29 @@ export function ScheduleExportDialog({
               <div className="space-y-3">
                 <Label>{t("export.appearance", "Appearance")}</Label>
                 <div className="flex flex-col gap-2">
+                  <Button
+                    className="justify-between"
+                    onClick={() => setIsShorthand(!isShorthand)}
+                    variant="outline"
+                  >
+                    <span className="flex items-center gap-2">
+                      {isShorthand ? (
+                        <CalendarMinus2 className="h-4 w-4" />
+                      ) : (
+                        <CalendarPlus2 className="h-4 w-4" />
+                      )}
+                      {t("export.shorthand", "Short day name")}
+                    </span>
+                    <span
+                      className={
+                        isShorthand
+                          ? "font-bold text-primary"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {isShorthand ? "On" : "Off"}
+                    </span>
+                  </Button>
                   <Button
                     className="justify-between"
                     onClick={() => setDarkMode(!darkMode)}
@@ -376,7 +412,11 @@ export function ScheduleExportDialog({
                 height: "100%",
               }}
             >
-              <SchedulePreview darkMode={darkMode} sessions={sessions} />
+              <SchedulePreview
+                darkMode={darkMode}
+                sessions={sessions}
+                shorthand={isShorthand}
+              />
             </div>
           </div>
         </div>,

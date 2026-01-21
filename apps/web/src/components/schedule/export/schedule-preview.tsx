@@ -14,9 +14,14 @@ import type { SelectedClassSession } from "@/stores/selected";
 interface SchedulePreviewProps {
   sessions: SelectedClassSession[];
   darkMode: boolean;
+  shorthand: boolean;
 }
 
-export function SchedulePreview({ sessions, darkMode }: SchedulePreviewProps) {
+export function SchedulePreview({
+  sessions,
+  darkMode,
+  shorthand,
+}: SchedulePreviewProps) {
   const { t } = useTranslation();
   const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE.md;
 
@@ -85,7 +90,9 @@ export function SchedulePreview({ sessions, darkMode }: SchedulePreviewProps) {
               )}
               key={`${day}-label`}
             >
-              {t(`days_time.${day.toLowerCase()}`)}
+              {shorthand
+                ? t(`days_short.${day.toLowerCase()}`)
+                : t(`days_time.${day.toLowerCase()}`)}
             </div>
 
             {TIME_SLOTS.map((_time, timeColIndex) => {
