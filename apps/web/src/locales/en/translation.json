@@ -133,7 +133,8 @@
       "download": "Download",
       "processing": "Processing...",
       "success": "Schedule exported successfully!",
-      "error": "Failed to export schedule"
+      "error": "Failed to export schedule",
+      "shorthand": "Short day name"
     },
     "import": {
       "title": "Import Schedule",
