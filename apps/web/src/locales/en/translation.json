@@ -117,9 +117,6 @@
       "size_sm": "Small",
       "size_md": "Medium",
       "size_lg": "Large",
-      "size_xl": "Extra Large",
-      "size_2xl": "2X Large",
-      "size_3xl": "3X Large",
       "group": {
         "appearance": "Appearance"
       }
