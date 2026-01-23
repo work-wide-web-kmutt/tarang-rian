@@ -165,7 +165,10 @@
       "confirm": "Import",
       "success": "Schedule imported successfully!",
       "error": "Failed to import schedule",
-      "invalid_format": "Invalid JSON format"
+      "invalid_format": "Invalid JSON format",
+      "tabPaste": "Paste",
+      "tabFile": "File",
+      "pastePlaceholder": "Paste JSON here..."
     }
   }
 }

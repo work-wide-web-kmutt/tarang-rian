@@ -165,7 +165,10 @@
       "confirm": "นำเข้า",
       "success": "นำเข้าตารางเรียนสำเร็จ!",
       "error": "ไม่สามารถนำเข้าตารางเรียนได้",
-      "invalid_format": "รูปแบบ JSON ไม่ถูกต้อง"
+      "invalid_format": "รูปแบบ JSON ไม่ถูกต้อง",
+      "tabPaste": "วาง",
+      "tabFile": "ไฟล์",
+      "pastePlaceholder": "วาง JSON ที่นี่..."
     }
   }
 }
