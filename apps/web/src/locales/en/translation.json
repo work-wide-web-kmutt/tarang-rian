@@ -108,8 +108,18 @@
     },
     "settings": {
       "title": "Settings",
+      "size": "Size",
       "language": "Language",
-      "select_language": "Select Language"
+      "select_language": "Select Language",
+      "search_placeholder": "Search settings...",
+      "search_clear": "Clear",
+      "search_no_results": "No settings found",
+      "size_sm": "Small",
+      "size_md": "Medium",
+      "size_lg": "Large",
+      "group": {
+        "appearance": "Appearance"
+      }
     },
     "footer": {
       "made_with": "Made with",

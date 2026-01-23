@@ -29,25 +29,4 @@ export const SCHEDULE_SIZE = {
     textClass: "text-xs",
     subTextClass: "text-[10px]",
   },
-  xl: {
-    cellSize: 180,
-    dayColumnWidth: 72,
-    rowHeight: 120,
-    textClass: "text-xs",
-    subTextClass: "text-[10px]",
-  },
-  "2xl": {
-    cellSize: 220,
-    dayColumnWidth: 80,
-    rowHeight: 140,
-    textClass: "text-xs",
-    subTextClass: "text-[10px]",
-  },
-  "3xl": {
-    cellSize: 260,
-    dayColumnWidth: 88,
-    rowHeight: 160,
-    textClass: "text-xs",
-    subTextClass: "text-[10px]",
-  },
 } as const;

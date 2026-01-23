@@ -9,6 +9,7 @@ import {
 import { SCHEDULE_SIZE } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import { cn } from "@/lib/utils";
+import { useScheduleSize } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 
 interface SchedulePreviewProps {
@@ -23,7 +24,9 @@ export function SchedulePreview({
   shorthand,
 }: SchedulePreviewProps) {
   const { t } = useTranslation();
-  const { cellSize, dayColumnWidth, rowHeight } = SCHEDULE_SIZE.md;
+  const size = useScheduleSize();
+  const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
+    SCHEDULE_SIZE[size];
 
   // Calculate scaled dimensions
   const scaledCellSize = cellSize;
@@ -42,13 +45,7 @@ export function SchedulePreview({
   const gridLineClass = darkMode ? "border-border" : "border-slate-200";
 
   return (
-    <div
-      className={containerClass}
-      style={{
-        width: "fit-content",
-        minWidth: "1000px",
-      }}
-    >
+    <div className={cn(containerClass, "w-fit")}>
       <div
         className={cn("grid border", borderClass)}
         style={{
@@ -138,7 +135,8 @@ export function SchedulePreview({
                     return (
                       <div
                         className={cn(
-                          "absolute inset-y-0 z-10 m-0.5 overflow-hidden rounded border p-1.5 text-xs",
+                          "absolute inset-y-0 z-10 m-0.5 overflow-hidden rounded border p-1.5",
+                          textClass,
                           blockBg
                         )}
                         key={classKey}
@@ -155,7 +153,8 @@ export function SchedulePreview({
                         </div>
                         <div
                           className={cn(
-                            "truncate text-[10px] opacity-80",
+                            "truncate opacity-80",
+                            subTextClass,
                             blockText
                           )}
                         >

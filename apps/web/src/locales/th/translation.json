@@ -107,9 +107,19 @@
       "instructor": "ผู้สอน"
     },
     "settings": {
-      "title": "ตั้งค่า",
+      "title": "ตั้งค่าตารางเรียน",
+      "size": "ขนาด",
       "language": "ภาษา",
-      "select_language": "เลือกภาษา"
+      "select_language": "เลือกภาษา",
+      "search_placeholder": "ค้นหาการตั้งค่า...",
+      "search_clear": "ล้าง",
+      "search_no_results": "ไม่พบการตั้งค่า",
+      "size_sm": "เล็ก",
+      "size_md": "กลาง",
+      "size_lg": "ใหญ่",
+      "group": {
+        "appearance": "รูปแบบตาราง"
+      }
     },
     "footer": {
       "made_with": "สร้างด้วย",

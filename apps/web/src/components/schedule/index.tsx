@@ -37,12 +37,11 @@ import {
 import { DAYS, TIME_SLOTS } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
 import { cn } from "@/lib/utils";
+import { useScheduleSize } from "@/stores/schedule-settings";
 import {
   type SelectedClassSession,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
-
-type ScheduleSize = keyof typeof SCHEDULE_SIZE;
 
 interface ScheduleStyles {
   borderTop?: string;
@@ -51,7 +50,6 @@ interface ScheduleStyles {
 
 interface ScheduleProps {
   sessions: SelectedClassSession[];
-  size?: ScheduleSize;
   styles?: ScheduleStyles;
 }
 
@@ -104,7 +102,8 @@ function DroppableCell({
   );
 }
 
-export function Schedule({ sessions, size = "md", styles }: ScheduleProps) {
+export function Schedule({ sessions, styles }: ScheduleProps) {
+  const size = useScheduleSize();
   const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
     SCHEDULE_SIZE[size];
   const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
