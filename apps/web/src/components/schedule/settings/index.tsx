@@ -1,7 +1,7 @@
-import { Search, Settings, X } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
@@ -82,26 +82,21 @@ export function ScheduleSettings({
               type="search"
               value={searchQuery}
             />
-            {hasQuery && (
-              <InputGroupAddon align="inline-end">
-                <button
-                  aria-label={t("settings.search_clear")}
-                  className="flex items-center justify-center"
-                  onClick={() => setSearchQuery("")}
-                  type="button"
-                >
-                  <X className="size-4" />
-                </button>
-              </InputGroupAddon>
-            )}
           </InputGroup>
 
           {(() => {
             if (hasResults) {
               return (
-                <div className="space-y-3">
-                  {filteredSettings.map((setting) => (
-                    <div key={setting.id}>{setting.render()}</div>
+                <div className="space-y-6">
+                  {filteredSettings.map((group) => (
+                    <div className="space-y-3" key={group.id}>
+                      <h3 className="font-medium text-muted-foreground text-sm">
+                        {t(group.header)}
+                      </h3>
+                      {group.items.map((item) => (
+                        <div key={item.id}>{item.render()}</div>
+                      ))}
+                    </div>
                   ))}
                 </div>
               );
@@ -113,21 +108,24 @@ export function ScheduleSettings({
                   <p className="text-muted-foreground text-sm">
                     {t("settings.search_no_results")}
                   </p>
-                  <button
-                    className="text-muted-foreground text-xs underline underline-offset-4 transition-colors hover:text-foreground"
-                    onClick={() => setSearchQuery("")}
-                    type="button"
-                  >
+                  <Button onClick={() => setSearchQuery("")} type="button">
                     {t("settings.search_clear")}
-                  </button>
+                  </Button>
                 </div>
               );
             }
 
             return (
-              <div className="space-y-3">
-                {settingsRegistry.map((setting) => (
-                  <div key={setting.id}>{setting.render()}</div>
+              <div className="space-y-6">
+                {settingsRegistry.map((group) => (
+                  <div className="space-y-3" key={group.id}>
+                    <h3 className="font-medium text-muted-foreground text-sm">
+                      {t(group.header)}
+                    </h3>
+                    {group.items.map((item) => (
+                      <div key={item.id}>{item.render()}</div>
+                    ))}
+                  </div>
                 ))}
               </div>
             );

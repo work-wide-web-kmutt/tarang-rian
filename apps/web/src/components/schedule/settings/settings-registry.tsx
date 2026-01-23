@@ -8,34 +8,63 @@ export interface SettingItem {
   render: () => ReactNode;
 }
 
-export function getSettingsRegistry(t: (key: string) => string): SettingItem[] {
+export interface SettingsGroup {
+  id: string;
+  header: string;
+  items: SettingItem[];
+}
+
+export function getSettingsRegistry(
+  t: (key: string) => string
+): SettingsGroup[] {
   return [
     {
-      id: "size",
-      label: t("settings.size"),
-      keywords: ["size", "scale", "dimension", "width", "height", "layout"],
-      render: () => <SizeSelector />,
+      id: "appearance",
+      header: "settings.group.appearance",
+      items: [
+        {
+          id: "size",
+          label: t("settings.size"),
+          keywords: ["size", "scale", "dimension", "width", "height", "layout"],
+          render: () => <SizeSelector />,
+        },
+      ],
     },
   ];
 }
 
 export function filterSettings(
-  items: SettingItem[],
+  groups: SettingsGroup[],
   query: string
-): SettingItem[] {
+): SettingsGroup[] {
   const normalizedQuery = query.toLowerCase().trim();
 
   if (normalizedQuery === "") {
-    return items;
+    return groups;
   }
 
-  return items.filter((item) => {
-    const normalizedLabel = item.label.toLowerCase();
-    const normalizedKeywords = item.keywords.map((k) => k.toLowerCase());
+  return groups
+    .map((group) => {
+      const filteredItems = group.items.filter((item) => {
+        const normalizedLabel = item.label.toLowerCase();
+        const normalizedKeywords = item.keywords.map((k) => k.toLowerCase());
 
-    return (
-      normalizedLabel.includes(normalizedQuery) ||
-      normalizedKeywords.some((keyword) => keyword.includes(normalizedQuery))
-    );
-  });
+        return (
+          normalizedLabel.includes(normalizedQuery) ||
+          normalizedKeywords.some((keyword) =>
+            keyword.includes(normalizedQuery)
+          )
+        );
+      });
+
+      if (filteredItems.length === 0) {
+        return null;
+      }
+
+      return {
+        ...group,
+        items: filteredItems,
+      };
+    })
+    .filter((group): group is SettingsGroup => group !== null);
 }

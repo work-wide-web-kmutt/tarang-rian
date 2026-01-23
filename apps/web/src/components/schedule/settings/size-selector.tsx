@@ -30,7 +30,7 @@ export function SizeSelector() {
         }}
         value={size}
       >
-        <SelectTrigger className="h-8 w-27.5">
+        <SelectTrigger className="h-8 w-full">
           <SelectValue>{`${t(`settings.size_${size}`)} (${size})`}</SelectValue>
         </SelectTrigger>
         <SelectContent>
