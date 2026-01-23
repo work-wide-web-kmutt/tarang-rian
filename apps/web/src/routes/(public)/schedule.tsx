@@ -38,8 +38,9 @@ function SelectedCoursesPage() {
           {t("nav.schedule")}
         </h1>
         <div className="flex">
-          <ScheduleImportDialog triggerClassName="h-18 border-0 mx-0.5 border-l-1" />
-          <ScheduleExportDialog triggerClassName="h-18 border-0 mx-0.5 border-l-1" />
+          <ScheduleImportDialog triggerClassName="h-18 border-0 border-l-1" />
+          <ScheduleSettings triggerClassName="h-18 border-0 border-l-1" />
+          <ScheduleExportDialog triggerClassName="h-18 border-0 border-l-1" />
         </div>
       </div>
       <div className="relative flex w-full items-center justify-center px-2 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
@@ -52,9 +53,6 @@ function SelectedCoursesPage() {
             }}
           />
         </div>
-      </div>
-      <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
-        <ScheduleSettings />
       </div>
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <h1 className="flex items-center pl-4 font-semibold text-xl md:text-2xl">
