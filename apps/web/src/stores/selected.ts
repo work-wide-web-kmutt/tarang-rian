@@ -87,6 +87,34 @@ const transformSession = (session: unknown): SelectedClassSession | null => {
   } as SelectedClassSession;
 };
 
+const migrateToPersistFormat = (parsed: unknown): string | null => {
+  if (Array.isArray(parsed)) {
+    const migrated = parsed
+      .map(transformSession)
+      .filter((session): session is SelectedClassSession => session !== null);
+    const persistFormat = {
+      state: { selected: migrated },
+      version: 0,
+    };
+    return JSON.stringify(persistFormat);
+  }
+
+  if (
+    parsed &&
+    typeof parsed === "object" &&
+    "selected" in parsed &&
+    !("state" in parsed)
+  ) {
+    const persistFormat = {
+      state: { selected: (parsed as { selected: unknown }).selected },
+      version: 0,
+    };
+    return JSON.stringify(persistFormat);
+  }
+
+  return null;
+};
+
 const createSelectedStorage = () => {
   return {
     getItem: (name: string): string | null => {
@@ -99,14 +127,13 @@ const createSelectedStorage = () => {
           return null;
         }
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          const migrated = parsed
-            .map(transformSession)
-            .filter(
-              (session): session is SelectedClassSession => session !== null
-            );
-          return JSON.stringify({ selected: migrated });
+
+        const migrated = migrateToPersistFormat(parsed);
+        if (migrated) {
+          localStorage.setItem(name, migrated);
+          return migrated;
         }
+
         return stored;
       } catch {
         return null;
