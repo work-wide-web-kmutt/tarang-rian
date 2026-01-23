@@ -8,6 +8,12 @@ import { Schedule } from "@/components/schedule";
 import { ScheduleExportDialog } from "@/components/schedule/export/export-dialog";
 import { ScheduleImportDialog } from "@/components/schedule/export/import-dialog";
 import { SelectedCourseCard } from "@/components/schedule/selected-course-card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useCourseFilters } from "@/hooks/use-course-filters";
 import { useSelectedGenElectives } from "@/stores/selected";
 
@@ -51,6 +57,16 @@ function SelectedCoursesPage() {
             }}
           />
         </div>
+      </div>
+      <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
+        <Accordion className="w-full border">
+          <AccordionItem value="settings">
+            <AccordionTrigger className="px-4">
+              {t("settings.title")}
+            </AccordionTrigger>
+            <AccordionContent className="px-4" />
+          </AccordionItem>
+        </Accordion>
       </div>
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <h1 className="flex items-center pl-4 font-semibold text-xl md:text-2xl">
