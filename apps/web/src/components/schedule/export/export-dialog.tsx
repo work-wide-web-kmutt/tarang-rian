@@ -1,6 +1,7 @@
 import {
   CalendarMinus2,
   CalendarPlus2,
+  Copy,
   Download,
   Grid,
   Moon,
@@ -108,6 +109,17 @@ export function ScheduleExportDialog({
     }
   };
 
+  const handleCopyToClipboard = async () => {
+    try {
+      const jsonData = JSON.stringify(sessions, null, 2);
+      await navigator.clipboard.writeText(jsonData);
+      toast.success(t("export.copySuccess", "JSON copied to clipboard"));
+    } catch (error) {
+      console.error(error);
+      toast.error(t("export.copyError", "Failed to copy JSON to clipboard"));
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger
@@ -131,32 +143,51 @@ export function ScheduleExportDialog({
 
         <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
           <div className="relative flex-1 overflow-auto bg-muted/30 p-4">
-            <div className="flex min-h-full w-fit min-w-full items-start justify-center p-8">
-              <div
-                className={cn(
-                  "min-w-fit origin-top scale-[0.45] shadow-lg transition-all sm:scale-[0.6] lg:scale-[0.75]",
-                  !showBackground &&
-                    "bg-[repeating-conic-gradient(#e2e8f0_0%_25%,transparent_0%_50%)] bg-size-[20px_20px] bg-white"
-                )}
-              >
+            {format === "json" ? (
+              <div className="relative flex h-full flex-col">
+                <div className="absolute top-4 right-4 z-10">
+                  <Button
+                    aria-label={t("export.copyAriaLabel", "Copy JSON")}
+                    onClick={handleCopyToClipboard}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Copy className="mr-2 h-4 w-4" />
+                    {t("export.copy", "Copy")}
+                  </Button>
+                </div>
+                <pre className="h-full overflow-auto rounded-md border bg-background p-4 font-mono text-sm">
+                  {JSON.stringify(sessions, null, 2)}
+                </pre>
+              </div>
+            ) : (
+              <div className="flex min-h-full w-fit min-w-full items-start justify-center p-8">
                 <div
-                  // Remove padding from key to enable transition
-                  className="w-fit transition-all duration-300 ease-in-out"
-                  key={`${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
-                  style={{
-                    padding: `${padding}px`,
-                    backgroundColor: showBackground ? bgColor : "transparent",
-                    display: "inline-block",
-                  }}
+                  className={cn(
+                    "min-w-fit origin-top scale-[0.45] shadow-lg transition-all sm:scale-[0.6] lg:scale-[0.75]",
+                    !showBackground &&
+                      "bg-[repeating-conic-gradient(#e2e8f0_0%_25%,transparent_0%_50%)] bg-size-[20px_20px] bg-white"
+                  )}
                 >
-                  <SchedulePreview
-                    darkMode={darkMode}
-                    sessions={sessions}
-                    shorthand={isShorthand}
-                  />
+                  <div
+                    // Remove padding from key to enable transition
+                    className="w-fit transition-all duration-300 ease-in-out"
+                    key={`${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
+                    style={{
+                      padding: `${padding}px`,
+                      backgroundColor: showBackground ? bgColor : "transparent",
+                      display: "inline-block",
+                    }}
+                  >
+                    <SchedulePreview
+                      darkMode={darkMode}
+                      sessions={sessions}
+                      shorthand={isShorthand}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="flex w-full shrink-0 flex-col border-t bg-background lg:w-[320px] lg:border-t-0 lg:border-l">

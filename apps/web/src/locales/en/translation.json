@@ -144,7 +144,11 @@
       "processing": "Processing...",
       "success": "Schedule exported successfully!",
       "error": "Failed to export schedule",
-      "shorthand": "Short day name"
+      "shorthand": "Short day name",
+      "copy": "Copy",
+      "copyAriaLabel": "Copy JSON",
+      "copySuccess": "JSON copied to clipboard",
+      "copyError": "Failed to copy JSON to clipboard"
     },
     "import": {
       "title": "Import Schedule",
