@@ -108,6 +108,7 @@
     },
     "settings": {
       "title": "ตั้งค่า",
+      "size": "ขนาด",
       "language": "ภาษา",
       "select_language": "เลือกภาษา"
     },

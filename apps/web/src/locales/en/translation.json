@@ -108,6 +108,7 @@
     },
     "settings": {
       "title": "Settings",
+      "size": "Size",
       "language": "Language",
       "select_language": "Select Language"
     },

@@ -14,7 +14,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SCHEDULE_SIZE } from "@/constants/schedule";
 import { useCourseFilters } from "@/hooks/use-course-filters";
+import {
+  useScheduleSettingsActions,
+  useScheduleSize,
+} from "@/stores/schedule-settings";
 import { useSelectedGenElectives } from "@/stores/selected";
 
 export const Route = createFileRoute("/(public)/schedule")({
@@ -26,6 +38,8 @@ function SelectedCoursesPage() {
   const { filters, setters, filteredSessions, totalSessions } =
     useCourseFilters({ showYearSemester: false });
   const { t } = useTranslation();
+  const size = useScheduleSize();
+  const { setSize } = useScheduleSettingsActions();
 
   const totalHours = useMemo(() => {
     return selected.reduce((acc, session) => {
@@ -64,7 +78,34 @@ function SelectedCoursesPage() {
             <AccordionTrigger className="px-4">
               {t("settings.title")}
             </AccordionTrigger>
-            <AccordionContent className="px-4" />
+            <AccordionContent className="px-4">
+              <div className="space-y-3">
+                <div className="flex flex-col">
+                  <span className="text-muted-foreground text-sm">
+                    {t("settings.size")}
+                  </span>
+                  <Select
+                    onValueChange={(val: string | null) => {
+                      if (val) {
+                        setSize(val as keyof typeof SCHEDULE_SIZE);
+                      }
+                    }}
+                    value={size}
+                  >
+                    <SelectTrigger className="h-8 w-27.5">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(SCHEDULE_SIZE).map((sizeKey) => (
+                        <SelectItem key={sizeKey} value={sizeKey}>
+                          {sizeKey.toUpperCase()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>
