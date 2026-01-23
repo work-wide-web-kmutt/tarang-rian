@@ -113,7 +113,13 @@
       "select_language": "Select Language",
       "search_placeholder": "Search settings...",
       "search_clear": "Clear",
-      "search_no_results": "No settings found"
+      "search_no_results": "No settings found",
+      "size_sm": "Small",
+      "size_md": "Medium",
+      "size_lg": "Large",
+      "size_xl": "Extra Large",
+      "size_2xl": "2X Large",
+      "size_3xl": "3X Large"
     },
     "footer": {
       "made_with": "Made with",

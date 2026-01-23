@@ -113,7 +113,13 @@
       "select_language": "เลือกภาษา",
       "search_placeholder": "ค้นหาการตั้งค่า...",
       "search_clear": "ล้าง",
-      "search_no_results": "ไม่พบการตั้งค่า"
+      "search_no_results": "ไม่พบการตั้งค่า",
+      "size_sm": "เล็ก",
+      "size_md": "กลาง",
+      "size_lg": "ใหญ่",
+      "size_xl": "ใหญ่มาก",
+      "size_2xl": "ใหญ่มาก 2 เท่า",
+      "size_3xl": "ใหญ่มาก 3 เท่า"
     },
     "footer": {
       "made_with": "สร้างด้วย",

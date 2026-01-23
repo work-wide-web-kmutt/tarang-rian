@@ -31,14 +31,17 @@ export function SizeSelector() {
         value={size}
       >
         <SelectTrigger className="h-8 w-27.5">
-          <SelectValue />
+          <SelectValue>{`${t(`settings.size_${size}`)} (${size})`}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {Object.keys(SCHEDULE_SIZE).map((sizeKey) => (
-            <SelectItem key={sizeKey} value={sizeKey}>
-              {sizeKey.toUpperCase()}
-            </SelectItem>
-          ))}
+          {Object.keys(SCHEDULE_SIZE).map((sizeKey) => {
+            const translatedName = t(`settings.size_${sizeKey}`);
+            return (
+              <SelectItem key={sizeKey} value={sizeKey}>
+                {`${translatedName} (${sizeKey})`}
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
     </div>
