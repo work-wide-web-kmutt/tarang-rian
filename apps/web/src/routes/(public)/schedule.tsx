@@ -45,7 +45,6 @@ function SelectedCoursesPage() {
         <div className="min-w-0 overflow-x-auto">
           <Schedule
             sessions={selected}
-            size="md"
             styles={{
               borderTop: "border-t-0",
               borderBottom: "border-b-0",
