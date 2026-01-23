@@ -141,13 +141,12 @@ export function ScheduleExportDialog({
               >
                 <div
                   // Remove padding from key to enable transition
-                  className="transition-all duration-300 ease-in-out"
+                  className="w-fit transition-all duration-300 ease-in-out"
                   key={`${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
                   style={{
                     padding: `${padding}px`,
                     backgroundColor: showBackground ? bgColor : "transparent",
                     display: "inline-block",
-                    minWidth: "1000px",
                   }}
                 >
                   <SchedulePreview
@@ -400,7 +399,6 @@ export function ScheduleExportDialog({
             id="schedule-export-target"
             key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
             style={{
-              minWidth: "1000px",
               width: "fit-content",
               height: "fit-content",
             }}
