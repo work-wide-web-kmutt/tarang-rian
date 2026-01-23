@@ -5,10 +5,11 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
+import { BreakpointIndicator } from "@/components/breakpoint-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 import "../index.css";
-import { BreakpointIndicator } from "@/components/breakpoint-indicator";
 
 // biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
 export interface RouterAppContext {}
@@ -106,6 +107,7 @@ function RootComponent() {
             <main className="flex-1">
               <div className="min-h-screen">
                 <Outlet />
+                <Toaster />
               </div>
             </main>
           </div>
