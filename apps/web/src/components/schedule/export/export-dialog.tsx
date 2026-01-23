@@ -111,13 +111,14 @@ export function ScheduleExportDialog({
   return (
     <Dialog>
       <DialogTrigger
+        aria-label={t("export.button", "Export")}
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
           triggerClassName
         )}
       >
-        <Download className="h-4 w-4" />
-        {t("export.button", "Export")}
+        <Download className="size-5 sm:size-4" />
+        <span className="hidden sm:inline">{t("export.button", "Export")}</span>
       </DialogTrigger>
 
       <DialogContent className="flex max-h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:rounded-lg lg:max-w-300">

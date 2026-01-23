@@ -32,13 +32,14 @@ export function ScheduleSettings({
   return (
     <Sheet onOpenChange={handleOpenChange} open={open}>
       <SheetTrigger
+        aria-label={t("settings.title")}
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
           triggerClassName
         )}
       >
-        <Settings className="size-4" />
-        {t("settings.title")}
+        <Settings className="size-5 sm:size-4" />
+        <span className="hidden sm:inline">{t("settings.title")}</span>
       </SheetTrigger>
 
       <SheetContent

@@ -99,13 +99,14 @@ export function ScheduleImportDialog({
       open={isOpen}
     >
       <DialogTrigger
+        aria-label={t("import.button", "Import")}
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
           triggerClassName
         )}
       >
-        <Upload className="size-4" />
-        {t("import.button", "Import")}
+        <Upload className="size-5 sm:size-4" />
+        <span className="hidden sm:inline">{t("import.button", "Import")}</span>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
