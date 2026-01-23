@@ -38,9 +38,9 @@ function SelectedCoursesPage() {
           {t("nav.schedule")}
         </h1>
         <div className="flex">
-          <ScheduleImportDialog triggerClassName="h-18 border-0 border-l-1" />
-          <ScheduleSettings triggerClassName="h-18 border-0 border-l-1" />
-          <ScheduleExportDialog triggerClassName="h-18 border-0 border-l-1" />
+          <ScheduleImportDialog triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10" />
+          <ScheduleSettings triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10" />
+          <ScheduleExportDialog triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10" />
         </div>
       </div>
       <div className="relative flex w-full items-center justify-center px-2 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
