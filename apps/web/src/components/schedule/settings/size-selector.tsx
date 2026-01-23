@@ -1,0 +1,46 @@
+import { useTranslation } from "react-i18next";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SCHEDULE_SIZE } from "@/constants/schedule";
+import {
+  useScheduleSettingsActions,
+  useScheduleSize,
+} from "@/stores/schedule-settings";
+
+export function SizeSelector() {
+  const { t } = useTranslation();
+  const size = useScheduleSize();
+  const { setSize } = useScheduleSettingsActions();
+
+  return (
+    <div className="flex flex-col">
+      <span className="text-muted-foreground text-sm">
+        {t("settings.size")}
+      </span>
+      <Select
+        onValueChange={(val: string | null) => {
+          if (val) {
+            setSize(val as keyof typeof SCHEDULE_SIZE);
+          }
+        }}
+        value={size}
+      >
+        <SelectTrigger className="h-8 w-27.5">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {Object.keys(SCHEDULE_SIZE).map((sizeKey) => (
+            <SelectItem key={sizeKey} value={sizeKey}>
+              {sizeKey.toUpperCase()}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}

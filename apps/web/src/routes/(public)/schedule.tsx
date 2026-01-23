@@ -8,25 +8,8 @@ import { Schedule } from "@/components/schedule";
 import { ScheduleExportDialog } from "@/components/schedule/export/export-dialog";
 import { ScheduleImportDialog } from "@/components/schedule/export/import-dialog";
 import { SelectedCourseCard } from "@/components/schedule/selected-course-card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SCHEDULE_SIZE } from "@/constants/schedule";
+import { ScheduleSettings } from "@/components/schedule/settings";
 import { useCourseFilters } from "@/hooks/use-course-filters";
-import {
-  useScheduleSettingsActions,
-  useScheduleSize,
-} from "@/stores/schedule-settings";
 import { useSelectedGenElectives } from "@/stores/selected";
 
 export const Route = createFileRoute("/(public)/schedule")({
@@ -38,8 +21,6 @@ function SelectedCoursesPage() {
   const { filters, setters, filteredSessions, totalSessions } =
     useCourseFilters({ showYearSemester: false });
   const { t } = useTranslation();
-  const size = useScheduleSize();
-  const { setSize } = useScheduleSettingsActions();
 
   const totalHours = useMemo(() => {
     return selected.reduce((acc, session) => {
@@ -73,41 +54,7 @@ function SelectedCoursesPage() {
         </div>
       </div>
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
-        <Accordion className="w-full border">
-          <AccordionItem value="settings">
-            <AccordionTrigger className="px-4">
-              {t("settings.title")}
-            </AccordionTrigger>
-            <AccordionContent className="px-4">
-              <div className="space-y-3">
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-sm">
-                    {t("settings.size")}
-                  </span>
-                  <Select
-                    onValueChange={(val: string | null) => {
-                      if (val) {
-                        setSize(val as keyof typeof SCHEDULE_SIZE);
-                      }
-                    }}
-                    value={size}
-                  >
-                    <SelectTrigger className="h-8 w-27.5">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(SCHEDULE_SIZE).map((sizeKey) => (
-                        <SelectItem key={sizeKey} value={sizeKey}>
-                          {sizeKey.toUpperCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <ScheduleSettings />
       </div>
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <h1 className="flex items-center pl-4 font-semibold text-xl md:text-2xl">
