@@ -124,7 +124,8 @@
     "footer": {
       "made_with": "Made with",
       "by": "by",
-      "team_name": "World Wide Web KMUTT"
+      "team_name": "World Wide Web KMUTT",
+      "contribute_message": "Have any problem with site? add new course? contribute? Pull request to us!"
     },
     "export": {
       "title": "Export Schedule",
