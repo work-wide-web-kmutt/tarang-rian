@@ -125,7 +125,8 @@
       "made_with": "Made with",
       "by": "by",
       "team_name": "World Wide Web KMUTT",
-      "contribute_message": "Have any problem with site? add new course? contribute? Pull request to us!"
+      "contribute_message": "Have any problem with site? add new course? contribute? Pull request to us!",
+      "latest_commit": "Latest commit"
     },
     "export": {
       "title": "Export Schedule",

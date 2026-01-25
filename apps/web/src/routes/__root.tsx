@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -10,6 +11,17 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import "../index.css";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
 export interface RouterAppContext {}
@@ -93,7 +105,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootComponent() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <HeadContent />
       <NuqsAdapter>
         <ThemeProvider
@@ -115,6 +127,6 @@ function RootComponent() {
       </NuqsAdapter>
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
       {import.meta.env.DEV && <BreakpointIndicator />}
-    </>
+    </QueryClientProvider>
   );
 }
