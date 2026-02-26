@@ -28,7 +28,7 @@ function CourseDetailPage() {
   const [openItems, setOpenItems] = useState<number[]>([0]);
 
   return (
-    <div className="container mx-auto px-12 pb-20">
+    <div className="container mx-auto px-2 pb-20 md:px-12">
       <div className="relative border-dashed pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <div className="p-4">
           <DisclaimerAlert />

@@ -18,7 +18,7 @@ function AllCoursesPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="container mx-auto px-12 pb-20">
+    <div className="container mx-auto px-2 pb-20 md:px-12">
       <div className="sticky top-0 z-10 border-x-2 border-dashed bg-background pb-4 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <div className="py-4">
           <DisclaimerAlert />

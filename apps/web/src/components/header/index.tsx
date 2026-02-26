@@ -11,7 +11,7 @@ export function Header() {
   const { t } = useTranslation();
   return (
     <div className="w-full">
-      <div className="container mx-auto flex h-fit w-full max-w-8xl items-center justify-between px-16 py-3">
+      <div className="container mx-auto flex h-fit w-full max-w-8xl items-center justify-between px-6 py-3 md:px-16">
         <Logo size="sm" />
         <div className="block md:hidden">
           <ThemeDropdown />

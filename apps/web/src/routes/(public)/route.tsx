@@ -11,7 +11,7 @@ function PublicLayout() {
     <>
       <div className="relative min-h-dvh">
         <div className="absolute inset-x-0 top-0 bottom-0 z-0">
-          <div className="container mx-auto h-full max-w-8xl bg-background px-12">
+          <div className="container mx-auto h-full max-w-8xl bg-background px-2 md:px-12">
             <div className="h-full w-full border-border border-x-2 border-dashed" />
           </div>
         </div>
