@@ -87,7 +87,9 @@ export function CourseVaulContent() {
                 <span>{t("days_time.day")}</span>
               </div>
             </td>
-            <td className="py-1.5">{session.day}</td>
+            <td className="py-1.5">
+              {t(`days_time.${session.day.toLowerCase()}`)}
+            </td>
           </tr>
           <tr>
             <td className="w-24 whitespace-nowrap py-1.5 pr-3 font-medium">

@@ -297,7 +297,9 @@ export function CourseVaulForm() {
                     className="w-full"
                     id={field.name}
                   >
-                    <SelectValue />
+                    <SelectValue>
+                      {t(`days_time.${field.state.value.toLowerCase()}`)}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {DAYS.map((day: (typeof DAYS)[number]) => (
