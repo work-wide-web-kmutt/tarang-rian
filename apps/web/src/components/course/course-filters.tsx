@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { AcademicTermSelector } from "@/components/academic-term-selector";
 import {
   InputGroup,
   InputGroupAddon,
@@ -24,37 +25,15 @@ const TIME_SLOTS = [
   { value: "afternoon", label: "Afternoon (12:00+)" },
 ] as const;
 
-const SEMESTERS = ["1", "2", "S"] as const;
-
 interface CourseFiltersProps {
   filters: CourseFiltersType;
   setters: CourseFilterSetters;
-  showYearSemester?: boolean;
 }
 
-export function CourseFilters({
-  filters,
-  setters,
-  showYearSemester = true,
-}: CourseFiltersProps) {
+export function CourseFilters({ filters, setters }: CourseFiltersProps) {
   const { t } = useTranslation();
-
-  const {
-    searchQuery,
-    dayFilter,
-    timeSlotFilter,
-    yearFilter,
-    semesterFilter,
-    availableYears,
-  } = filters;
-
-  const {
-    setSearchQuery,
-    setDayFilter,
-    setTimeSlotFilter,
-    setYearFilter,
-    setSemesterFilter,
-  } = setters;
+  const { searchQuery, dayFilter, timeSlotFilter } = filters;
+  const { setSearchQuery, setDayFilter, setTimeSlotFilter } = setters;
 
   const getDayLabel = (value: string): string => {
     return value === "all"
@@ -66,21 +45,11 @@ export function CourseFilters({
     return value === "all" ? t("filter.times.all") : t(`filter.times.${value}`);
   };
 
-  const getYearLabel = (value: string): string => {
-    return value === "all" ? t("filter.years.all") : value;
-  };
-
-  const getSemesterLabel = (value: string): string => {
-    return value === "all"
-      ? t("filter.semesters.all")
-      : t(`filter.semesters.${value}`);
-  };
-
   return (
     <div className="flex flex-col md:flex-row">
       <InputGroup className="border-r-0 border-l-0 md:border-r">
         <InputGroupInput
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(event) => setSearchQuery(event.target.value)}
           placeholder={t("filter.search")}
           value={searchQuery}
         />
@@ -92,7 +61,7 @@ export function CourseFilters({
       <div className="flex w-full md:w-fit">
         <Select
           onValueChange={(value) => {
-            if (value !== null) {
+            if (value) {
               setDayFilter(value);
             }
           }}
@@ -113,7 +82,7 @@ export function CourseFilters({
 
         <Select
           onValueChange={(value) => {
-            if (value !== null) {
+            if (value) {
               setTimeSlotFilter(value);
             }
           }}
@@ -134,56 +103,7 @@ export function CourseFilters({
         </Select>
       </div>
 
-      {showYearSemester &&
-        yearFilter !== undefined &&
-        semesterFilter !== undefined &&
-        availableYears !== undefined &&
-        setYearFilter !== undefined &&
-        setSemesterFilter !== undefined && (
-          <div className="flex w-full md:w-fit">
-            <Select
-              onValueChange={(value) => {
-                if (value !== null) {
-                  setYearFilter(value);
-                }
-              }}
-              value={yearFilter}
-            >
-              <SelectTrigger className="w-full border-l-0 md:w-35 md:border">
-                <SelectValue>{getYearLabel(yearFilter)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("filter.years.all")}</SelectItem>
-                {availableYears.map((year) => (
-                  <SelectItem key={year} value={year}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              onValueChange={(value) => {
-                if (value !== null) {
-                  setSemesterFilter(value);
-                }
-              }}
-              value={semesterFilter}
-            >
-              <SelectTrigger className="w-full border-r-0 md:w-35 md:border">
-                <SelectValue>{getSemesterLabel(semesterFilter)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("filter.semesters.all")}</SelectItem>
-                {SEMESTERS.map((semester) => (
-                  <SelectItem key={semester} value={semester}>
-                    {t(`filter.semesters.${semester}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+      <AcademicTermSelector className="w-full md:w-64" />
     </div>
   );
 }

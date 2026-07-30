@@ -24,10 +24,8 @@ function AllCoursesPage() {
           <DisclaimerAlert />
         </div>
 
-        <div className="mb-4">
-          <h1 className="px-4 font-semibold text-3xl">
-            {t("courses.courses")}
-          </h1>
+        <div className="mb-4 px-4">
+          <h1 className="font-semibold text-3xl">{t("courses.courses")}</h1>
         </div>
         <div>
           <CourseFilters filters={filters} setters={setters} />
@@ -39,7 +37,15 @@ function AllCoursesPage() {
       </div>
 
       {filteredCourses.length === 0 ? (
-        <NotFound className="mt-8" description={t("not_found.no_courses")} />
+        <NotFound
+          action={
+            <Link to="/schedule">
+              <Button variant="outline">{t("nav.schedule")}</Button>
+            </Link>
+          }
+          className="mt-8"
+          description={t("not_found.no_courses_for_term")}
+        />
       ) : (
         <div className="mt-4 space-y-4">
           {filteredCourses.map((course) => (

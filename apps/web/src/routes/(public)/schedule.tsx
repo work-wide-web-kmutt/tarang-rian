@@ -9,51 +9,67 @@ import { ScheduleExportDialog } from "@/components/schedule/export/export-dialog
 import { ScheduleImportDialog } from "@/components/schedule/export/import-dialog";
 import { SelectedCourseCard } from "@/components/schedule/selected-course-card";
 import { ScheduleSettings } from "@/components/schedule/settings";
-import { useCourseFilters } from "@/hooks/use-course-filters";
-import { useSelectedGenElectives } from "@/stores/selected";
+import { useSelectedCourseFilters } from "@/hooks/use-course-filters";
+import { useActiveAcademicTerm } from "@/stores/academic-context";
+import { useActiveSelectedSessions } from "@/stores/selected";
 
 export const Route = createFileRoute("/(public)/schedule")({
   component: SelectedCoursesPage,
 });
 
 function SelectedCoursesPage() {
-  const selected = useSelectedGenElectives();
+  const activeTerm = useActiveAcademicTerm();
+  const selected = useActiveSelectedSessions();
   const { filters, setters, filteredSessions, totalSessions } =
-    useCourseFilters({ showYearSemester: false });
+    useSelectedCourseFilters();
   const { t } = useTranslation();
 
-  const totalHours = useMemo(() => {
-    return selected.reduce((acc, session) => {
-      const [startH, startM] = session.start.split(":").map(Number);
-      const [endH, endM] = session.end.split(":").map(Number);
-      const hours = endH - startH + (endM - startM) / 60;
-      return acc + hours;
-    }, 0);
-  }, [selected]);
+  const totalHours = useMemo(
+    () =>
+      selected.reduce((acc, session) => {
+        const [startH, startM] = session.start.split(":").map(Number);
+        const [endH, endM] = session.end.split(":").map(Number);
+        return acc + endH - startH + (endM - startM) / 60;
+      }, 0),
+    [selected]
+  );
 
   return (
     <div className="container mx-auto px-2 pb-20 md:px-12">
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
-        <h1 className="flex items-center px-4 font-semibold text-xl md:text-2xl">
-          {t("nav.schedule")}
-        </h1>
+        <div className="flex items-center px-4">
+          <h1 className="font-semibold text-xl md:text-2xl">
+            {t("nav.schedule")}
+          </h1>
+        </div>
         <div className="flex">
-          <ScheduleImportDialog triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10" />
+          <ScheduleImportDialog
+            term={activeTerm}
+            triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10"
+          />
           <ScheduleSettings triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10" />
-          <ScheduleExportDialog triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10" />
+          <ScheduleExportDialog
+            sessions={selected}
+            term={activeTerm}
+            triggerClassName="h-18 border-0 border-l-1 focus-visible:relative focus-visible:z-10"
+          />
         </div>
       </div>
+
       <div className="relative flex w-full items-center justify-center px-2 after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <div className="min-w-0 overflow-x-auto">
           <Schedule
+            key={`${activeTerm.year}-${activeTerm.semester}`}
             sessions={selected}
             styles={{
               borderTop: "border-t-0",
               borderBottom: "border-b-0",
             }}
+            term={activeTerm}
           />
         </div>
       </div>
+
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
         <h1 className="flex items-center pl-4 font-semibold text-xl md:text-2xl">
           {t("nav.selected_classes")}
@@ -81,11 +97,7 @@ function SelectedCoursesPage() {
       </div>
 
       <div className="mt-4">
-        <CourseFilters
-          filters={filters}
-          setters={setters}
-          showYearSemester={false}
-        />
+        <CourseFilters filters={filters} setters={setters} />
         <p className="mt-4 px-4 text-muted-foreground text-sm">
           {t("courses.show")} {filteredSessions.length} {t("courses.of")}{" "}
           {totalSessions} {t("courses.courses")}

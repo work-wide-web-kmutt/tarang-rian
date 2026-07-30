@@ -7,6 +7,8 @@ import { AccordionItem } from "@/components/class/accordion-item";
 import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import { Accordion } from "@/components/ui/accordion";
 import type { GenElectiveOption } from "@/course/schema";
+import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
+import { useAcademicTermActions } from "@/stores/academic-context";
 
 const H1_REGEX = /^#\s+(.+)$/m;
 
@@ -24,6 +26,11 @@ export const Route = createFileRoute("/(public)/courses/$id")({
 function CourseDetailPage() {
   const { course } = Route.useLoaderData();
   const { t } = useTranslation();
+  const { activateTerm } = useAcademicTermActions();
+
+  useIsomorphicLayoutEffect(() => {
+    activateTerm({ year: course.year, semester: course.semester });
+  }, [activateTerm, course.semester, course.year]);
 
   const [openItems, setOpenItems] = useState<number[]>([0]);
 

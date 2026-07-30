@@ -41,6 +41,7 @@
     "academic": {
       "year": "Year",
       "semester": "Semester",
+      "select_term": "Select academic term",
       "classes": "Classes",
       "hours": "Hours"
     },
@@ -54,11 +55,7 @@
         "morning": "Morning (before 12:00)",
         "afternoon": "Afternoon (12:00+)"
       },
-      "years": {
-        "all": "All Years"
-      },
       "semesters": {
-        "all": "All Semesters",
         "1": "Semester 1",
         "2": "Semester 2",
         "S": "Summer"
@@ -79,6 +76,7 @@
     "not_found": {
       "title": "Sorry!",
       "no_courses": "We couldn't find any courses matching your filters.",
+      "no_courses_for_term": "No course data is available for this academic term.",
       "no_selected_classes": "We couldn't find any selected classes yet."
     },
     "courses": {

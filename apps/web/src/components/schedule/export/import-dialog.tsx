@@ -2,6 +2,7 @@ import { FileUp, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import z from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,8 +17,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import {
+  normalizeSelectedSession,
   type SelectedClassSession,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
@@ -25,10 +28,14 @@ import {
 type ImportMode = "replace" | "merge";
 
 interface ScheduleImportDialogProps {
+  term: AcademicTerm;
   triggerClassName?: string;
 }
 
+const importSchema = z.array(z.unknown());
+
 export function ScheduleImportDialog({
+  term,
   triggerClassName,
 }: ScheduleImportDialogProps) {
   const { t } = useTranslation();
@@ -53,11 +60,14 @@ export function ScheduleImportDialog({
     }
 
     try {
-      const json = JSON.parse(value);
-      if (!Array.isArray(json)) {
+      const json = importSchema.parse(JSON.parse(value));
+      const normalized = json.map((session) =>
+        normalizeSelectedSession(session, term)
+      );
+      if (normalized.some((session) => session === null)) {
         throw new Error("Invalid format");
       }
-      setSessions(json as SelectedClassSession[]);
+      setSessions(normalized as SelectedClassSession[]);
     } catch {
       setError(t("import.invalid_format", "Invalid JSON format"));
       setSessions([]);
@@ -77,10 +87,14 @@ export function ScheduleImportDialog({
     reader.onload = (event) => {
       try {
         const json = JSON.parse(event.target?.result as string);
-        if (!Array.isArray(json)) {
+        const parsed = importSchema.parse(json);
+        const normalized = parsed.map((session) =>
+          normalizeSelectedSession(session, term)
+        );
+        if (normalized.some((session) => session === null)) {
           throw new Error("Invalid format");
         }
-        setSessions(json as SelectedClassSession[]);
+        setSessions(normalized as SelectedClassSession[]);
       } catch {
         setError(t("import.invalid_format", "Invalid JSON format"));
         setSessions([]);
@@ -95,7 +109,7 @@ export function ScheduleImportDialog({
     }
 
     try {
-      importSchedule(sessions, mode);
+      importSchedule(term, sessions, mode);
       toast.success(t("import.success", "Schedule imported successfully!"));
       setIsOpen(false);
       resetState();
