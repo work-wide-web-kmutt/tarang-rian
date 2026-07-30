@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/select";
 import {
   type AcademicTerm,
-  academicTermKey,
   availableAcademicTerms,
   latestAcademicTerm,
   prefilledAcademicTerms,
+  SEMESTERS,
 } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import {
@@ -24,10 +24,6 @@ import { useSelectedGenElectives } from "@/stores/selected";
 
 interface AcademicTermSelectorProps {
   className?: string;
-}
-
-function formatTerm(term: AcademicTerm, t: (key: string) => string): string {
-  return `${t("academic.year")} ${term.year} · ${t("academic.semester")} ${term.semester}`;
 }
 
 export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
@@ -53,37 +49,84 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
     );
   }, [activeTerm, selected]);
 
-  const activateByKey = (key: string) => {
-    const term = availableTerms.find(
-      (candidate) => academicTermKey(candidate) === key
-    );
+  const years = useMemo(
+    () => [...new Set(availableTerms.map((term) => term.year))],
+    [availableTerms]
+  );
+
+  const semestersForYear = useMemo(
+    () =>
+      SEMESTERS.filter((semester) =>
+        availableTerms.some(
+          (term) => term.year === activeTerm.year && term.semester === semester
+        )
+      ),
+    [activeTerm.year, availableTerms]
+  );
+
+  const activateTermForYear = (year: string) => {
+    const term =
+      availableTerms.find(
+        (candidate) =>
+          candidate.year === year && candidate.semester === activeTerm.semester
+      ) ?? availableTerms.find((candidate) => candidate.year === year);
     if (term) {
       activateTerm(term);
     }
   };
 
   return (
-    <Select
-      onValueChange={(value) => {
-        if (value) {
-          activateByKey(value);
-        }
-      }}
-      value={academicTermKey(activeTerm)}
-    >
-      <SelectTrigger
-        aria-label={t("academic.select_term")}
-        className={cn("w-fit min-w-28", className)}
+    <div className={cn("flex w-full md:w-64", className)}>
+      <Select
+        onValueChange={(value) => {
+          if (value) {
+            activateTermForYear(value);
+          }
+        }}
+        value={activeTerm.year}
       >
-        <SelectValue>{`${activeTerm.year} / ${activeTerm.semester}`}</SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {availableTerms.map((term) => (
-          <SelectItem key={academicTermKey(term)} value={academicTermKey(term)}>
-            {formatTerm(term, t)}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+        <SelectTrigger
+          aria-label={t("academic.year")}
+          className="w-full min-w-0 rounded-none border-l-0 md:w-1/2 md:border"
+        >
+          <SelectValue>{activeTerm.year}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {years.map((year) => (
+            <SelectItem key={year} value={year}>
+              {year}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        onValueChange={(value) => {
+          if (value) {
+            activateTerm({
+              year: activeTerm.year,
+              semester: value as AcademicTerm["semester"],
+            });
+          }
+        }}
+        value={activeTerm.semester}
+      >
+        <SelectTrigger
+          aria-label={t("academic.semester")}
+          className="w-full min-w-0 rounded-none border-l-0 md:w-1/2 md:border-r-0"
+        >
+          <SelectValue>
+            {t(`filter.semesters.${activeTerm.semester}`)}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {semestersForYear.map((semester) => (
+            <SelectItem key={semester} value={semester}>
+              {t(`filter.semesters.${semester}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
