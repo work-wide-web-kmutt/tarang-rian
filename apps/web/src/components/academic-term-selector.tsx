@@ -12,6 +12,8 @@ import {
   type AcademicTerm,
   academicTermKey,
   availableAcademicTerms,
+  latestAcademicTerm,
+  prefilledAcademicTerms,
 } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import {
@@ -34,21 +36,22 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
   const selected = useSelectedGenElectives();
   const { activateTerm } = useAcademicTermActions();
 
-  const availableTerms = useMemo(
-    () =>
-      availableAcademicTerms(
-        allCourses.map((course) => ({
-          year: course.year,
-          semester: course.semester,
-        })),
-        selected.map((session) => ({
-          year: session.year,
-          semester: session.semester,
-        })),
-        activeTerm
-      ),
-    [activeTerm, selected]
-  );
+  const availableTerms = useMemo(() => {
+    const catalogTerms = allCourses.map((course) => ({
+      year: course.year,
+      semester: course.semester,
+    }));
+    const newestCatalogTerm = latestAcademicTerm(catalogTerms);
+
+    return availableAcademicTerms(
+      [...catalogTerms, ...prefilledAcademicTerms(newestCatalogTerm.year)],
+      selected.map((session) => ({
+        year: session.year,
+        semester: session.semester,
+      })),
+      activeTerm
+    );
+  }, [activeTerm, selected]);
 
   const activateByKey = (key: string) => {
     const term = availableTerms.find(

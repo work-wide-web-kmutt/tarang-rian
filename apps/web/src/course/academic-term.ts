@@ -20,6 +20,8 @@ export const DEFAULT_ACADEMIC_TERM: AcademicTerm = {
   semester: "2",
 };
 
+export const PREFILLED_ACADEMIC_YEAR_COUNT = 5;
+
 export function academicTermKey(term: AcademicTerm): string {
   return `${term.year}-${term.semester}`;
 }
@@ -81,6 +83,23 @@ export function availableAcademicTerms(
   activeTerm: AcademicTerm
 ): AcademicTerm[] {
   return uniqueAcademicTerms([...catalogTerms, ...archivedTerms, activeTerm]);
+}
+
+export function prefilledAcademicTerms(
+  startYear: string,
+  yearCount: number = PREFILLED_ACADEMIC_YEAR_COUNT
+): AcademicTerm[] {
+  const numericStartYear = Number(startYear);
+  if (!Number.isInteger(numericStartYear) || yearCount < 1) {
+    return [];
+  }
+
+  return Array.from({ length: yearCount }, (_, offset) =>
+    SEMESTERS.map((semester) => ({
+      year: String(numericStartYear + offset),
+      semester,
+    }))
+  ).flat();
 }
 
 export function latestAcademicTerm(

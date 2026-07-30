@@ -5,6 +5,7 @@ import {
   availableAcademicTerms,
   compareAcademicTerms,
   latestAcademicTerm,
+  prefilledAcademicTerms,
   uniqueAcademicTerms,
 } from "./academic-term";
 
@@ -57,6 +58,17 @@ describe("academic terms", () => {
       { year: "2025", semester: "2" },
       { year: "2024", semester: "1" },
       { year: "2023", semester: "S" },
+    ]);
+  });
+
+  test("prefills future academic years with all semesters", () => {
+    expect(prefilledAcademicTerms("2025", 2)).toEqual([
+      { year: "2025", semester: "1" },
+      { year: "2025", semester: "2" },
+      { year: "2025", semester: "S" },
+      { year: "2026", semester: "1" },
+      { year: "2026", semester: "2" },
+      { year: "2026", semester: "S" },
     ]);
   });
 });
