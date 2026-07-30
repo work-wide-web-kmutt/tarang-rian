@@ -1,38 +1,70 @@
-import { create, type StateCreator } from "zustand";
-import type { GenElectiveOption } from "@/course/schema";
+import { allCourses } from "content-collections";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import {
+  type AcademicTerm,
+  DEFAULT_ACADEMIC_TERM,
+  isAcademicTerm,
+  latestAcademicTerm,
+} from "@/course/academic-term";
 
 interface AcademicContextState {
-  currentYear: number;
-  currentSemester: GenElectiveOption["semester"];
+  activeTerm: AcademicTerm;
   actions: {
-    setYear: (year: number) => void;
-    setSemester: (semester: GenElectiveOption["semester"]) => void;
+    activateTerm: (term: AcademicTerm) => void;
   };
 }
 
-const academicContextStoreCreator: StateCreator<AcademicContextState> = (
-  set
-) => ({
-  currentYear: 2025,
-  currentSemester: "2",
-  actions: {
-    setYear: (year: number) => set({ currentYear: year }),
-    setSemester: (semester: GenElectiveOption["semester"]) =>
-      set({ currentSemester: semester }),
-  },
-});
-
-const useAcademicContextStore = create<AcademicContextState>(
-  academicContextStoreCreator
+const latestCatalogTerm = latestAcademicTerm(
+  allCourses.map((course) => ({ year: course.year, semester: course.semester }))
 );
 
+const useAcademicContextStore = create<AcademicContextState>()(
+  persist(
+    (set) => ({
+      activeTerm: latestCatalogTerm,
+      actions: {
+        activateTerm: (term) => {
+          if (isAcademicTerm(term)) {
+            set({ activeTerm: term });
+          }
+        },
+      },
+    }),
+    {
+      name: "academic-context-storage",
+      version: 1,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ activeTerm: state.activeTerm }),
+      migrate: (persistedState: unknown) => {
+        if (
+          persistedState &&
+          typeof persistedState === "object" &&
+          "activeTerm" in persistedState &&
+          isAcademicTerm((persistedState as { activeTerm: unknown }).activeTerm)
+        ) {
+          return {
+            activeTerm: (persistedState as { activeTerm: AcademicTerm })
+              .activeTerm,
+          };
+        }
+
+        return { activeTerm: latestCatalogTerm ?? DEFAULT_ACADEMIC_TERM };
+      },
+    }
+  )
+);
+
+export const useActiveAcademicTerm = () =>
+  useAcademicContextStore((state) => state.activeTerm);
+
+export const useAcademicTermActions = () =>
+  useAcademicContextStore((state) => state.actions);
+
 export const useCurrentYear = () =>
-  useAcademicContextStore((state) => state.currentYear);
+  Number(useAcademicContextStore((state) => state.activeTerm.year));
 
 export const useCurrentSemester = () =>
-  useAcademicContextStore((state) => state.currentSemester);
-
-export const useAcademicContextActions = () =>
-  useAcademicContextStore((state) => state.actions);
+  useAcademicContextStore((state) => state.activeTerm.semester);
 
 export const getAcademicContext = () => useAcademicContextStore.getState();

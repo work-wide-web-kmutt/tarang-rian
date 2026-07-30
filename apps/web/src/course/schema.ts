@@ -27,3 +27,4 @@ export const GenElectiveOptionSchema = z.object({
 });
 
 export type GenElectiveOption = z.infer<typeof GenElectiveOptionSchema>;
+export type Semester = GenElectiveOption["semester"];
