@@ -19,6 +19,22 @@ const latestCatalogTerm = latestAcademicTerm(
   allCourses.map((course) => ({ year: course.year, semester: course.semester }))
 );
 
+export function restoreAcademicTerm(
+  persistedState: unknown,
+  fallback: AcademicTerm = latestCatalogTerm ?? DEFAULT_ACADEMIC_TERM
+): AcademicTerm {
+  if (
+    persistedState &&
+    typeof persistedState === "object" &&
+    "activeTerm" in persistedState &&
+    isAcademicTerm((persistedState as { activeTerm: unknown }).activeTerm)
+  ) {
+    return (persistedState as { activeTerm: AcademicTerm }).activeTerm;
+  }
+
+  return fallback;
+}
+
 const useAcademicContextStore = create<AcademicContextState>()(
   persist(
     (set) => ({
@@ -36,21 +52,9 @@ const useAcademicContextStore = create<AcademicContextState>()(
       version: 1,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ activeTerm: state.activeTerm }),
-      migrate: (persistedState: unknown) => {
-        if (
-          persistedState &&
-          typeof persistedState === "object" &&
-          "activeTerm" in persistedState &&
-          isAcademicTerm((persistedState as { activeTerm: unknown }).activeTerm)
-        ) {
-          return {
-            activeTerm: (persistedState as { activeTerm: AcademicTerm })
-              .activeTerm,
-          };
-        }
-
-        return { activeTerm: latestCatalogTerm ?? DEFAULT_ACADEMIC_TERM };
-      },
+      migrate: (persistedState: unknown) => ({
+        activeTerm: restoreAcademicTerm(persistedState),
+      }),
     }
   )
 );
