@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { AcademicTermSelector } from "@/components/academic-term-selector";
 import {
   InputGroup,
   InputGroupAddon,
@@ -101,6 +102,8 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
           </SelectContent>
         </Select>
       </div>
+
+      <AcademicTermSelector className="w-full rounded-none border-l-0 md:w-40 md:border" />
     </div>
   );
 }

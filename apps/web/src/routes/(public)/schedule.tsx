@@ -2,7 +2,6 @@ import NumberFlow from "@number-flow/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { AcademicTermSelector } from "@/components/academic-term-selector";
 import { CourseFilters } from "@/components/course/course-filters";
 import { NotFound } from "@/components/not-found";
 import { Schedule } from "@/components/schedule";
@@ -38,11 +37,10 @@ function SelectedCoursesPage() {
   return (
     <div className="container mx-auto px-2 pb-20 md:px-12">
       <div className="relative flex w-full items-stretch justify-between border-dashed after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-screen after:-translate-x-1/2 after:border-border after:border-b-2 after:border-dashed">
-        <div className="flex items-center gap-4 px-4">
+        <div className="flex items-center px-4">
           <h1 className="font-semibold text-xl md:text-2xl">
             {t("nav.schedule")}
           </h1>
-          <AcademicTermSelector />
         </div>
         <div className="flex">
           <ScheduleImportDialog

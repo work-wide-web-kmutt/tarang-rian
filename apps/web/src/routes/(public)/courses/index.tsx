@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { AcademicTermSelector } from "@/components/academic-term-selector";
 import { SelectButton } from "@/components/class/select-button";
 import { SelectDropdown } from "@/components/class/select-dropdown";
 import { CourseFilters } from "@/components/course/course-filters";
@@ -25,11 +24,8 @@ function AllCoursesPage() {
           <DisclaimerAlert />
         </div>
 
-        <div className="mb-4 flex items-center justify-between gap-4 px-4">
-          <h1 className="px-4 font-semibold text-3xl">
-            {t("courses.courses")}
-          </h1>
-          <AcademicTermSelector />
+        <div className="mb-4 px-4">
+          <h1 className="font-semibold text-3xl">{t("courses.courses")}</h1>
         </div>
         <div>
           <CourseFilters filters={filters} setters={setters} />
