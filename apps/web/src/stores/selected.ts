@@ -1,4 +1,5 @@
 import { allCourses } from "content-collections";
+import i18n from "i18next";
 import { v7 } from "uuid";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -282,8 +283,10 @@ const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
             );
             const session: SelectedClassSession = {
               id: v7(),
-              courseCode: `Unassigned (${customSessions.length + 1})`,
-              courseName: "Unassigned Class",
+              courseCode: i18n.t("translation:schedule.unassigned_code", {
+                number: customSessions.length + 1,
+              }),
+              courseName: i18n.t("translation:schedule.unassigned_class"),
               year: term.year,
               semester: term.semester,
               instructor: ["TBA"],
