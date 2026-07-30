@@ -29,7 +29,12 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
   const [defaultEditMode, setDefaultEditMode] = useState(false);
 
   const isCustom = session.type === "custom";
-  const course = allCourses.find((c) => c.code === session.courseCode);
+  const course = allCourses.find(
+    (candidate) =>
+      candidate.code === session.courseCode &&
+      candidate.year === session.year &&
+      candidate.semester === session.semester
+  );
   const courseSlug = course?.slug;
 
   const handleDeleteClick = () => {

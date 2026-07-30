@@ -8,18 +8,21 @@ import {
 } from "@/components/schedule/utils";
 import { SCHEDULE_SIZE } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
+import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import { useScheduleSize } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 
 interface SchedulePreviewProps {
   sessions: SelectedClassSession[];
+  term: AcademicTerm;
   darkMode: boolean;
   shorthand: boolean;
 }
 
 export function SchedulePreview({
   sessions,
+  term,
   darkMode,
   shorthand,
 }: SchedulePreviewProps) {
@@ -46,6 +49,10 @@ export function SchedulePreview({
 
   return (
     <div className={cn(containerClass, "w-fit")}>
+      <div className={cn("px-2 pb-2 font-medium text-sm", mutedTextClass)}>
+        {t("academic.year")} {term.year}, {t("academic.semester")}{" "}
+        {term.semester}
+      </div>
       <div
         className={cn("grid border", borderClass)}
         style={{

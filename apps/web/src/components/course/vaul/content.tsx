@@ -36,7 +36,12 @@ export function CourseVaulContent() {
     return null;
   }
 
-  const course = allCourses.find((c) => c.code === session.courseCode);
+  const course = allCourses.find(
+    (candidate) =>
+      candidate.code === session.courseCode &&
+      candidate.year === session.year &&
+      candidate.semester === session.semester
+  );
   const courseSlug = course?.slug;
 
   const handleConfirmRemove = (e?: React.MouseEvent<HTMLButtonElement>) => {

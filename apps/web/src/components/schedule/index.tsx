@@ -35,6 +35,7 @@ import {
   SLOT_DURATION_MINUTES,
 } from "@/constants/schedule";
 import { DAYS, TIME_SLOTS } from "@/constants/times";
+import type { AcademicTerm } from "@/course/academic-term";
 import type { GenElectiveOption } from "@/course/schema";
 import { cn } from "@/lib/utils";
 import { useScheduleSize } from "@/stores/schedule-settings";
@@ -50,6 +51,7 @@ interface ScheduleStyles {
 
 interface ScheduleProps {
   sessions: SelectedClassSession[];
+  term: AcademicTerm;
   styles?: ScheduleStyles;
 }
 
@@ -102,7 +104,7 @@ function DroppableCell({
   );
 }
 
-export function Schedule({ sessions, styles }: ScheduleProps) {
+export function Schedule({ sessions, term, styles }: ScheduleProps) {
   const size = useScheduleSize();
   const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
     SCHEDULE_SIZE[size];
@@ -653,7 +655,7 @@ export function Schedule({ sessions, styles }: ScheduleProps) {
     if (duration >= MIN_DRAG_DURATION) {
       const startTime = getTimeFrom30MinuteSlot(startSlot);
       const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
-      const createdSession = addCustom(dragState.day, startTime, endTime);
+      const createdSession = addCustom(term, dragState.day, startTime, endTime);
 
       if (createdSession) {
         const classKey = getClassKey(createdSession);

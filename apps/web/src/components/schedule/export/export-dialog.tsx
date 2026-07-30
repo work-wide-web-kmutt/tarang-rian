@@ -30,8 +30,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
-import { useSelectedGenElectives } from "@/stores/selected";
+import type { SelectedClassSession } from "@/stores/selected";
 import { SchedulePreview } from "./schedule-preview";
 import {
   downloadFile,
@@ -41,14 +42,17 @@ import {
 } from "./utils";
 
 interface ScheduleExportDialogProps {
+  sessions: SelectedClassSession[];
+  term: AcademicTerm;
   triggerClassName?: string;
 }
 
 export function ScheduleExportDialog({
+  sessions,
+  term,
   triggerClassName,
 }: ScheduleExportDialogProps) {
   const { t } = useTranslation();
-  const sessions = useSelectedGenElectives();
 
   const [format, setFormat] = useState<ExportFormat>("png");
   const [darkMode, setDarkMode] = useState(false);
@@ -80,7 +84,7 @@ export function ScheduleExportDialog({
         const jsonData = JSON.stringify(sessions, null, 2);
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-        downloadFile(url, "schedule.json");
+        downloadFile(url, `schedule-${term.year}-${term.semester}.json`);
         URL.revokeObjectURL(url);
       } else {
         // Allow time for the Portal to render the export target
@@ -88,7 +92,7 @@ export function ScheduleExportDialog({
 
         if (format === "pdf") {
           const pdf = await exportAsPdf("schedule-export-target");
-          pdf.save("schedule.pdf");
+          pdf.save(`schedule-${term.year}-${term.semester}.pdf`);
         } else {
           const dataUrl = await exportAsImage(
             "schedule-export-target",
@@ -96,7 +100,10 @@ export function ScheduleExportDialog({
             Number.parseInt(scale, 10)
           );
           if (dataUrl) {
-            downloadFile(dataUrl, `schedule.${format}`);
+            downloadFile(
+              dataUrl,
+              `schedule-${term.year}-${term.semester}.${format}`
+            );
           }
         }
       }
@@ -183,6 +190,7 @@ export function ScheduleExportDialog({
                       darkMode={darkMode}
                       sessions={sessions}
                       shorthand={isShorthand}
+                      term={term}
                     />
                   </div>
                 </div>
@@ -446,6 +454,7 @@ export function ScheduleExportDialog({
                 darkMode={darkMode}
                 sessions={sessions}
                 shorthand={isShorthand}
+                term={term}
               />
             </div>
           </div>
