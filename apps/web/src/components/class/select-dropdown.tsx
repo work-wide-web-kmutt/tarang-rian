@@ -26,6 +26,8 @@ export function SelectDropdown({ course }: SelectDropdownProps) {
     selected.find(
       (s) =>
         s.courseCode === course.code &&
+        s.year === course.year &&
+        s.semester === course.semester &&
         s.group === cls.group &&
         s.day === cls.day &&
         s.start === cls.start &&

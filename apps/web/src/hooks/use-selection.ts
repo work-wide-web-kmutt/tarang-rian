@@ -27,12 +27,23 @@ export function useSelection(
       selected.find(
         (s) =>
           s.courseCode === course.code &&
+          s.year === course.year &&
+          s.semester === course.semester &&
           s.group === cls.group &&
           s.day === cls.day &&
           s.start === cls.start &&
           s.end === cls.end
       ),
-    [selected, course.code, cls.group, cls.day, cls.start, cls.end]
+    [
+      selected,
+      course.code,
+      course.year,
+      course.semester,
+      cls.group,
+      cls.day,
+      cls.start,
+      cls.end,
+    ]
   );
 
   const isSelected = selectedSession !== undefined;

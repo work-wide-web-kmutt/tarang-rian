@@ -1,6 +1,8 @@
 import { allCourses, type Course } from "content-collections";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
+import { sameAcademicTerm } from "@/course/academic-term";
+import { useActiveAcademicTerm } from "@/stores/academic-context";
 import {
   type SelectedClassSession,
   useSelectedGenElectives,
@@ -10,51 +12,61 @@ export interface CourseFilters {
   searchQuery: string;
   dayFilter: string;
   timeSlotFilter: string;
-  yearFilter?: string;
-  semesterFilter?: string;
-  availableYears?: string[];
 }
 
 export interface CourseFilterSetters {
   setSearchQuery: (value: string) => void;
   setDayFilter: (value: string) => void;
   setTimeSlotFilter: (value: string) => void;
-  setYearFilter?: (value: string) => void;
-  setSemesterFilter?: (value: string) => void;
 }
 
-interface UseCourseFiltersOptions {
-  showYearSemester?: boolean;
-}
-
-interface UseCourseFiltersReturnBase {
+export interface UseCourseFiltersReturn {
   filters: CourseFilters;
   setters: CourseFilterSetters;
-}
-
-export interface UseCourseFiltersReturn extends UseCourseFiltersReturnBase {
   filteredCourses: Course[];
   totalCourses: number;
 }
 
-export interface UseSelectedFiltersReturn extends UseCourseFiltersReturnBase {
+export interface UseSelectedFiltersReturn {
+  filters: CourseFilters;
+  setters: CourseFilterSetters;
   filteredSessions: SelectedClassSession[];
   totalSessions: number;
 }
 
-export function useCourseFilters(options?: {
-  showYearSemester: true;
-}): UseCourseFiltersReturn;
-export function useCourseFilters(options: {
-  showYearSemester: false;
-}): UseSelectedFiltersReturn;
-export function useCourseFilters(
-  options: UseCourseFiltersOptions = {}
-): UseCourseFiltersReturn | UseSelectedFiltersReturn {
-  const { showYearSemester = true } = options;
+interface CommonFilters {
+  filters: CourseFilters;
+  setters: CourseFilterSetters;
+  searchQuery: string;
+  dayFilter: string;
+  timeSlotFilter: string;
+  activeTerm: ReturnType<typeof useActiveAcademicTerm>;
+}
 
-  const selected = useSelectedGenElectives();
+function matchesSearch(
+  searchQuery: string,
+  courseCode: string,
+  courseName: string
+): boolean {
+  const searchLower = searchQuery.toLowerCase();
+  return (
+    searchQuery === "" ||
+    courseCode.toLowerCase().includes(searchLower) ||
+    courseName.toLowerCase().includes(searchLower)
+  );
+}
 
+function matchesTimeSlot(timeSlotFilter: string, start: string): boolean {
+  if (timeSlotFilter === "all") {
+    return true;
+  }
+
+  const startHour = Number.parseInt(start.split(":")[0], 10);
+  return timeSlotFilter === "morning" ? startHour < 12 : startHour >= 12;
+}
+
+function useCommonFilters(): CommonFilters {
+  const activeTerm = useActiveAcademicTerm();
   const [searchQuery, setSearchQuery] = useQueryState(
     "q",
     parseAsString.withDefault("")
@@ -67,158 +79,98 @@ export function useCourseFilters(
     "time",
     parseAsString.withDefault("all")
   );
-  const [yearFilter, setYearFilter] = useQueryState(
-    "year",
-    parseAsString.withDefault("all")
-  );
-  const [semesterFilter, setSemesterFilter] = useQueryState(
-    "semester",
-    parseAsString.withDefault("all")
-  );
-
-  const availableYears = useMemo(() => {
-    const years = [...new Set(allCourses.map((course) => course.year))];
-    return years.sort((a, b) => a.localeCompare(b));
-  }, []);
-
-  const sortedCourses = useMemo(() => {
-    return [...allCourses].sort((a, b) => {
-      if (a.year === b.year) {
-        if (a.semester === b.semester) {
-          return a.code.localeCompare(b.code);
-        }
-        return a.semester.localeCompare(b.semester);
-      }
-      return a.year.localeCompare(b.year);
-    });
-  }, []);
-
-  const filteredCourses = useMemo(() => {
-    return sortedCourses.filter((course) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        searchQuery === "" ||
-        course.code.toLowerCase().includes(searchLower) ||
-        course.name.toLowerCase().includes(searchLower);
-
-      if (!matchesSearch) {
-        return false;
-      }
-
-      const matchesDay =
-        dayFilter === "all" ||
-        course.class.some((cls) => cls.day === dayFilter);
-
-      if (!matchesDay) {
-        return false;
-      }
-
-      const matchesTimeSlot =
-        timeSlotFilter === "all" ||
-        course.class.some((cls) => {
-          const startHour = Number.parseInt(cls.start.split(":")[0], 10);
-          if (timeSlotFilter === "morning") {
-            return startHour < 12;
-          }
-          if (timeSlotFilter === "afternoon") {
-            return startHour >= 12;
-          }
-          return true;
-        });
-
-      if (!matchesTimeSlot) {
-        return false;
-      }
-
-      const matchesYear = yearFilter === "all" || course.year === yearFilter;
-
-      if (!matchesYear) {
-        return false;
-      }
-
-      const matchesSemester =
-        semesterFilter === "all" || course.semester === semesterFilter;
-
-      return matchesSemester;
-    });
-  }, [
-    sortedCourses,
-    searchQuery,
-    dayFilter,
-    timeSlotFilter,
-    yearFilter,
-    semesterFilter,
-  ]);
-
-  const filteredSessions = useMemo(() => {
-    return selected.filter((session) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        searchQuery === "" ||
-        session.courseCode.toLowerCase().includes(searchLower) ||
-        session.courseName.toLowerCase().includes(searchLower);
-
-      if (!matchesSearch) {
-        return false;
-      }
-
-      const matchesDay = dayFilter === "all" || session.day === dayFilter;
-
-      if (!matchesDay) {
-        return false;
-      }
-
-      const matchesTimeSlot =
-        timeSlotFilter === "all" ||
-        (() => {
-          const startHour = Number.parseInt(session.start.split(":")[0], 10);
-          if (timeSlotFilter === "morning") {
-            return startHour < 12;
-          }
-          if (timeSlotFilter === "afternoon") {
-            return startHour >= 12;
-          }
-          return true;
-        })();
-
-      return matchesTimeSlot;
-    });
-  }, [selected, searchQuery, dayFilter, timeSlotFilter]);
-
-  const baseFilters: CourseFilters = {
-    searchQuery,
-    dayFilter,
-    timeSlotFilter,
-  };
-
-  const baseSetters: CourseFilterSetters = {
-    setSearchQuery,
-    setDayFilter,
-    setTimeSlotFilter,
-  };
-
-  if (showYearSemester) {
-    return {
-      filters: {
-        ...baseFilters,
-        yearFilter,
-        semesterFilter,
-        availableYears,
-      },
-      setters: {
-        ...baseSetters,
-        setYearFilter,
-        setSemesterFilter,
-      },
-      filteredCourses,
-      totalCourses: sortedCourses.length,
-    };
-  }
 
   return {
-    filters: baseFilters,
-    setters: baseSetters,
+    activeTerm,
+    searchQuery,
+    dayFilter,
+    timeSlotFilter,
+    filters: { searchQuery, dayFilter, timeSlotFilter },
+    setters: { setSearchQuery, setDayFilter, setTimeSlotFilter },
+  };
+}
+
+export function useCourseFilters(): UseCourseFiltersReturn {
+  const {
+    activeTerm,
+    dayFilter,
+    filters,
+    searchQuery,
+    setters,
+    timeSlotFilter,
+  } = useCommonFilters();
+
+  const activeCourses = useMemo(
+    () =>
+      [...allCourses]
+        .filter((course) => sameAcademicTerm(course, activeTerm))
+        .sort((first, second) => first.code.localeCompare(second.code)),
+    [activeTerm]
+  );
+
+  const filteredCourses = useMemo(
+    () =>
+      activeCourses.filter((course) => {
+        if (!matchesSearch(searchQuery, course.code, course.name)) {
+          return false;
+        }
+        if (
+          dayFilter !== "all" &&
+          !course.class.some((session) => session.day === dayFilter)
+        ) {
+          return false;
+        }
+        return course.class.some((session) =>
+          matchesTimeSlot(timeSlotFilter, session.start)
+        );
+      }),
+    [activeCourses, dayFilter, searchQuery, timeSlotFilter]
+  );
+
+  return {
+    filters,
+    setters,
+    filteredCourses,
+    totalCourses: activeCourses.length,
+  };
+}
+
+export function useSelectedCourseFilters(): UseSelectedFiltersReturn {
+  const {
+    activeTerm,
+    dayFilter,
+    filters,
+    searchQuery,
+    setters,
+    timeSlotFilter,
+  } = useCommonFilters();
+  const selected = useSelectedGenElectives();
+
+  const activeSessions = useMemo(
+    () => selected.filter((session) => sameAcademicTerm(session, activeTerm)),
+    [activeTerm, selected]
+  );
+
+  const filteredSessions = useMemo(
+    () =>
+      activeSessions.filter((session) => {
+        if (
+          !matchesSearch(searchQuery, session.courseCode, session.courseName)
+        ) {
+          return false;
+        }
+        if (dayFilter !== "all" && session.day !== dayFilter) {
+          return false;
+        }
+        return matchesTimeSlot(timeSlotFilter, session.start);
+      }),
+    [activeSessions, dayFilter, searchQuery, timeSlotFilter]
+  );
+
+  return {
+    filters,
+    setters,
     filteredSessions,
-    totalSessions: selected.length,
+    totalSessions: activeSessions.length,
   };
 }

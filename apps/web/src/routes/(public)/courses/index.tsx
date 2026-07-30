@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { AcademicTermSelector } from "@/components/academic-term-selector";
 import { SelectButton } from "@/components/class/select-button";
 import { SelectDropdown } from "@/components/class/select-dropdown";
 import { CourseFilters } from "@/components/course/course-filters";
@@ -24,10 +25,11 @@ function AllCoursesPage() {
           <DisclaimerAlert />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between gap-4 px-4">
           <h1 className="px-4 font-semibold text-3xl">
             {t("courses.courses")}
           </h1>
+          <AcademicTermSelector />
         </div>
         <div>
           <CourseFilters filters={filters} setters={setters} />
@@ -39,7 +41,15 @@ function AllCoursesPage() {
       </div>
 
       {filteredCourses.length === 0 ? (
-        <NotFound className="mt-8" description={t("not_found.no_courses")} />
+        <NotFound
+          action={
+            <Link to="/schedule">
+              <Button variant="outline">{t("nav.schedule")}</Button>
+            </Link>
+          }
+          className="mt-8"
+          description={t("not_found.no_courses_for_term")}
+        />
       ) : (
         <div className="mt-4 space-y-4">
           {filteredCourses.map((course) => (
