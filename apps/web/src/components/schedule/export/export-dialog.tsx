@@ -135,6 +135,7 @@ export function ScheduleExportDialog({
           buttonVariants({ variant: "outline", size: "sm" }),
           triggerClassName
         )}
+        disabled={sessions.length === 0}
       >
         <Download className="size-5 sm:size-4" />
         <span className="hidden sm:inline">{t("export.button", "Export")}</span>
