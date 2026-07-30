@@ -11,7 +11,7 @@ import {
 import {
   type AcademicTerm,
   academicTermKey,
-  uniqueAcademicTerms,
+  availableAcademicTerms,
 } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import {
@@ -36,17 +36,17 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
 
   const availableTerms = useMemo(
     () =>
-      uniqueAcademicTerms([
-        ...allCourses.map((course) => ({
+      availableAcademicTerms(
+        allCourses.map((course) => ({
           year: course.year,
           semester: course.semester,
         })),
-        ...selected.map((session) => ({
+        selected.map((session) => ({
           year: session.year,
           semester: session.semester,
         })),
-        activeTerm,
-      ]),
+        activeTerm
+      ),
     [activeTerm, selected]
   );
 

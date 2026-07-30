@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   type AcademicTerm,
   academicTermKey,
+  availableAcademicTerms,
   compareAcademicTerms,
   latestAcademicTerm,
   uniqueAcademicTerms,
@@ -43,5 +44,19 @@ describe("academic terms", () => {
 
   test("uses stable term key", () => {
     expect(academicTermKey({ year: "2025", semester: "2" })).toBe("2025-2");
+  });
+
+  test("includes catalog, archived, and active terms in selector options", () => {
+    expect(
+      availableAcademicTerms(
+        [{ year: "2025", semester: "2" }],
+        [{ year: "2024", semester: "1" }],
+        { year: "2023", semester: "S" }
+      )
+    ).toEqual([
+      { year: "2025", semester: "2" },
+      { year: "2024", semester: "1" },
+      { year: "2023", semester: "S" },
+    ]);
   });
 });

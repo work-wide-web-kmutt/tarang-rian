@@ -55,11 +55,7 @@
         "morning": "Morning (before 12:00)",
         "afternoon": "Afternoon (12:00+)"
       },
-      "years": {
-        "all": "All Years"
-      },
       "semesters": {
-        "all": "All Semesters",
         "1": "Semester 1",
         "2": "Semester 2",
         "S": "Summer"

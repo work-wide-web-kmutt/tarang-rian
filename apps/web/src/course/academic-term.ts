@@ -75,6 +75,14 @@ export function uniqueAcademicTerms(
   return [...unique.values()].sort(compareAcademicTerms);
 }
 
+export function availableAcademicTerms(
+  catalogTerms: readonly AcademicTerm[],
+  archivedTerms: readonly AcademicTerm[],
+  activeTerm: AcademicTerm
+): AcademicTerm[] {
+  return uniqueAcademicTerms([...catalogTerms, ...archivedTerms, activeTerm]);
+}
+
 export function latestAcademicTerm(
   terms: readonly AcademicTerm[],
   fallback: AcademicTerm = DEFAULT_ACADEMIC_TERM
