@@ -156,7 +156,7 @@ export function normalizeSelectedSession(
   };
 }
 
-function normalizeSessions(
+export function normalizeSessions(
   sessions: unknown[],
   fallbackTerm: AcademicTerm = getFallbackTerm()
 ): SelectedClassSession[] {
@@ -165,7 +165,36 @@ function normalizeSessions(
     .filter((session): session is SelectedClassSession => session !== null);
 }
 
-function migrateToPersistFormat(parsed: unknown): string | null {
+export function importSessionsForTerm(
+  existing: readonly SelectedClassSession[],
+  term: AcademicTerm,
+  sessions: readonly unknown[],
+  mode: "replace" | "merge"
+): SelectedClassSession[] {
+  const imported = normalizeSessions([...sessions], term).map((session) => ({
+    ...session,
+    id: v7(),
+    year: term.year,
+    semester: term.semester,
+  }));
+  const next =
+    mode === "replace"
+      ? existing.filter((session) => !sameAcademicTerm(session, term))
+      : [...existing];
+  const keys = new Set(next.map(selectedSessionKey));
+
+  for (const session of imported) {
+    const key = selectedSessionKey(session);
+    if (!keys.has(key)) {
+      next.push(session);
+      keys.add(key);
+    }
+  }
+
+  return next;
+}
+
+export function migrateSelectedStorageValue(parsed: unknown): string | null {
   if (Array.isArray(parsed)) {
     return JSON.stringify({
       state: { selected: normalizeSessions(parsed) },
@@ -207,7 +236,7 @@ const createSelectedStorage = () => ({
       }
 
       const parsed = JSON.parse(stored);
-      const migrated = migrateToPersistFormat(parsed);
+      const migrated = migrateSelectedStorageValue(parsed);
       if (migrated) {
         localStorage.setItem(name, migrated);
         return migrated;
@@ -339,31 +368,14 @@ const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
           })),
         importSchedule: (term, sessions, mode) =>
           set((state) => {
-            const imported = normalizeSessions(sessions, term).map(
-              (session) => ({
-                ...session,
-                id: v7(),
-                year: term.year,
-                semester: term.semester,
-              })
-            );
-            const existing =
-              mode === "replace"
-                ? state.selected.filter(
-                    (session) => !sameAcademicTerm(session, term)
-                  )
-                : [...state.selected];
-            const keys = new Set(existing.map(selectedSessionKey));
-
-            for (const session of imported) {
-              const key = selectedSessionKey(session);
-              if (!keys.has(key)) {
-                existing.push(session);
-                keys.add(key);
-              }
-            }
-
-            return { selected: existing };
+            return {
+              selected: importSessionsForTerm(
+                state.selected,
+                term,
+                sessions,
+                mode
+              ),
+            };
           }),
       },
     }),
