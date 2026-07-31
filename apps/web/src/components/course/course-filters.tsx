@@ -103,7 +103,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
         </Select>
       </div>
 
-      <AcademicTermSelector className="w-full md:w-64" />
+      <AcademicTermSelector className="w-full md:w-96" />
     </div>
   );
 }
