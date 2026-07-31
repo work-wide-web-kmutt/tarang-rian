@@ -76,7 +76,7 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
   };
 
   return (
-    <div className={cn("flex w-full md:w-64", className)}>
+    <div className={cn("flex w-full md:w-96", className)}>
       <Select
         onValueChange={(value) => {
           if (value) {
