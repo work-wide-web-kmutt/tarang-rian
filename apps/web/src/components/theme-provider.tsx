@@ -8,5 +8,5 @@ export function ThemeProvider({
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
-// biome-ignore lint/performance/noBarrelFile: Create T Stack auth generted
+// oxlint-disable-next-line oxc/no-barrel-file -- TanStack auth generated
 export { useTheme } from "next-themes";

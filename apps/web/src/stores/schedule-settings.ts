@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
 import { SCHEDULE_SIZE } from "@/constants/schedule";
 import {
   DEFAULT_SCHEDULE_TIME_RANGE,
   normalizeScheduleTimeRange,
-  type ScheduleTimeRange,
 } from "@/constants/times";
+import type { ScheduleTimeRange } from "@/constants/times";
 
 export type ScheduleSize = keyof typeof SCHEDULE_SIZE;
 
@@ -27,7 +28,7 @@ export function migrateScheduleSettings(
   persistedState: unknown
 ): PersistedScheduleSettings {
   const persisted =
-    persistedState && typeof persistedState === "object"
+    persistedState !== null && typeof persistedState === "object"
       ? (persistedState as Partial<PersistedScheduleSettings>)
       : {};
 
@@ -45,38 +46,46 @@ export function migrateScheduleSettings(
 const useScheduleSettingsStore = create<ScheduleSettingsState>()(
   persist(
     (set) => ({
+      actions: {
+        setSize: (size: ScheduleSize) => {
+          set({ size });
+        },
+        setTimeRange: (range: ScheduleTimeRange) => {
+          set({ timeRange: normalizeScheduleTimeRange(range) });
+        },
+      },
       size: "md",
       timeRange: DEFAULT_SCHEDULE_TIME_RANGE,
-      actions: {
-        setSize: (size: ScheduleSize) => set({ size }),
-        setTimeRange: (range: ScheduleTimeRange) =>
-          set({ timeRange: normalizeScheduleTimeRange(range) }),
-      },
     }),
     {
-      name: "schedule-settings-storage",
-      storage: createJSONStorage(() => localStorage),
-      version: 1,
-      partialize: (state): PersistedScheduleSettings => ({
-        size: state.size,
-        timeRange: state.timeRange,
-      }),
-      migrate: migrateScheduleSettings,
       merge: (persistedState, currentState) => ({
         ...currentState,
         ...migrateScheduleSettings(persistedState),
       }),
+      migrate: migrateScheduleSettings,
+      name: "schedule-settings-storage",
+      partialize: (state): PersistedScheduleSettings => ({
+        size: state.size,
+        timeRange: state.timeRange,
+      }),
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
     }
   )
 );
 
-export const useScheduleSize = () =>
-  useScheduleSettingsStore((state) => state.size);
+export function useScheduleSize(): ScheduleSize {
+  return useScheduleSettingsStore((state) => state.size);
+}
 
-export const useScheduleTimeRange = () =>
-  useScheduleSettingsStore((state) => state.timeRange);
+export function useScheduleTimeRange(): ScheduleTimeRange {
+  return useScheduleSettingsStore((state) => state.timeRange);
+}
 
-export const useScheduleSettingsActions = () =>
-  useScheduleSettingsStore((state) => state.actions);
+export function useScheduleSettingsActions(): ScheduleSettingsState["actions"] {
+  return useScheduleSettingsStore((state) => state.actions);
+}
 
-export const getScheduleSettings = () => useScheduleSettingsStore.getState();
+export function getScheduleSettings(): ScheduleSettingsState {
+  return useScheduleSettingsStore.getState();
+}

@@ -1,12 +1,13 @@
 import { allCourses } from "content-collections";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
 import {
-  type AcademicTerm,
   DEFAULT_ACADEMIC_TERM,
   isAcademicTerm,
   latestAcademicTerm,
 } from "@/course/academic-term";
+import type { AcademicTerm } from "@/course/academic-term";
 
 interface AcademicContextState {
   activeTerm: AcademicTerm;
@@ -16,7 +17,7 @@ interface AcademicContextState {
 }
 
 const latestCatalogTerm = latestAcademicTerm(
-  allCourses.map((course) => ({ year: course.year, semester: course.semester }))
+  allCourses.map((course) => ({ semester: course.semester, year: course.year }))
 );
 
 export function restoreAcademicTerm(
@@ -24,12 +25,12 @@ export function restoreAcademicTerm(
   fallback: AcademicTerm = latestCatalogTerm ?? DEFAULT_ACADEMIC_TERM
 ): AcademicTerm {
   if (
-    persistedState &&
+    persistedState !== null &&
     typeof persistedState === "object" &&
     "activeTerm" in persistedState &&
-    isAcademicTerm((persistedState as { activeTerm: unknown }).activeTerm)
+    isAcademicTerm(persistedState.activeTerm)
   ) {
-    return (persistedState as { activeTerm: AcademicTerm }).activeTerm;
+    return persistedState.activeTerm;
   }
 
   return fallback;
@@ -38,7 +39,6 @@ export function restoreAcademicTerm(
 const useAcademicContextStore = create<AcademicContextState>()(
   persist(
     (set) => ({
-      activeTerm: latestCatalogTerm,
       actions: {
         activateTerm: (term) => {
           if (isAcademicTerm(term)) {
@@ -46,29 +46,36 @@ const useAcademicContextStore = create<AcademicContextState>()(
           }
         },
       },
+      activeTerm: latestCatalogTerm,
     }),
     {
-      name: "academic-context-storage",
-      version: 1,
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ activeTerm: state.activeTerm }),
       migrate: (persistedState: unknown) => ({
         activeTerm: restoreAcademicTerm(persistedState),
       }),
+      name: "academic-context-storage",
+      partialize: (state) => ({ activeTerm: state.activeTerm }),
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
     }
   )
 );
 
-export const useActiveAcademicTerm = () =>
-  useAcademicContextStore((state) => state.activeTerm);
+export function useActiveAcademicTerm(): AcademicTerm {
+  return useAcademicContextStore((state) => state.activeTerm);
+}
 
-export const useAcademicTermActions = () =>
-  useAcademicContextStore((state) => state.actions);
+export function useAcademicTermActions(): AcademicContextState["actions"] {
+  return useAcademicContextStore((state) => state.actions);
+}
 
-export const useCurrentYear = () =>
-  Number(useAcademicContextStore((state) => state.activeTerm.year));
+export function useCurrentYear(): number {
+  return Number(useAcademicContextStore((state) => state.activeTerm.year));
+}
 
-export const useCurrentSemester = () =>
-  useAcademicContextStore((state) => state.activeTerm.semester);
+export function useCurrentSemester(): AcademicTerm["semester"] {
+  return useAcademicContextStore((state) => state.activeTerm.semester);
+}
 
-export const getAcademicContext = () => useAcademicContextStore.getState();
+export function getAcademicContext(): AcademicContextState {
+  return useAcademicContextStore.getState();
+}

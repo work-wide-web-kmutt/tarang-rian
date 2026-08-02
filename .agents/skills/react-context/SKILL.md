@@ -7,10 +7,7 @@ description: Add or change typed React Context providers and consumers in apps/w
 
 ## Decide whether Context fits
 
-Use Context for prop drilling, theme, authentication, localization, or state scoped
-to one component subtree. Prefer props for direct parent-child communication. Prefer
-Zustand for global client state and React Query for server state. Avoid Context for
-high-frequency state when consumers would re-render unnecessarily.
+Use Context for prop drilling, theme, authentication, localization, or state scoped to one component subtree. Prefer props for direct parent-child communication. Prefer Zustand for global client state and React Query for server state. Avoid Context for high-frequency state when consumers would re-render unnecessarily.
 
 ## Workflow
 
@@ -20,10 +17,8 @@ high-frequency state when consumers would re-render unnecessarily.
    const FeatureContext = createContext<FeatureContextValue | null>(null);
    ```
 
-2. Keep the provider scope as narrow as the consumers require. Keep one provider
-   focused on one concern; split contexts when update frequencies differ.
-3. Export the provider and a custom hook, not the raw context. The hook must throw a
-   descriptive error when a required provider is missing:
+2. Keep the provider scope as narrow as the consumers require. Keep one provider focused on one concern; split contexts when update frequencies differ.
+3. Export the provider and a custom hook, not the raw context. The hook must throw a descriptive error when a required provider is missing:
 
    ```tsx
    export function useFeatureContext() {
@@ -35,10 +30,8 @@ high-frequency state when consumers would re-render unnecessarily.
    }
    ```
 
-4. Memoize context values and callbacks when they contain objects or functions.
-   Avoid creating a new value object on every provider render.
-5. For reusable component instances, create an instance-scoped provider rather than
-   relying on a global singleton.
+4. Memoize context values and callbacks when they contain objects or functions. Avoid creating a new value object on every provider render.
+5. For reusable component instances, create an instance-scoped provider rather than relying on a global singleton.
 
 ## Verification
 

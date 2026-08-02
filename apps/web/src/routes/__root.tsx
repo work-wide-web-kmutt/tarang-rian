@@ -6,98 +6,99 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
+
 import { BreakpointIndicator } from "@/components/breakpoint-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-import "../index.css";
+import "@/index.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
-      retry: 1,
       refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
     },
   },
 });
 
-// biome-ignore lint/suspicious/noEmptyInterface: TanStack Start genereted
+// oxlint-disable-next-line typescript/no-empty-interface, typescript/no-empty-object-type -- TanStack Start generated
 export interface RouterAppContext {}
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,
   head: () => ({
+    links: [
+      {
+        href: "/static/favicon/favicon-96x96.png",
+        rel: "icon",
+        sizes: "96x96",
+        type: "image/png",
+      },
+      {
+        href: "/static/favicon/favicon.svg",
+        rel: "icon",
+        type: "image/svg+xml",
+      },
+      {
+        href: "/static/favicon/favicon.ico",
+        rel: "shortcut icon",
+      },
+      {
+        href: "/static/favicon/apple-touch-icon.png",
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+      },
+      {
+        href: "/static/favicon/site.webmanifest",
+        rel: "manifest",
+      },
+    ],
     meta: [
       {
         title: "Tarang Rian",
       },
       {
+        content: "Tarang Rian - Course management and planning platform",
         name: "description",
-        content: "Tarang Rian - Course management and planning platform",
       },
       {
+        content: "Tarang Rian",
         name: "apple-mobile-web-app-title",
-        content: "Tarang Rian",
       },
       {
+        content: "Tarang Rian",
         property: "og:title",
-        content: "Tarang Rian",
       },
       {
+        content: "Tarang Rian - Course management and planning platform",
         property: "og:description",
-        content: "Tarang Rian - Course management and planning platform",
       },
       {
+        content: "https://tarang-rian.dekcpe.link/static/og-image.png",
         property: "og:image",
-        content: "https://tarang-rian.dekcpe.link/static/og-image.png",
       },
       {
-        property: "og:type",
         content: "website",
+        property: "og:type",
       },
       {
-        name: "twitter:card",
         content: "summary_large_image",
+        name: "twitter:card",
       },
       {
-        name: "twitter:title",
         content: "Tarang Rian",
+        name: "twitter:title",
       },
       {
-        name: "twitter:description",
         content: "Tarang Rian - Course management and planning platform",
+        name: "twitter:description",
       },
       {
-        name: "twitter:image",
         content: "https://tarang-rian.dekcpe.link/static/og-image.png",
-      },
-    ],
-    links: [
-      {
-        rel: "icon",
-        type: "image/png",
-        href: "/static/favicon/favicon-96x96.png",
-        sizes: "96x96",
-      },
-      {
-        rel: "icon",
-        type: "image/svg+xml",
-        href: "/static/favicon/favicon.svg",
-      },
-      {
-        rel: "shortcut icon",
-        href: "/static/favicon/favicon.ico",
-      },
-      {
-        rel: "apple-touch-icon",
-        sizes: "180x180",
-        href: "/static/favicon/apple-touch-icon.png",
-      },
-      {
-        rel: "manifest",
-        href: "/static/favicon/site.webmanifest",
+        name: "twitter:image",
       },
     ],
   }),

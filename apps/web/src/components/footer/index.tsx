@@ -1,5 +1,6 @@
-import { GithubIcon } from "lucide-react";
+import { GitPullRequest } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { useLatestCommit } from "@/hooks/use-latest-commit";
@@ -20,11 +21,11 @@ function Footer() {
             </span>
             <a
               href="https://github.com/work-wide-web-kmutt/tarang-rian/pulls"
-              rel="noopener"
+              rel="noreferrer"
               target="_blank"
             >
               <Button size="xs">
-                <GithubIcon />
+                <GitPullRequest />
                 Github
               </Button>
             </a>
@@ -36,7 +37,7 @@ function Footer() {
                 <a
                   className="font-mono hover:underline"
                   href={commit.html_url}
-                  rel="noopener"
+                  rel="noreferrer"
                   target="_blank"
                 >
                   {commit.sha.slice(0, 7)}

@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { AcademicTermSelector } from "@/components/academic-term-selector";
 import {
   InputGroup,
@@ -20,9 +21,9 @@ import type {
 } from "@/hooks/use-course-filters";
 
 const TIME_SLOTS = [
-  { value: "all", label: "All Times" },
-  { value: "morning", label: "Morning (before 12:00)" },
-  { value: "afternoon", label: "Afternoon (12:00+)" },
+  { label: "All Times", value: "all" },
+  { label: "Morning (before 12:00)", value: "morning" },
+  { label: "Afternoon (12:00+)", value: "afternoon" },
 ] as const;
 
 interface CourseFiltersProps {
@@ -35,21 +36,23 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
   const { searchQuery, dayFilter, timeSlotFilter } = filters;
   const { setSearchQuery, setDayFilter, setTimeSlotFilter } = setters;
 
-  const getDayLabel = (value: string): string => {
+  function getDayLabel(value: string): string {
     return value === "all"
       ? t("filter.days.all")
       : t(`days_time.${value.toLowerCase()}`);
-  };
+  }
 
-  const getTimeSlotLabel = (value: string): string => {
+  function getTimeSlotLabel(value: string): string {
     return value === "all" ? t("filter.times.all") : t(`filter.times.${value}`);
-  };
+  }
 
   return (
     <div className="flex flex-col md:flex-row">
       <InputGroup className="border-r-0 border-l-0 md:border-r">
         <InputGroupInput
-          onChange={(event) => setSearchQuery(event.target.value)}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+          }}
           placeholder={t("filter.search")}
           value={searchQuery}
         />
@@ -61,7 +64,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
       <div className="flex w-full md:w-fit">
         <Select
           onValueChange={(value) => {
-            if (value) {
+            if (value !== null && value !== "") {
               setDayFilter(value);
             }
           }}
@@ -82,7 +85,7 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
 
         <Select
           onValueChange={(value) => {
-            if (value) {
+            if (value !== null && value !== "") {
               setTimeSlotFilter(value);
             }
           }}

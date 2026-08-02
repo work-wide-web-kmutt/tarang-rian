@@ -1,6 +1,7 @@
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import CourseVaul from "@/components/course/vaul";
 import {
   getClassKey,
@@ -72,17 +73,17 @@ export function SessionBlock({
   const durationHours =
     (parseTime(session.end) - parseTime(session.start)) / 60;
 
-  const handleDelete = (e: React.MouseEvent) => {
+  function handleDelete(e: React.MouseEvent): void {
     e.stopPropagation();
     e.preventDefault();
     setShowDeleteDialog(true);
-  };
+  }
 
-  const handleConfirmDelete = (e?: React.MouseEvent<HTMLButtonElement>) => {
+  function handleConfirmDelete(e?: React.MouseEvent<HTMLButtonElement>): void {
     e?.stopPropagation();
     remove(session.id);
     setShowDeleteDialog(false);
-  };
+  }
 
   return (
     <ContextMenu>
@@ -104,8 +105,8 @@ export function SessionBlock({
           shouldOpen={openClassKey === classKey}
           style={{
             left: `${startOffset * 100}%`,
-            width: `calc(${span * 100}% - 0.25rem)`,
             paddingLeft: extraLeftPadding,
+            width: `calc(${span * 100}% - 0.25rem)`,
           }}
         >
           <div className="min-w-0">

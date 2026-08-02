@@ -4,8 +4,8 @@ import {
   DEFAULT_SCHEDULE_TIME_RANGE,
   getScheduleTimeSlots,
   normalizeScheduleTimeRange,
-  type ScheduleTimeRange,
 } from "@/constants/times";
+import type { ScheduleTimeRange } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
 import { parseTime } from "@/lib/parser/time";
 import type { SelectedClassSession } from "@/stores/selected";
@@ -20,6 +20,10 @@ export interface TimeSlotPosition {
 interface VisibleSessionInterval {
   startMinutes: number;
   endMinutes: number;
+}
+
+function isScheduleDay(value: string): value is (typeof DAYS)[number] {
+  return DAYS.some((day) => day === value);
 }
 
 function formatMinutes(totalMinutes: number): string {
@@ -54,8 +58,8 @@ export function getVisibleSessionInterval(
   }
 
   return {
-    startMinutes: visibleStartMinutes,
     endMinutes: visibleEndMinutes,
+    startMinutes: visibleStartMinutes,
   };
 }
 
@@ -86,10 +90,10 @@ export function getTimeSlotPosition(
   const span = endCol - startCol + (endOffset - startOffset);
 
   return {
+    endOffset,
+    span: Math.max(0.5, span),
     startCol,
     startOffset,
-    span: Math.max(0.5, span),
-    endOffset,
   };
 }
 
@@ -172,25 +176,25 @@ export function calculateSnappedPreview(
     normalizedRange.startHour * 60 + targetSlotIndex * SLOT_DURATION_MINUTES;
 
   return {
-    newStart: formatMinutes(newStartMinutes),
     newEnd: formatMinutes(newStartMinutes + duration),
+    newStart: formatMinutes(newStartMinutes),
   };
 }
 
 export function findDayRowFromMousePosition(
-  mouseEvent: MouseEvent,
+  mouseEvent: Pick<MouseEvent, "clientX" | "clientY">,
   cellSize: number,
   dayColumnWidth: number,
   range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
-): { day: string; timeColIndex: number; cellX: number } | null {
+): { day: (typeof DAYS)[number]; timeColIndex: number; cellX: number } | null {
   const columnCount = getScheduleTimeSlots(range).length;
 
   for (const day of DAYS) {
-    const dayRowElement = document.querySelector(
+    const dayRowElement = document.querySelector<HTMLElement>(
       `[data-day-row="${day}"]`
-    ) as HTMLElement;
+    );
 
-    if (!dayRowElement) {
+    if (dayRowElement === null) {
       continue;
     }
 
@@ -220,23 +224,20 @@ export function findDayRowFromMousePosition(
     }
 
     const cellX = x - timeColIndex * cellSize;
-    return { day, timeColIndex, cellX };
+    return { cellX, day, timeColIndex };
   }
 
   return null;
 }
 
 export function parseOverId(overId: string): {
-  day: string;
+  day: (typeof DAYS)[number];
   timeColIndex: number;
 } | null {
   const [day, timeColIndexStr] = overId.split("-");
-  const timeColIndex = Number.parseInt(timeColIndexStr, 10);
+  const timeColIndex = Math.trunc(Number(timeColIndexStr));
 
-  if (
-    Number.isNaN(timeColIndex) ||
-    !DAYS.includes(day as (typeof DAYS)[number])
-  ) {
+  if (Number.isNaN(timeColIndex) || !isScheduleDay(day)) {
     return null;
   }
 
@@ -245,16 +246,16 @@ export function parseOverId(overId: string): {
 
 export function getMousePositionInDayRow(
   day: string,
-  mouseEvent: MouseEvent,
+  mouseEvent: Pick<MouseEvent, "clientX" | "clientY">,
   timeColIndex: number,
   cellSize: number,
   dayColumnWidth: number
 ): { x: number; cellX: number } | null {
-  const dayRowElement = document.querySelector(
+  const dayRowElement = document.querySelector<HTMLElement>(
     `[data-day-row="${day}"]`
-  ) as HTMLElement;
+  );
 
-  if (!dayRowElement) {
+  if (dayRowElement === null) {
     return null;
   }
 
@@ -266,7 +267,7 @@ export function getMousePositionInDayRow(
   }
 
   const cellX = x - timeColIndex * cellSize;
-  return { x, cellX };
+  return { cellX, x };
 }
 
 export function getClassesForCell(
@@ -331,11 +332,11 @@ export function calculateResizePreview(
   }
 
   return {
-    newStart: formatMinutes(newStartMinutes),
-    newEnd: formatMinutes(newEndMinutes),
     isValid:
       Number.isFinite(newStartMinutes) &&
       Number.isFinite(newEndMinutes) &&
       newStartMinutes < newEndMinutes,
+    newEnd: formatMinutes(newEndMinutes),
+    newStart: formatMinutes(newStartMinutes),
   };
 }

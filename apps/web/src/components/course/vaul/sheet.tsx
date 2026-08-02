@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import { CourseVaulContent } from "@/components/course/vaul/content";
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { CourseVaulForm } from "@/components/course/vaul/form";
@@ -14,7 +15,9 @@ export function CourseVaulSheet() {
     <>
       <div
         className={cn(className, "transition-all duration-300 ease-out")}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();

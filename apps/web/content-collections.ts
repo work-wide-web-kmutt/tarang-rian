@@ -1,17 +1,18 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
-import { GenElectiveOptionSchema } from "./src/course/schema";
 
-const MD_FILE_EXTENSION_REGEX = /\.md$/;
+import { GenElectiveOptionSchema } from "@/course/schema";
+
+const MD_FILE_EXTENSION_REGEX = /\.md$/u;
 
 const courses = defineCollection({
-  name: "courses",
   directory: "src/course",
   include: "**/*.md",
+  name: "courses",
   schema: GenElectiveOptionSchema,
   transform: (data) => {
     const slug = data._meta.path
       .replace(MD_FILE_EXTENSION_REGEX, "")
-      .replace(/\//g, "-");
+      .replaceAll("/", "-");
     const normalizedClass =
       data.class?.map((cls) => ({
         ...cls,
@@ -21,8 +22,8 @@ const courses = defineCollection({
       })) ?? [];
     return {
       ...data,
-      slug,
       class: normalizedClass,
+      slug,
     };
   },
 });

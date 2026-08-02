@@ -12,6 +12,14 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+
+import { SchedulePreview } from "@/components/schedule/export/schedule-preview";
+import {
+  downloadFile,
+  exportAsImage,
+  exportAsPdf,
+} from "@/components/schedule/export/utils";
+import type { ExportFormat } from "@/components/schedule/export/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,13 +42,6 @@ import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import { useScheduleTimeRange } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
-import { SchedulePreview } from "./schedule-preview";
-import {
-  downloadFile,
-  type ExportFormat,
-  exportAsImage,
-  exportAsPdf,
-} from "./utils";
 
 interface ScheduleExportDialogProps {
   sessions: SelectedClassSession[];
@@ -78,7 +79,7 @@ export function ScheduleExportDialog({
     { name: "Black", value: "#000000" },
   ];
 
-  const handleExport = async () => {
+  async function handleExport(): Promise<void> {
     setIsExporting(true);
 
     try {
@@ -90,7 +91,10 @@ export function ScheduleExportDialog({
         URL.revokeObjectURL(url);
       } else {
         // Allow time for the Portal to render the export target
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // oxlint-disable-next-line promise/avoid-new -- allow portal render before capture
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, 100);
+        });
 
         if (format === "pdf") {
           const pdf = await exportAsPdf("schedule-export-target");
@@ -99,7 +103,7 @@ export function ScheduleExportDialog({
           const dataUrl = await exportAsImage(
             "schedule-export-target",
             format,
-            Number.parseInt(scale, 10)
+            Math.trunc(Number(scale))
           );
           if (dataUrl) {
             downloadFile(
@@ -116,9 +120,9 @@ export function ScheduleExportDialog({
     } finally {
       setIsExporting(false);
     }
-  };
+  }
 
-  const handleCopyToClipboard = async () => {
+  async function handleCopyToClipboard(): Promise<void> {
     try {
       const jsonData = JSON.stringify(sessions, null, 2);
       await navigator.clipboard.writeText(jsonData);
@@ -127,14 +131,14 @@ export function ScheduleExportDialog({
       console.error(error);
       toast.error(t("export.copyError", "Failed to copy JSON to clipboard"));
     }
-  };
+  }
 
   return (
     <Dialog>
       <DialogTrigger
         aria-label={t("export.button", "Export")}
         className={cn(
-          buttonVariants({ variant: "outline", size: "sm" }),
+          buttonVariants({ size: "sm", variant: "outline" }),
           triggerClassName
         )}
         disabled={sessions.length === 0}
@@ -158,7 +162,9 @@ export function ScheduleExportDialog({
                 <div className="absolute top-4 right-4 z-10">
                   <Button
                     aria-label={t("export.copyAriaLabel", "Copy JSON")}
-                    onClick={handleCopyToClipboard}
+                    onClick={() => {
+                      void handleCopyToClipboard();
+                    }}
                     size="sm"
                     variant="outline"
                   >
@@ -184,9 +190,9 @@ export function ScheduleExportDialog({
                     className="w-fit transition-all duration-300 ease-in-out"
                     key={`${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
                     style={{
-                      padding: `${padding}px`,
                       backgroundColor: showBackground ? bgColor : "transparent",
                       display: "inline-block",
+                      padding: `${padding}px`,
                     }}
                   >
                     <SchedulePreview
@@ -209,7 +215,9 @@ export function ScheduleExportDialog({
                 <div className="grid grid-cols-4 gap-2">
                   <Button
                     className="w-full"
-                    onClick={() => setFormat("png")}
+                    onClick={() => {
+                      setFormat("png");
+                    }}
                     size="sm"
                     variant={format === "png" ? "default" : "outline"}
                   >
@@ -217,7 +225,9 @@ export function ScheduleExportDialog({
                   </Button>
                   <Button
                     className="w-full"
-                    onClick={() => setFormat("jpg")}
+                    onClick={() => {
+                      setFormat("jpg");
+                    }}
                     size="sm"
                     variant={format === "jpg" ? "default" : "outline"}
                   >
@@ -225,7 +235,9 @@ export function ScheduleExportDialog({
                   </Button>
                   <Button
                     className="w-full"
-                    onClick={() => setFormat("pdf")}
+                    onClick={() => {
+                      setFormat("pdf");
+                    }}
                     size="sm"
                     variant={format === "pdf" ? "default" : "outline"}
                   >
@@ -233,7 +245,9 @@ export function ScheduleExportDialog({
                   </Button>
                   <Button
                     className="w-full"
-                    onClick={() => setFormat("json")}
+                    onClick={() => {
+                      setFormat("json");
+                    }}
                     size="sm"
                     variant={format === "json" ? "default" : "outline"}
                   >
@@ -249,7 +263,9 @@ export function ScheduleExportDialog({
                 <div className="flex flex-col gap-2">
                   <Button
                     className="justify-between"
-                    onClick={() => setIsShorthand(!isShorthand)}
+                    onClick={() => {
+                      setIsShorthand(!isShorthand);
+                    }}
                     variant="outline"
                   >
                     <span className="flex items-center gap-2">
@@ -272,7 +288,9 @@ export function ScheduleExportDialog({
                   </Button>
                   <Button
                     className="justify-between"
-                    onClick={() => setDarkMode(!darkMode)}
+                    onClick={() => {
+                      setDarkMode(!darkMode);
+                    }}
                     variant="outline"
                   >
                     <span className="flex items-center gap-2">
@@ -295,7 +313,9 @@ export function ScheduleExportDialog({
                   </Button>
                   <Button
                     className="justify-between"
-                    onClick={() => setShowBackground(!showBackground)}
+                    onClick={() => {
+                      setShowBackground(!showBackground);
+                    }}
                     variant="outline"
                   >
                     <span className="flex items-center gap-2">
@@ -323,7 +343,9 @@ export function ScheduleExportDialog({
                           <Palette className="pointer-events-none absolute top-1/2 left-1/2 z-10 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-foreground" />
                           <input
                             className="absolute inset-0 -top-1/4 -left-1/4 h-[150%] w-[150%] cursor-pointer border-0 p-0 opacity-0"
-                            onChange={(e) => setBgColor(e.target.value)}
+                            onChange={(e) => {
+                              setBgColor(e.target.value);
+                            }}
                             title="Custom Color"
                             type="color"
                             value={bgColor}
@@ -333,13 +355,16 @@ export function ScheduleExportDialog({
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {BG_PRESETS.map((preset) => (
                           <button
+                            aria-label={preset.name}
                             className={cn(
                               "h-6 w-6 rounded-full border transition-all hover:scale-110",
                               bgColor === preset.value &&
                                 "ring-2 ring-primary ring-offset-1"
                             )}
                             key={preset.value}
-                            onClick={() => setBgColor(preset.value)}
+                            onClick={() => {
+                              setBgColor(preset.value);
+                            }}
                             style={{ backgroundColor: preset.value }}
                             title={preset.name}
                             type="button"
@@ -362,7 +387,7 @@ export function ScheduleExportDialog({
                     </span>
                     <Select
                       onValueChange={(val: string | null) => {
-                        if (val) {
+                        if (val !== null && val !== "") {
                           setPadding(val);
                         }
                       }}
@@ -387,7 +412,7 @@ export function ScheduleExportDialog({
                     <Select
                       disabled={format === "pdf"}
                       onValueChange={(val: string | null) => {
-                        if (val) {
+                        if (val !== null && val !== "") {
                           setScale(val);
                         }
                       }}
@@ -412,7 +437,9 @@ export function ScheduleExportDialog({
               <Button
                 className="w-full"
                 disabled={isExporting}
-                onClick={handleExport}
+                onClick={() => {
+                  void handleExport();
+                }}
                 size="lg"
               >
                 {isExporting ? (
@@ -432,26 +459,26 @@ export function ScheduleExportDialog({
       {createPortal(
         <div
           style={{
-            position: "fixed",
             left: "200vw",
-            top: 0,
             overflow: "hidden",
+            position: "fixed",
+            top: 0,
           }}
         >
           <div
             id="schedule-export-target"
             key={`${padding}-${bgColor}-${showBackground}-${darkMode}-${sessions.length}`}
             style={{
-              width: "fit-content",
               height: "fit-content",
+              width: "fit-content",
             }}
           >
             <div
               style={{
-                padding: `${padding}px`,
                 backgroundColor: showBackground ? bgColor : "transparent",
-                width: "100%",
                 height: "100%",
+                padding: `${padding}px`,
+                width: "100%",
               }}
             >
               <SchedulePreview

@@ -21,18 +21,14 @@ These instructions apply to `apps/web` and supplement repository-root guidance.
 - `src/locales`: English and Thai translations.
 - `scripts/generate-content-collections.ts`: content-collection generation.
 
-Keep domain logic in the closest domain module. Keep route components focused on
-composition and data flow. Reuse existing schedule positioning, snapping, and
-normalization utilities instead of duplicating them.
+Keep domain logic in the closest domain module. Keep route components focused on composition and data flow. Reuse existing schedule positioning, snapping, and normalization utilities instead of duplicating them.
 
 ## Existing Patterns
 
 - Forms use TanStack Form, Zod, and `Field` components.
-- Stores use Zustand selectors, grouped actions, persistence, and migrations where
-  state must survive reloads.
+- Stores use Zustand selectors, grouped actions, persistence, and migrations where state must survive reloads.
 - Context providers are component-scoped when state needs isolated instances.
-- Drag interactions use dnd-kit; schedule-specific creation and resizing may use
-  pointer handlers plus existing schedule utilities.
+- Drag interactions use dnd-kit; schedule-specific creation and resizing may use pointer handlers plus existing schedule utilities.
 - User-facing text belongs in `src/locales/en` and `src/locales/th`.
 
 ## Verification
@@ -46,9 +42,7 @@ bun run test
 bun run build
 ```
 
-`check-types` generates content collections before invoking TypeScript. Run the
-focused web test or type check first during iteration, then the relevant root
-checks before handoff.
+`check-types` generates content collections before invoking TypeScript. Run the focused web test or type check first during iteration, then the relevant root checks before handoff.
 
 ## Task Skills
 

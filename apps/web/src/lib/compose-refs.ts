@@ -1,4 +1,5 @@
-import { type Ref, useCallback } from "react";
+import { useMemo } from "react";
+import type { Ref } from "react";
 
 type PossibleRef<T> = Ref<T> | undefined;
 
@@ -37,7 +38,7 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
     // using the cleanup functionality added in React 19.
     if (hasCleanup) {
       return () => {
-        for (let i = 0; i < cleanups.length; i++) {
+        for (let i = 0; i < cleanups.length; i += 1) {
           const cleanup = cleanups[i];
           if (typeof cleanup === "function") {
             cleanup();
@@ -47,6 +48,8 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
         }
       };
     }
+    // oxlint-disable-next-line unicorn/no-useless-undefined -- explicitly signal that ref has no cleanup
+    return undefined;
   };
 }
 
@@ -54,9 +57,12 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
  * A custom hook that composes multiple refs
  * Accepts callback refs and RefObject(s)
  */
+// oxlint-disable react/react-compiler -- refs are intentionally a dynamic dependency list
+// oxlint-disable react-hooks/exhaustive-deps -- every supplied ref is a dependency
 function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
-  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to memoize by all values
-  return useCallback(composeRefs(...refs), refs);
+  return useMemo(() => composeRefs(...refs), [...refs]);
 }
+// oxlint-enable react-hooks/exhaustive-deps
+// oxlint-enable react/react-compiler
 
 export { composeRefs, useComposedRefs };

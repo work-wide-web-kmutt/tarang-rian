@@ -1,30 +1,31 @@
 import { describe, expect, test } from "bun:test";
+
 import type { AcademicTerm } from "@/course/academic-term";
 import {
   importSessionsForTerm,
   migrateSelectedStorageValue,
   normalizeSelectedSession,
-  type SelectedClassSession,
-} from "./selected";
+} from "@/stores/selected";
+import type { SelectedClassSession } from "@/stores/selected";
 
-const term2025: AcademicTerm = { year: "2025", semester: "2" };
-const term2026: AcademicTerm = { year: "2026", semester: "1" };
+const term2025: AcademicTerm = { semester: "2", year: "2025" };
+const term2026: AcademicTerm = { semester: "1", year: "2026" };
 
 function session(
   overrides: Partial<SelectedClassSession> = {}
 ): SelectedClassSession {
   return {
-    id: "session-1",
     courseCode: "GEN101",
     courseName: "Course",
-    year: term2025.year,
-    semester: term2025.semester,
-    instructor: ["Teacher"],
-    group: "1",
     day: "Monday",
-    start: "09:00",
     end: "10:00",
+    group: "1",
+    id: "session-1",
+    instructor: ["Teacher"],
+    semester: term2025.semester,
+    start: "09:00",
     type: "fixed",
+    year: term2025.year,
     ...overrides,
   };
 }
@@ -34,22 +35,22 @@ describe("selected schedule migration and term isolation", () => {
     const normalized = normalizeSelectedSession(
       {
         courseCode: "GEN101",
-        instructor: "Teacher",
         day: "Monday",
-        start: "09:00",
         end: "10:00",
+        instructor: "Teacher",
+        start: "09:00",
       },
       term2026
     );
     expect(normalized).toMatchObject({
       courseCode: "GEN101",
       instructor: ["Teacher"],
-      year: "2026",
       semester: "1",
+      year: "2026",
     });
     expect(
       normalizeSelectedSession(
-        { day: "Monday", start: "bad", end: "10:00" },
+        { day: "Monday", end: "10:00", start: "bad" },
         term2026
       )
     ).toBeNull();
@@ -57,26 +58,32 @@ describe("selected schedule migration and term isolation", () => {
 
   test("migrates raw-array and pre-persist formats", () => {
     const raw = migrateSelectedStorageValue([
-      { courseCode: "GEN101", day: "Monday", start: "09:00", end: "10:00" },
+      { courseCode: "GEN101", day: "Monday", end: "10:00", start: "09:00" },
     ]);
     expect(raw).not.toBeNull();
-    expect(JSON.parse(raw as string)).toMatchObject({
-      version: 0,
+    if (raw === null) {
+      throw new Error("Expected migrated storage value");
+    }
+    expect(JSON.parse(raw)).toMatchObject({
       state: { selected: [{ courseCode: "GEN101" }] },
+      version: 0,
     });
 
     const prePersist = migrateSelectedStorageValue({ selected: [] });
-    expect(JSON.parse(prePersist as string)).toEqual({
-      version: 0,
+    if (prePersist === null) {
+      throw new Error("Expected migrated storage value");
+    }
+    expect(JSON.parse(prePersist)).toEqual({
       state: { selected: [] },
+      version: 0,
     });
   });
 
   test("keeps identical classes separate by term and deduplicates within term", () => {
     const archived = session({
-      year: term2026.year,
-      semester: term2026.semester,
       id: "archived",
+      semester: term2026.semester,
+      year: term2026.year,
     });
     const imported = { ...session(), id: "incoming" };
     const existing = [session(), archived];
@@ -105,9 +112,9 @@ describe("selected schedule migration and term isolation", () => {
     const existing = [
       session(),
       session({
-        year: term2026.year,
-        semester: term2026.semester,
         id: "other",
+        semester: term2026.semester,
+        year: term2026.year,
       }),
     ];
     const replacement = importSessionsForTerm(

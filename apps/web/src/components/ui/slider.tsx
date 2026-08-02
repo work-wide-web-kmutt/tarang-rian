@@ -1,14 +1,14 @@
 import { Slider as BaseSlider } from "@base-ui/react/slider";
 import type * as React from "react";
+
 import { cn } from "@/lib/utils";
 
 type BaseSliderProps = React.ComponentProps<typeof BaseSlider.Root>;
 
-interface RangeSliderProps
-  extends Omit<
-    BaseSliderProps,
-    "children" | "defaultValue" | "onValueChange" | "value"
-  > {
+interface RangeSliderProps extends Omit<
+  BaseSliderProps,
+  "children" | "defaultValue" | "onValueChange" | "value"
+> {
   value: readonly [number, number];
   onValueChange?: (value: readonly number[]) => void;
   getAriaLabel?: (index: number) => string;

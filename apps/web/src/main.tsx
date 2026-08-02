@@ -7,10 +7,10 @@ import "@/stores/academic-context";
 import "@/lib/i18n";
 
 const router = createRouter({
-  routeTree,
-  defaultPreload: "intent",
-  defaultPendingComponent: () => <Loader />,
   context: {},
+  defaultPendingComponent: () => <Loader />,
+  defaultPreload: "intent",
+  routeTree,
 });
 
 declare module "@tanstack/react-router" {
@@ -19,7 +19,7 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const rootElement = document.getElementById("app");
+const rootElement = document.querySelector("#app");
 
 if (!rootElement) {
   throw new Error("Root element not found");

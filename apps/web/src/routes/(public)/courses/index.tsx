@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+
 import { SelectButton } from "@/components/class/select-button";
 import { SelectDropdown } from "@/components/class/select-dropdown";
 import { CourseFilters } from "@/components/course/course-filters";

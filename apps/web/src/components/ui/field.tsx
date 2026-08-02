@@ -1,6 +1,6 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
 import type * as React from "react";
-import { useMemo } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -52,17 +52,17 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
 const fieldVariants = cva(
   "group/field flex w-full gap-2 data-[invalid=true]:text-destructive",
   {
+    defaultVariants: {
+      orientation: "vertical",
+    },
     variants: {
       orientation: {
-        vertical: "flex-col *:w-full [&>.sr-only]:w-auto",
         horizontal:
           "flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
         responsive:
           "@md/field-group:flex-row flex-col @md/field-group:items-center *:w-full @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+        vertical: "flex-col *:w-full [&>.sr-only]:w-auto",
       },
-    },
-    defaultVariants: {
-      orientation: "vertical",
     },
   }
 );
@@ -154,12 +154,12 @@ function FieldSeparator({
         "relative -my-2 h-5 text-xs group-data-[variant=outline]/field-group:-mb-2",
         className
       )}
-      data-content={!!children}
+      data-content={children !== null && children !== undefined}
       data-slot="field-separator"
       {...props}
     >
       <Separator className="absolute inset-0 top-1/2" />
-      {children && (
+      {children !== null && children !== undefined && children !== false && (
         <span
           className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
           data-slot="field-separator-content"
@@ -177,36 +177,38 @@ function FieldError({
   errors,
   ...props
 }: React.ComponentProps<"div"> & {
-  errors?: Array<{ message?: string } | undefined>;
+  errors?: ({ message?: string } | undefined)[];
 }) {
-  const content = useMemo(() => {
-    if (children) {
-      return children;
-    }
-
-    if (!errors?.length) {
-      return null;
-    }
-
+  let content: React.ReactNode = null;
+  if (
+    children !== null &&
+    children !== undefined &&
+    children !== false &&
+    children !== ""
+  ) {
+    content = children;
+  } else if (errors !== undefined && errors.length > 0) {
     const uniqueErrors = [
       ...new Map(errors.map((error) => [error?.message, error])).values(),
     ];
 
-    if (uniqueErrors?.length === 1) {
-      return uniqueErrors[0]?.message;
-    }
+    content =
+      uniqueErrors.length === 1 ? (
+        uniqueErrors[0]?.message
+      ) : (
+        <ul className="ml-4 flex list-disc flex-col gap-1">
+          {uniqueErrors.map(
+            (error) =>
+              error?.message !== undefined &&
+              error.message !== "" && (
+                <li key={error.message}>{error.message}</li>
+              )
+          )}
+        </ul>
+      );
+  }
 
-    return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error) =>
-            error?.message && <li key={error.message}>{error.message}</li>
-        )}
-      </ul>
-    );
-  }, [children, errors]);
-
-  if (!content) {
+  if (content === null || content === undefined || content === "") {
     return null;
   }
 

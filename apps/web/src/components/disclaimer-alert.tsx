@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 

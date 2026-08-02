@@ -18,22 +18,15 @@ description: Add accessible, conflict-free keyboard shortcuts in apps/web with @
    });
    ```
 
-4. Avoid browser defaults, OS shortcuts, and screen-reader commands. Call
-   `event.preventDefault()` only when intentionally overriding a default.
-5. Use `enabled` for shortcuts that apply only in a particular feature or mode.
-   Keep the library's input-field ignore behavior unless the shortcut is explicitly
-   useful inside an input; use `ignoredElementWhitelist` only for that exception.
+4. Avoid browser defaults, OS shortcuts, and screen-reader commands. Call `event.preventDefault()` only when intentionally overriding a default.
+5. Use `enabled` for shortcuts that apply only in a particular feature or mode. Keep the library's input-field ignore behavior unless the shortcut is explicitly useful inside an input; use `ignoredElementWhitelist` only for that exception.
 
 ## Accessibility
 
-- Add `aria-keyshortcuts` to the element or control that owns the action. Use
-  `Meta+S Control+S` formatting for multiple platform variants.
-- Show the shortcut with existing `Kbd` and `KbdGroup` components in buttons,
-  menus, tooltips, or help UI.
-- Keep a mouse, touch, or visible control alternative. A shortcut must never be
-  the only way to reach an action.
-- Use platform-appropriate labels (`Cmd` or `Ctrl`) when the UI can detect the
-  user's platform without harming server or test environments.
+- Add `aria-keyshortcuts` to the element or control that owns the action. Use `Meta+S Control+S` formatting for multiple platform variants.
+- Show the shortcut with existing `Kbd` and `KbdGroup` components in buttons, menus, tooltips, or help UI.
+- Keep a mouse, touch, or visible control alternative. A shortcut must never be the only way to reach an action.
+- Use platform-appropriate labels (`Cmd` or `Ctrl`) when the UI can detect the user's platform without harming server or test environments.
 
 ## Verification
 

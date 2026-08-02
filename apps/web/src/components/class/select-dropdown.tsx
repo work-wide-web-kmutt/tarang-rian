@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,8 +23,10 @@ export function SelectDropdown({ course }: SelectDropdownProps) {
   const selected = useSelectedGenElectives();
   const { add, remove } = useSelectedGenElectivesActions();
 
-  const isClassSelected = (cls: GenElectiveOption["class"][number]) =>
-    selected.find(
+  function isClassSelected(
+    cls: GenElectiveOption["class"][number]
+  ): (typeof selected)[number] | undefined {
+    return selected.find(
       (s) =>
         s.courseCode === course.code &&
         s.year === course.year &&
@@ -33,20 +36,21 @@ export function SelectDropdown({ course }: SelectDropdownProps) {
         s.start === cls.start &&
         s.end === cls.end
     );
+  }
 
   const selectedClasses = course.class.filter((cls) => isClassSelected(cls));
   const selectedCount = selectedClasses.length;
 
-  const getButtonLabel = (): string => {
+  function getButtonLabel(): string {
     if (selectedCount === 0) {
       return t("courses.select_class");
     }
     if (selectedCount === 1) {
-      const cls = selectedClasses[0];
+      const [cls] = selectedClasses;
       return formatLabel(cls, t);
     }
     return t("courses.selected_count", { count: selectedCount });
-  };
+  }
 
   return (
     <DropdownMenu>
@@ -70,7 +74,7 @@ export function SelectDropdown({ course }: SelectDropdownProps) {
               checked={isSelected}
               key={`${course.code}-${cls.group}-${cls.day}-${cls.start}-${cls.end}`}
               onCheckedChange={() => {
-                if (isSelected && selectedSession) {
+                if (isSelected && selectedSession !== undefined) {
                   remove(selectedSession.id);
                 } else {
                   add(course, cls);

@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { Logo } from "@/components/logo";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -8,14 +10,13 @@ export const Route = createFileRoute("/")({
   component: HomeComponent,
 });
 
-import { useTranslation } from "react-i18next";
-
 function HomeComponent() {
   const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler -- mount state prevents hydration mismatch
     setMounted(true);
   }, []);
 
@@ -31,7 +32,6 @@ function HomeComponent() {
           <div className="container mx-auto max-w-8xl px-12">
             {mounted && (
               <div className="overflow-hidden px-0.5">
-                {/* biome-ignore lint/correctness/useImageSize: responsive background image */}
                 <img
                   alt=""
                   className="max-h-80 w-full object-cover object-center"

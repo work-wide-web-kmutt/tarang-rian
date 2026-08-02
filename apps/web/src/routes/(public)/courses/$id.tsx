@@ -1,8 +1,10 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { allCourses, type Course } from "content-collections";
+import { allCourses } from "content-collections";
+import type { Course } from "content-collections";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
+
 import { AccordionItem } from "@/components/class/accordion-item";
 import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import { Accordion } from "@/components/ui/accordion";
@@ -10,13 +12,14 @@ import type { GenElectiveOption } from "@/course/schema";
 import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
 import { useAcademicTermActions } from "@/stores/academic-context";
 
-const H1_REGEX = /^#\s+(.+)$/m;
+const H1_REGEX = /^#\s+(?<heading>.+)$/mu;
 
 export const Route = createFileRoute("/(public)/courses/$id")({
   component: CourseDetailPage,
   loader: ({ params }) => {
     const course = allCourses.find((c: Course) => c.slug === params.id);
     if (!course) {
+      // oxlint-disable-next-line typescript/only-throw-error -- TanStack Router uses notFound() as a control-flow exception
       throw notFound();
     }
     return { course };
@@ -29,7 +32,7 @@ function CourseDetailPage() {
   const { activateTerm } = useAcademicTermActions();
 
   useIsomorphicLayoutEffect(() => {
-    activateTerm({ year: course.year, semester: course.semester });
+    activateTerm({ semester: course.semester, year: course.year });
   }, [activateTerm, course.semester, course.year]);
 
   const [openItems, setOpenItems] = useState<number[]>([0]);
@@ -58,7 +61,9 @@ function CourseDetailPage() {
           </header>
           <div className="border-0 md:border">
             <div className="border-b p-4 font-semibold text-xl">
-              <Markdown>{course.content.match(H1_REGEX)?.[1] ?? ""}</Markdown>
+              <Markdown>
+                {H1_REGEX.exec(course.content)?.groups?.heading ?? ""}
+              </Markdown>
             </div>
             <div className="prose prose-sm dark:prose-invert max-w-none p-4">
               <Markdown>{course.content.replace(H1_REGEX, "")}</Markdown>

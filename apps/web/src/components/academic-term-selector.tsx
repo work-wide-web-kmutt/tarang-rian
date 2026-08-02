@@ -1,6 +1,7 @@
 import { allCourses } from "content-collections";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
 import {
   Select,
   SelectContent,
@@ -9,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  type AcademicTerm,
   availableAcademicTerms,
   latestAcademicTerm,
   prefilledAcademicTerms,
@@ -34,16 +34,16 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
 
   const availableTerms = useMemo(() => {
     const catalogTerms = allCourses.map((course) => ({
-      year: course.year,
       semester: course.semester,
+      year: course.year,
     }));
     const newestCatalogTerm = latestAcademicTerm(catalogTerms);
 
     return availableAcademicTerms(
       [...catalogTerms, ...prefilledAcademicTerms(newestCatalogTerm.year)],
       selected.map((session) => ({
-        year: session.year,
         semester: session.semester,
+        year: session.year,
       })),
       activeTerm
     );
@@ -64,7 +64,7 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
     [activeTerm.year, availableTerms]
   );
 
-  const activateTermForYear = (year: string) => {
+  function activateTermForYear(year: string): void {
     const term =
       availableTerms.find(
         (candidate) =>
@@ -73,13 +73,13 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
     if (term) {
       activateTerm(term);
     }
-  };
+  }
 
   return (
     <div className={cn("flex w-full md:w-96", className)}>
       <Select
         onValueChange={(value) => {
-          if (value) {
+          if (value !== null && value !== "") {
             activateTermForYear(value);
           }
         }}
@@ -102,10 +102,10 @@ export function AcademicTermSelector({ className }: AcademicTermSelectorProps) {
 
       <Select
         onValueChange={(value) => {
-          if (value) {
+          if (value !== null) {
             activateTerm({
+              semester: value,
               year: activeTerm.year,
-              semester: value as AcademicTerm["semester"],
             });
           }
         }}

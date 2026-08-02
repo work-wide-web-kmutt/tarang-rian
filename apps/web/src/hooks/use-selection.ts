@@ -1,11 +1,12 @@
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
 import type { GenElectiveOption } from "@/course/schema";
 import {
-  type SelectedClassSession,
   useSelectedGenElectives,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
+import type { SelectedClassSession } from "@/stores/selected";
 
 export interface SelectionResult {
   isSelected: boolean;
@@ -51,7 +52,7 @@ export function useSelection(
   const label = `${t(`days_short.${cls.day.toLowerCase()}`)} ${cls.start} - ${cls.end}`;
 
   const toggle = useCallback(() => {
-    if (isSelected && selectedSession) {
+    if (isSelected && selectedSession !== undefined) {
       remove(selectedSession.id);
     } else {
       add(course, cls);
@@ -60,8 +61,8 @@ export function useSelection(
 
   return {
     isSelected,
-    selectedSession,
     label,
+    selectedSession,
     toggle,
   };
 }

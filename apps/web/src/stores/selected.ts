@@ -3,16 +3,17 @@ import i18n from "i18next";
 import { v7 } from "uuid";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
 import {
-  type AcademicTerm,
   academicTermKey,
   DEFAULT_ACADEMIC_TERM,
   isAcademicTerm,
   latestAcademicTerm,
   sameAcademicTerm,
 } from "@/course/academic-term";
+import type { AcademicTerm } from "@/course/academic-term";
 import type { GenElectiveOption } from "@/course/schema";
-import { useActiveAcademicTerm } from "./academic-context";
+import { useActiveAcademicTerm } from "@/stores/academic-context";
 
 export interface SelectedClassSession {
   id: string;
@@ -65,10 +66,10 @@ interface SelectedGenElectivesState {
 }
 
 const catalogDefaultTerm = latestAcademicTerm(
-  allCourses.map((course) => ({ year: course.year, semester: course.semester }))
+  allCourses.map((course) => ({ semester: course.semester, year: course.year }))
 );
 
-const DAY_VALUES = new Set<SelectedClassSession["day"]>([
+const DAY_VALUES = new Set([
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -78,15 +79,64 @@ const DAY_VALUES = new Set<SelectedClassSession["day"]>([
   "Sunday",
 ]);
 
-const TIME_PATTERN = /^\d{2}:\d{2}$/;
+const TIME_PATTERN = /^\d{2}:\d{2}$/u;
 
 function getFallbackTerm(): AcademicTerm {
   return catalogDefaultTerm ?? DEFAULT_ACADEMIC_TERM;
 }
 
+function normalizeSessionYear(value: unknown, fallback: string): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return String(value);
+  }
+  return fallback;
+}
+
+function isSelectedSessionDay(
+  value: unknown
+): value is SelectedClassSession["day"] {
+  return typeof value === "string" && DAY_VALUES.has(value);
+}
+
+function isValidSessionTime(value: unknown): value is string {
+  return typeof value === "string" && TIME_PATTERN.test(value);
+}
+
+function hasValidSessionSchedule(
+  candidate: Partial<SelectedClassSession>
+): candidate is Partial<SelectedClassSession> & {
+  day: SelectedClassSession["day"];
+  start: string;
+  end: string;
+} {
+  return (
+    isSelectedSessionDay(candidate.day) &&
+    isValidSessionTime(candidate.start) &&
+    isValidSessionTime(candidate.end)
+  );
+}
+
+function normalizeInstructors(
+  value: Partial<SelectedClassSession>["instructor"]
+): string[] {
+  if (Array.isArray(value)) {
+    const instructors = value.filter(
+      (instructor): instructor is string => typeof instructor === "string"
+    );
+    return instructors.length > 0 ? instructors : ["TBA"];
+  }
+  if (typeof value === "string") {
+    return [value];
+  }
+  return ["TBA"];
+}
+
 export function selectedSessionKey(session: SelectedClassSession): string {
   return [
-    academicTermKey({ year: session.year, semester: session.semester }),
+    academicTermKey({ semester: session.semester, year: session.year }),
     session.type,
     session.courseCode,
     session.group,
@@ -100,59 +150,38 @@ export function normalizeSelectedSession(
   session: unknown,
   fallbackTerm: AcademicTerm = getFallbackTerm()
 ): SelectedClassSession | null {
-  if (!session || typeof session !== "object") {
+  if (session === null || typeof session !== "object") {
     return null;
   }
 
   const candidate = session as Partial<SelectedClassSession>;
-  let year = fallbackTerm.year;
-  if (typeof candidate.year === "string") {
-    year = candidate.year;
-  } else if (typeof candidate.year === "number") {
-    year = String(candidate.year);
-  }
+  const year = normalizeSessionYear(candidate.year, fallbackTerm.year);
   const candidateTerm = {
-    year,
     semester: candidate.semester,
+    year,
   };
   const term = isAcademicTerm(candidateTerm)
-    ? { year, semester: candidateTerm.semester }
+    ? { semester: candidateTerm.semester, year }
     : fallbackTerm;
 
-  if (
-    typeof candidate.day !== "string" ||
-    !DAY_VALUES.has(candidate.day as SelectedClassSession["day"]) ||
-    typeof candidate.start !== "string" ||
-    !TIME_PATTERN.test(candidate.start) ||
-    typeof candidate.end !== "string" ||
-    !TIME_PATTERN.test(candidate.end)
-  ) {
+  if (!hasValidSessionSchedule(candidate)) {
     return null;
   }
 
-  let instructor = ["TBA"];
-  if (Array.isArray(candidate.instructor)) {
-    instructor = candidate.instructor.filter(
-      (value): value is string => typeof value === "string"
-    );
-  } else if (typeof candidate.instructor === "string") {
-    instructor = [candidate.instructor];
-  }
-
   return {
-    id: typeof candidate.id === "string" ? candidate.id : v7(),
     courseCode:
       typeof candidate.courseCode === "string" ? candidate.courseCode : "",
     courseName:
       typeof candidate.courseName === "string" ? candidate.courseName : "",
-    year: term.year,
-    semester: term.semester,
-    instructor: instructor.length > 0 ? instructor : ["TBA"],
-    group: typeof candidate.group === "string" ? candidate.group : "",
-    day: candidate.day as SelectedClassSession["day"],
-    start: candidate.start,
+    day: candidate.day,
     end: candidate.end,
+    group: typeof candidate.group === "string" ? candidate.group : "",
+    id: typeof candidate.id === "string" ? candidate.id : v7(),
+    instructor: normalizeInstructors(candidate.instructor),
+    semester: term.semester,
+    start: candidate.start,
     type: candidate.type === "custom" ? "custom" : "fixed",
+    year: term.year,
   };
 }
 
@@ -174,8 +203,8 @@ export function importSessionsForTerm(
   const imported = normalizeSessions([...sessions], term).map((session) => ({
     ...session,
     id: v7(),
-    year: term.year,
     semester: term.semester,
+    year: term.year,
   }));
   const next =
     mode === "replace"
@@ -203,18 +232,14 @@ export function migrateSelectedStorageValue(parsed: unknown): string | null {
   }
 
   if (
-    parsed &&
+    parsed !== null &&
     typeof parsed === "object" &&
     "selected" in parsed &&
     !("state" in parsed)
   ) {
     return JSON.stringify({
       state: {
-        selected: normalizeSessions(
-          Array.isArray((parsed as { selected: unknown }).selected)
-            ? (parsed as { selected: unknown[] }).selected
-            : []
-        ),
+        selected: normalizeSessions(getSelectedArray(parsed)),
       },
       version: 0,
     });
@@ -223,73 +248,86 @@ export function migrateSelectedStorageValue(parsed: unknown): string | null {
   return null;
 }
 
-const createSelectedStorage = () => ({
-  getItem: (name: string): string | null => {
-    if (typeof window === "undefined") {
-      return null;
-    }
+function isUnknownArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
 
-    try {
-      const stored = localStorage.getItem(name);
-      if (!stored) {
+function getSelectedArray(value: unknown): unknown[] {
+  if (value === null || typeof value !== "object" || !("selected" in value)) {
+    return [];
+  }
+
+  return isUnknownArray(value.selected) ? value.selected : [];
+}
+
+function createSelectedStorage() {
+  return {
+    getItem: (name: string): string | null => {
+      if (typeof window === "undefined") {
         return null;
       }
 
-      const parsed = JSON.parse(stored);
-      const migrated = migrateSelectedStorageValue(parsed);
-      if (migrated) {
-        localStorage.setItem(name, migrated);
-        return migrated;
+      try {
+        const stored = localStorage.getItem(name);
+        if (stored === null || stored === "") {
+          return null;
+        }
+
+        const parsed: unknown = JSON.parse(stored);
+        const migrated = migrateSelectedStorageValue(parsed);
+        if (migrated !== null) {
+          localStorage.setItem(name, migrated);
+          return migrated;
+        }
+
+        return stored;
+      } catch {
+        return null;
+      }
+    },
+    removeItem: (name: string): void => {
+      if (typeof window === "undefined") {
+        return;
       }
 
-      return stored;
-    } catch {
-      return null;
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    if (typeof window === "undefined") {
-      return;
-    }
+      try {
+        localStorage.removeItem(name);
+      } catch {
+        // Ignore storage errors.
+      }
+    },
+    setItem: (name: string, value: string): void => {
+      if (typeof window === "undefined") {
+        return;
+      }
 
-    try {
-      localStorage.setItem(name, value);
-    } catch {
-      // Ignore storage errors.
-    }
-  },
-  removeItem: (name: string): void => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    try {
-      localStorage.removeItem(name);
-    } catch {
-      // Ignore storage errors.
-    }
-  },
-});
+      try {
+        localStorage.setItem(name, value);
+      } catch {
+        // Ignore storage errors.
+      }
+    },
+  };
+}
 
 const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
   persist(
     (set) => ({
-      selected: [],
       actions: {
-        add: (course, classSession) =>
+        add: (course, classSession) => {
           set((state) => {
             const session: SelectedClassSession = {
-              id: v7(),
               courseCode: course.code,
               courseName: course.name,
-              year: course.year,
-              semester: course.semester,
-              instructor: classSession.instructor,
-              group: classSession.group,
               day: classSession.day,
-              start: classSession.start,
               end: classSession.end,
+              group: classSession.group,
+              id: v7(),
+              instructor: classSession.instructor,
+              semester: course.semester,
+              start: classSession.start,
               type: "fixed",
+              year: course.year,
             };
 
             if (
@@ -302,7 +340,8 @@ const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
             }
 
             return { selected: [...state.selected, session] };
-          }),
+          });
+        },
         addCustom: (term, day, start, end) => {
           let createdSession: SelectedClassSession | null = null;
           set((state) => {
@@ -311,19 +350,21 @@ const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
                 session.type === "custom" && sameAcademicTerm(session, term)
             );
             const session: SelectedClassSession = {
-              id: v7(),
+              // oxlint-disable-next-line import/no-named-as-default-member -- use i18next singleton for store-generated labels
               courseCode: i18n.t("translation:schedule.unassigned_code", {
                 number: customSessions.length + 1,
               }),
+              // oxlint-disable-next-line import/no-named-as-default-member -- use i18next singleton for store-generated labels
               courseName: i18n.t("translation:schedule.unassigned_class"),
-              year: term.year,
-              semester: term.semester,
-              instructor: ["TBA"],
-              group: "TBA",
               day,
-              start,
               end,
+              group: "TBA",
+              id: v7(),
+              instructor: ["TBA"],
+              semester: term.semester,
+              start,
               type: "custom",
+              year: term.year,
             };
 
             if (
@@ -341,71 +382,73 @@ const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
 
           return createdSession;
         },
-        remove: (id) =>
-          set((state) => ({
-            selected: state.selected.filter((session) => session.id !== id),
-          })),
-        update: (id, newDay, newStart, newEnd) =>
-          set((state) => ({
-            selected: state.selected.map((session) =>
-              session.id === id
-                ? { ...session, day: newDay, start: newStart, end: newEnd }
-                : session
-            ),
-          })),
-        updateSession: (id, updates) =>
-          set((state) => ({
-            selected: state.selected.map((session) =>
-              session.id === id ? { ...session, ...updates } : session
-            ),
-          })),
-        clear: () => set({ selected: [] }),
-        clearTerm: (term) =>
+        clear: () => {
+          set({ selected: [] });
+        },
+        clearTerm: (term) => {
           set((state) => ({
             selected: state.selected.filter(
               (session) => !sameAcademicTerm(session, term)
             ),
-          })),
-        importSchedule: (term, sessions, mode) =>
-          set((state) => {
-            return {
-              selected: importSessionsForTerm(
-                state.selected,
-                term,
-                sessions,
-                mode
-              ),
-            };
-          }),
+          }));
+        },
+        importSchedule: (term, sessions, mode) => {
+          set((state) => ({
+            selected: importSessionsForTerm(
+              state.selected,
+              term,
+              sessions,
+              mode
+            ),
+          }));
+        },
+        remove: (id) => {
+          set((state) => ({
+            selected: state.selected.filter((session) => session.id !== id),
+          }));
+        },
+        update: (id, newDay, newStart, newEnd) => {
+          set((state) => ({
+            selected: state.selected.map((session) =>
+              session.id === id
+                ? { ...session, day: newDay, end: newEnd, start: newStart }
+                : session
+            ),
+          }));
+        },
+        updateSession: (id, updates) => {
+          set((state) => ({
+            selected: state.selected.map((session) =>
+              session.id === id ? { ...session, ...updates } : session
+            ),
+          }));
+        },
       },
+      selected: [],
     }),
     {
-      name: "selected-gen-electives-storage",
-      version: 1,
-      storage: createJSONStorage(() => createSelectedStorage()),
-      partialize: (state) => ({ selected: state.selected }),
       migrate: (persistedState: unknown) => {
-        const selected =
-          persistedState &&
-          typeof persistedState === "object" &&
-          "selected" in persistedState &&
-          Array.isArray((persistedState as { selected: unknown }).selected)
-            ? (persistedState as { selected: unknown[] }).selected
-            : [];
+        const selected = getSelectedArray(persistedState);
         return { selected: normalizeSessions(selected) };
       },
+      name: "selected-gen-electives-storage",
+      partialize: (state) => ({ selected: state.selected }),
+      storage: createJSONStorage(() => createSelectedStorage()),
+      version: 1,
     }
   )
 );
 
-export const useSelectedGenElectives = () =>
-  useSelectedGenElectivesStore((state) => state.selected);
+export function useSelectedGenElectives(): SelectedClassSession[] {
+  return useSelectedGenElectivesStore((state) => state.selected);
+}
 
-export const useActiveSelectedSessions = () => {
+export function useActiveSelectedSessions(): SelectedClassSession[] {
   const selected = useSelectedGenElectives();
   const activeTerm = useActiveAcademicTerm();
   return selected.filter((session) => sameAcademicTerm(session, activeTerm));
-};
+}
 
-export const useSelectedGenElectivesActions = () =>
-  useSelectedGenElectivesStore((state) => state.actions);
+export function useSelectedGenElectivesActions(): SelectedGenElectivesState["actions"] {
+  return useSelectedGenElectivesStore((state) => state.actions);
+}

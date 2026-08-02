@@ -1,8 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import { BookOpen, GraduationCap, UsersIcon } from "lucide-react";
-import { type FormEvent, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import z from "zod";
+
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,8 +38,6 @@ import { useSelectedGenElectivesActions } from "@/stores/selected";
 const editSchema = z.object({
   courseCode: z.string().min(1, "Course code is required."),
   courseName: z.string().min(1, "Course name is required."),
-  instructor: z.array(z.string()).min(1, "At least one instructor is required"),
-  group: z.string().min(1, "Group is required."),
   day: z.enum([
     "Monday",
     "Tuesday",
@@ -47,8 +47,10 @@ const editSchema = z.object({
     "Saturday",
     "Sunday",
   ]),
-  startTime: z.string().min(1, "Start time is required."),
   endTime: z.string().min(1, "End time is required."),
+  group: z.string().min(1, "Group is required."),
+  instructor: z.array(z.string()).min(1, "At least one instructor is required"),
+  startTime: z.string().min(1, "Start time is required."),
 });
 
 export function CourseVaulForm() {
@@ -56,21 +58,17 @@ export function CourseVaulForm() {
   const { updateSession } = useSelectedGenElectivesActions();
   const { setIsEditing, session } = useCourseVaulContext();
 
-  const timeSlots = useMemo(getFullDayTimeSlots, []);
+  const timeSlots = useMemo(() => getFullDayTimeSlots(), []);
 
   const form = useForm({
     defaultValues: {
       courseCode: session?.courseCode ?? "",
       courseName: session?.courseName ?? "",
-      instructor: session?.instructor ?? [],
-      group: session?.group ?? "",
       day: session?.day ?? "Monday",
-      startTime: session?.start ?? "",
       endTime: session?.end ?? "",
-    },
-    validators: {
-      onBlur: editSchema,
-      onSubmit: editSchema,
+      group: session?.group ?? "",
+      instructor: session?.instructor ?? [],
+      startTime: session?.start ?? "",
     },
     onSubmit: ({ value }) => {
       if (!session) {
@@ -79,13 +77,17 @@ export function CourseVaulForm() {
       updateSession(session?.id, {
         courseCode: value.courseCode,
         courseName: value.courseName,
-        instructor: value.instructor,
-        group: value.group,
         day: value.day,
-        start: value.startTime,
         end: value.endTime,
+        group: value.group,
+        instructor: value.instructor,
+        start: value.startTime,
       });
       setIsEditing(false);
+    },
+    validators: {
+      onBlur: editSchema,
+      onSubmit: editSchema,
     },
   });
 
@@ -96,18 +98,18 @@ export function CourseVaulForm() {
     form.reset({
       courseCode: session.courseCode,
       courseName: session.courseName,
-      instructor: session.instructor,
-      group: session.group,
       day: session.day,
-      startTime: session.start,
       endTime: session.end,
+      group: session.group,
+      instructor: session.instructor,
+      startTime: session.start,
     });
   }, [session, form]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    form.handleSubmit();
-  };
+    void form.handleSubmit();
+  }
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -190,8 +192,8 @@ export function CourseVaulForm() {
                 </FieldLabel>
                 <Select
                   onValueChange={(value) => {
-                    if (value) {
-                      field.handleChange(value as typeof field.state.value);
+                    if (value !== null) {
+                      field.handleChange(value);
                     }
                   }}
                   value={field.state.value}
@@ -224,7 +226,7 @@ export function CourseVaulForm() {
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid;
-              const endTime = form.state.values.endTime;
+              const { endTime } = form.state.values;
               return (
                 <Field className="flex-1" data-invalid={isInvalid}>
                   <FieldLabel htmlFor={field.name}>
@@ -232,7 +234,7 @@ export function CourseVaulForm() {
                   </FieldLabel>
                   <Select
                     onValueChange={(value) => {
-                      if (value) {
+                      if (value !== null && value !== "") {
                         field.handleChange(value);
                       }
                     }}
@@ -272,7 +274,7 @@ export function CourseVaulForm() {
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid;
-              const startTime = form.state.values.startTime;
+              const { startTime } = form.state.values;
               return (
                 <Field className="flex-1" data-invalid={isInvalid}>
                   <FieldLabel htmlFor={field.name}>
@@ -280,7 +282,7 @@ export function CourseVaulForm() {
                   </FieldLabel>
                   <Select
                     onValueChange={(value) => {
-                      if (value) {
+                      if (value !== null && value !== "") {
                         field.handleChange(value);
                       }
                     }}

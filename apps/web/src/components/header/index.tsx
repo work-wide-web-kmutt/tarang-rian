@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { ThemeDropdown } from "@/components/header/dropdown";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Logo } from "@/components/logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
-import { ThemeDropdown } from "./dropdown";
 
 export function Header() {
   const { t } = useTranslation();

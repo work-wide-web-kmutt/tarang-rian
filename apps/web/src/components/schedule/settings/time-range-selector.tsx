@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import { RangeSlider } from "@/components/ui/slider";
 import {
   formatScheduleHour,
@@ -36,8 +37,8 @@ export function TimeRangeSelector() {
             ? t("settings.time_range_start_aria")
             : t("settings.time_range_end_aria")
         }
-        getAriaValueText={(_formattedValue, value, index) =>
-          `${index === 0 ? t("settings.time_range_start") : t("settings.time_range_end")}: ${formatScheduleHour(value)}`
+        getAriaValueText={(_formattedValue, hour, index) =>
+          `${index === 0 ? t("settings.time_range_start") : t("settings.time_range_end")}: ${formatScheduleHour(hour)}`
         }
         max={SCHEDULE_TIME_RANGE_LIMITS.maxHour}
         min={SCHEDULE_TIME_RANGE_LIMITS.minHour}
@@ -49,7 +50,7 @@ export function TimeRangeSelector() {
             typeof endHour === "number" &&
             endHour - startHour >= SCHEDULE_TIME_RANGE_LIMITS.minDurationHours
           ) {
-            setTimeRange({ startHour, endHour });
+            setTimeRange({ endHour, startHour });
           }
         }}
         step={1}

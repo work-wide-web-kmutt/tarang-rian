@@ -2,8 +2,7 @@
 
 ## Scope
 
-These instructions apply to the repository. `apps/web/AGENTS.md` adds guidance for
-frontend work under `apps/web`.
+These instructions apply to the repository. `apps/web/AGENTS.md` adds guidance for frontend work under `apps/web`.
 
 ## Project
 
@@ -13,8 +12,7 @@ frontend work under `apps/web`.
 - `packages/env`: typed environment access.
 - `docs/adr`: architecture decisions.
 
-Use Bun. Keep changes scoped to the requested work and inspect existing patterns
-before adding new abstractions.
+Use Bun. Keep changes scoped to the requested work and inspect existing patterns before adding new abstractions.
 
 ## Commands
 
@@ -22,16 +20,14 @@ before adding new abstractions.
 bun install          # install dependencies
 bun run dev          # develop all workspaces
 bun run dev:web      # develop web app only
-bun run check        # Ultracite check
-bun run fix          # format and canonical Tailwind classes; mutates files
+bun run check        # Oxfmt and Oxlint checks
+bun run fix          # Oxfmt and Oxlint fixes; mutates files
 bun run check-types  # TypeScript checks
 bun run test         # workspace tests
 bun run build        # workspace builds
 ```
 
-CI runs `bun run fix`, `bun run check-types`, `bun run test`, then `bun run build`.
-Run relevant checks before handoff; run full CI checks when changes affect shared
-configuration, dependencies, or build behavior.
+CI runs `bun run fix`, `bun run check-types`, `bun run test`, then `bun run build`. Run relevant checks before handoff; run full CI checks when changes affect shared configuration, dependencies, or build behavior.
 
 ## TypeScript and React
 
@@ -46,22 +42,16 @@ configuration, dependencies, or build behavior.
 
 ## Accessibility and UI
 
-- Use semantic HTML, correct heading hierarchy, labels, meaningful image alt text,
-  keyboard handlers, and ARIA only where needed.
+- Use semantic HTML, correct heading hierarchy, labels, meaningful image alt text, keyboard handlers, and ARIA only where needed.
 - Use existing project primitives before adding new ones. Use `cn` for class logic.
 - Prefer Tailwind defaults for spacing, radius, shadows, colors, and typography.
 - Add `aria-label` to icon-only buttons.
 - Use `AlertDialog` for destructive or irreversible actions.
-- Use `h-dvh`, respect safe-area insets for fixed elements, and show errors beside
-  the action or field that caused them.
+- Use `h-dvh`, respect safe-area insets for fixed elements, and show errors beside the action or field that caused them.
 - Never block paste in inputs or textareas.
-- Do not add animation unless requested. Animate only `transform` and `opacity`,
-  keep interaction feedback under 200ms, pause off-screen loops, and respect
-  `prefers-reduced-motion`.
-- Avoid gradients, glow effects, large blur/backdrop surfaces, and custom easing
-  unless explicitly requested.
-- Use text balancing for headings, text prettifying for body copy, tabular numbers
-  for data, a fixed z-index scale, and square size utilities where appropriate.
+- Do not add animation unless requested. Animate only `transform` and `opacity`, keep interaction feedback under 200ms, pause off-screen loops, and respect `prefers-reduced-motion`.
+- Avoid gradients, glow effects, large blur/backdrop surfaces, and custom easing unless explicitly requested.
+- Use text balancing for headings, text prettifying for body copy, tabular numbers for data, a fixed z-index scale, and square size utilities where appropriate.
 
 ## Skills
 

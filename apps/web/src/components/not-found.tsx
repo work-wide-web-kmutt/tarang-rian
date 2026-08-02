@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 
 interface NotFoundProps {
@@ -17,7 +18,6 @@ export function NotFound({ description, action, className }: NotFoundProps) {
         className
       )}
     >
-      {/* biome-ignore lint/correctness/useImageSize: width/height controlled via className for responsive sizing */}
       <img
         alt=""
         aria-hidden="true"
@@ -27,7 +27,9 @@ export function NotFound({ description, action, className }: NotFoundProps) {
       <div className="flex flex-col items-center text-center md:items-start md:text-left">
         <h2 className="font-semibold text-xl">{t("not_found.title")}</h2>
         <p className="text-muted-foreground">{description}</p>
-        {action && <div className="mt-4">{action}</div>}
+        {action !== null && action !== undefined && action !== false && (
+          <div className="mt-4">{action}</div>
+        )}
       </div>
     </div>
   );

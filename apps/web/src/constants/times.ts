@@ -8,23 +8,25 @@ export const DAYS = [
 ] as const;
 
 export interface ScheduleTimeRange {
-  startHour: number; // inclusive, 0–23
-  endHour: number; // exclusive, 1–24
+  // inclusive, 0–23
+  startHour: number;
+  // exclusive, 1–24
+  endHour: number;
 }
 
 export const DEFAULT_SCHEDULE_TIME_RANGE: ScheduleTimeRange = {
-  startHour: 8,
   endHour: 19,
+  startHour: 8,
 };
 
 export const SCHEDULE_TIME_RANGE_LIMITS = {
-  minHour: 0,
   maxHour: 24,
   minDurationHours: 1,
+  minHour: 0,
 } as const;
 
 export function normalizeScheduleTimeRange(value: unknown): ScheduleTimeRange {
-  if (!value || typeof value !== "object") {
+  if (value === null || typeof value !== "object") {
     return DEFAULT_SCHEDULE_TIME_RANGE;
   }
 
@@ -41,9 +43,7 @@ export function normalizeScheduleTimeRange(value: unknown): ScheduleTimeRange {
     endHour <= SCHEDULE_TIME_RANGE_LIMITS.maxHour &&
     endHour - startHour >= SCHEDULE_TIME_RANGE_LIMITS.minDurationHours;
 
-  return isValid
-    ? { startHour: startHour as number, endHour: endHour as number }
-    : DEFAULT_SCHEDULE_TIME_RANGE;
+  return isValid ? { endHour, startHour } : DEFAULT_SCHEDULE_TIME_RANGE;
 }
 
 export function formatScheduleHour(hour: number): string {
