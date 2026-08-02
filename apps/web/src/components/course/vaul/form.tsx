@@ -29,7 +29,7 @@ import {
   TagsInputItem,
   TagsInputList,
 } from "@/components/ui/tags-input";
-import { DAYS } from "@/constants/times";
+import { DAYS, getFullDayTimeSlots } from "@/constants/times";
 import { parseTime } from "@/lib/parser/time";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
@@ -56,16 +56,7 @@ export function CourseVaulForm() {
   const { updateSession } = useSelectedGenElectivesActions();
   const { setIsEditing, session } = useCourseVaulContext();
 
-  const timeSlots = useMemo(() => {
-    const slots: string[] = [];
-    for (let hour = 8; hour <= 18; hour++) {
-      slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 18) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
-      }
-    }
-    return slots;
-  }, []);
+  const timeSlots = useMemo(getFullDayTimeSlots, []);
 
   const form = useForm({
     defaultValues: {
@@ -255,7 +246,7 @@ export function CourseVaulForm() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {timeSlots.map((time) => {
+                      {timeSlots.slice(0, -1).map((time) => {
                         const isDisabled = endTime
                           ? parseTime(time) >= parseTime(endTime)
                           : false;
@@ -303,7 +294,7 @@ export function CourseVaulForm() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {timeSlots.map((time) => {
+                      {timeSlots.slice(1).map((time) => {
                         const isDisabled = startTime
                           ? parseTime(time) <= parseTime(startTime)
                           : false;

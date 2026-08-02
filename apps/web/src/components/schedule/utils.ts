@@ -1,32 +1,92 @@
-import { BASE_MINUTES, SLOT_DURATION_MINUTES } from "@/constants/schedule";
-import { DAYS, TIME_SLOTS } from "@/constants/times";
+import { SLOT_DURATION_MINUTES } from "@/constants/schedule";
+import {
+  DAYS,
+  DEFAULT_SCHEDULE_TIME_RANGE,
+  getScheduleTimeSlots,
+  normalizeScheduleTimeRange,
+  type ScheduleTimeRange,
+} from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
 import { parseTime } from "@/lib/parser/time";
 import type { SelectedClassSession } from "@/stores/selected";
 
-export function getTimeSlotPosition(
-  start: string,
-  end: string
-): {
+export interface TimeSlotPosition {
   startCol: number;
   startOffset: number;
   span: number;
   endOffset: number;
-} {
+}
+
+interface VisibleSessionInterval {
+  startMinutes: number;
+  endMinutes: number;
+}
+
+function formatMinutes(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+}
+
+export function getVisibleSessionInterval(
+  start: string,
+  end: string,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
+): VisibleSessionInterval | null {
+  const normalizedRange = normalizeScheduleTimeRange(range);
   const startMinutes = parseTime(start);
   const endMinutes = parseTime(end);
-  const baseMinutes = BASE_MINUTES;
+  const rangeStartMinutes = normalizedRange.startHour * 60;
+  const rangeEndMinutes = normalizedRange.endHour * 60;
 
-  const startCol = Math.floor((startMinutes - baseMinutes) / 60);
-  const startOffset = ((startMinutes - baseMinutes) % 60) / 60;
+  if (
+    !(Number.isFinite(startMinutes) && Number.isFinite(endMinutes)) ||
+    startMinutes >= endMinutes
+  ) {
+    return null;
+  }
 
-  const endCol = Math.floor((endMinutes - baseMinutes) / 60);
-  const endOffset = ((endMinutes - baseMinutes) % 60) / 60;
+  const visibleStartMinutes = Math.max(startMinutes, rangeStartMinutes);
+  const visibleEndMinutes = Math.min(endMinutes, rangeEndMinutes);
 
+  if (visibleStartMinutes >= visibleEndMinutes) {
+    return null;
+  }
+
+  return {
+    startMinutes: visibleStartMinutes,
+    endMinutes: visibleEndMinutes,
+  };
+}
+
+export function getTimeSlotPosition(
+  start: string,
+  end: string,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
+): TimeSlotPosition | null {
+  const normalizedRange = normalizeScheduleTimeRange(range);
+  const visibleInterval = getVisibleSessionInterval(
+    start,
+    end,
+    normalizedRange
+  );
+
+  if (!visibleInterval) {
+    return null;
+  }
+
+  const rangeStartMinutes = normalizedRange.startHour * 60;
+  const relativeStartMinutes = visibleInterval.startMinutes - rangeStartMinutes;
+  const relativeEndMinutes = visibleInterval.endMinutes - rangeStartMinutes;
+
+  const startCol = Math.floor(relativeStartMinutes / 60);
+  const startOffset = (relativeStartMinutes % 60) / 60;
+  const endCol = Math.floor(relativeEndMinutes / 60);
+  const endOffset = (relativeEndMinutes % 60) / 60;
   const span = endCol - startCol + (endOffset - startOffset);
 
   return {
-    startCol: Math.max(0, startCol),
+    startCol,
     startOffset,
     span: Math.max(0.5, span),
     endOffset,
@@ -74,20 +134,24 @@ export function getOverlappingSessions(
 export function get30MinuteSlotFromPosition(
   x: number,
   cellWidth: number,
-  timeColIndex: number
+  timeColIndex: number,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
 ): { slotIndex: number; time: string } {
   const xPercent = x / cellWidth;
   const halfSlot = xPercent < 0.5 ? 0 : 1;
   const slotIndex = timeColIndex * 2 + halfSlot;
-  const time = getTimeFrom30MinuteSlot(slotIndex);
+  const time = getTimeFrom30MinuteSlot(slotIndex, range);
   return { slotIndex, time };
 }
 
-export function getTimeFrom30MinuteSlot(slotIndex: number): string {
-  const totalMinutes = BASE_MINUTES + slotIndex * SLOT_DURATION_MINUTES;
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+export function getTimeFrom30MinuteSlot(
+  slotIndex: number,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
+): string {
+  const normalizedRange = normalizeScheduleTimeRange(range);
+  const totalMinutes =
+    normalizedRange.startHour * 60 + slotIndex * SLOT_DURATION_MINUTES;
+  return formatMinutes(totalMinutes);
 }
 
 export function formatTimeRange(start: string, end: string): string {
@@ -97,32 +161,30 @@ export function formatTimeRange(start: string, end: string): string {
 export function calculateSnappedPreview(
   session: SelectedClassSession,
   _targetDay: GenElectiveOption["class"][number]["day"],
-  targetSlotIndex: number
+  targetSlotIndex: number,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
 ): { newStart: string; newEnd: string } {
   const startMinutes = parseTime(session.start);
   const endMinutes = parseTime(session.end);
   const duration = endMinutes - startMinutes;
-
+  const normalizedRange = normalizeScheduleTimeRange(range);
   const newStartMinutes =
-    BASE_MINUTES + targetSlotIndex * SLOT_DURATION_MINUTES;
-  const newEndMinutes = newStartMinutes + duration;
+    normalizedRange.startHour * 60 + targetSlotIndex * SLOT_DURATION_MINUTES;
 
-  const newStartHours = Math.floor(newStartMinutes / 60);
-  const newStartMins = newStartMinutes % 60;
-  const newEndHours = Math.floor(newEndMinutes / 60);
-  const newEndMins = newEndMinutes % 60;
-
-  const newStart = `${newStartHours.toString().padStart(2, "0")}:${newStartMins.toString().padStart(2, "0")}`;
-  const newEnd = `${newEndHours.toString().padStart(2, "0")}:${newEndMins.toString().padStart(2, "0")}`;
-
-  return { newStart, newEnd };
+  return {
+    newStart: formatMinutes(newStartMinutes),
+    newEnd: formatMinutes(newStartMinutes + duration),
+  };
 }
 
 export function findDayRowFromMousePosition(
   mouseEvent: MouseEvent,
   cellSize: number,
-  dayColumnWidth: number
+  dayColumnWidth: number,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
 ): { day: string; timeColIndex: number; cellX: number } | null {
+  const columnCount = getScheduleTimeSlots(range).length;
+
   for (const day of DAYS) {
     const dayRowElement = document.querySelector(
       `[data-day-row="${day}"]`
@@ -153,7 +215,7 @@ export function findDayRowFromMousePosition(
 
     const timeColIndex = Math.floor(x / cellSize);
 
-    if (timeColIndex < 0 || timeColIndex >= TIME_SLOTS.length) {
+    if (timeColIndex < 0 || timeColIndex >= columnCount) {
       continue;
     }
 
@@ -210,79 +272,70 @@ export function getMousePositionInDayRow(
 export function getClassesForCell(
   day: string,
   timeColIndex: number,
-  sessions: SelectedClassSession[]
+  sessions: SelectedClassSession[],
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
 ): SelectedClassSession[] {
   return sessions.filter((session) => {
     if (session.day !== day) {
       return false;
     }
-    const { startCol, span } = getTimeSlotPosition(session.start, session.end);
-    const endCol = startCol + span;
-    return timeColIndex >= startCol && timeColIndex < Math.ceil(endCol);
+
+    const position = getTimeSlotPosition(session.start, session.end, range);
+    if (!position) {
+      return false;
+    }
+
+    const endCol = position.startCol + position.span;
+    return (
+      timeColIndex >= position.startCol && timeColIndex < Math.ceil(endCol)
+    );
   });
 }
 
 export function isFirstCol(
   session: SelectedClassSession,
-  timeColIndex: number
+  timeColIndex: number,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
 ): boolean {
-  const { startCol } = getTimeSlotPosition(session.start, session.end);
-  return timeColIndex === startCol;
+  const position = getTimeSlotPosition(session.start, session.end, range);
+  return position !== null && timeColIndex === position.startCol;
 }
 
 export function calculateResizePreview(
   session: SelectedClassSession,
   edge: "left" | "right",
-  targetSlotIndex: number
+  targetSlotIndex: number,
+  range: ScheduleTimeRange = DEFAULT_SCHEDULE_TIME_RANGE
 ): { newStart: string; newEnd: string; isValid: boolean } {
   const startMinutes = parseTime(session.start);
   const endMinutes = parseTime(session.end);
   const minDuration = SLOT_DURATION_MINUTES;
+  const normalizedRange = normalizeScheduleTimeRange(range);
+  const rangeStartMinutes = normalizedRange.startHour * 60;
 
   let newStartMinutes = startMinutes;
   let newEndMinutes = endMinutes;
 
   if (edge === "left") {
-    // Left edge = adjusting start time
-    newStartMinutes = BASE_MINUTES + targetSlotIndex * SLOT_DURATION_MINUTES;
+    newStartMinutes =
+      rangeStartMinutes + targetSlotIndex * SLOT_DURATION_MINUTES;
     if (newEndMinutes - newStartMinutes < minDuration) {
       newStartMinutes = newEndMinutes - minDuration;
     }
   } else {
-    // Right edge = adjusting end time
     newEndMinutes =
-      BASE_MINUTES + (targetSlotIndex + 1) * SLOT_DURATION_MINUTES;
+      rangeStartMinutes + (targetSlotIndex + 1) * SLOT_DURATION_MINUTES;
     if (newEndMinutes - newStartMinutes < minDuration) {
       newEndMinutes = newStartMinutes + minDuration;
     }
   }
 
-  const minTime = BASE_MINUTES;
-  const maxTime = BASE_MINUTES + TIME_SLOTS.length * 60;
-
-  const isValid =
-    newStartMinutes >= minTime &&
-    newEndMinutes <= maxTime &&
-    newStartMinutes < newEndMinutes;
-
-  newStartMinutes = Math.max(
-    minTime,
-    Math.min(newStartMinutes, maxTime - minDuration)
-  );
-  newEndMinutes = Math.min(
-    maxTime,
-    Math.max(newEndMinutes, minTime + minDuration)
-  );
-
-  const formatTime = (mins: number) => {
-    const hours = Math.floor(mins / 60);
-    const minutes = mins % 60;
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-  };
-
   return {
-    newStart: formatTime(newStartMinutes),
-    newEnd: formatTime(newEndMinutes),
-    isValid,
+    newStart: formatMinutes(newStartMinutes),
+    newEnd: formatMinutes(newEndMinutes),
+    isValid:
+      Number.isFinite(newStartMinutes) &&
+      Number.isFinite(newEndMinutes) &&
+      newStartMinutes < newEndMinutes,
   };
 }

@@ -27,6 +27,8 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import type { ScheduleTimeRange } from "@/constants/times";
+import { parseTime } from "@/lib/parser/time";
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
@@ -40,6 +42,7 @@ interface SessionBlockProps {
   textClass?: string;
   subTextClass?: string;
   defaultEditMode?: boolean;
+  timeRange: ScheduleTimeRange;
 }
 
 export function SessionBlock({
@@ -51,13 +54,23 @@ export function SessionBlock({
   textClass = "text-xs",
   subTextClass = "text-[10px]",
   defaultEditMode = false,
+  timeRange,
 }: SessionBlockProps) {
-  const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
+  const position = getTimeSlotPosition(session.start, session.end, timeRange);
   const classKey = getClassKey(session);
   const hasOverlapping = hasOverlap(session, allSessions);
   const overlappingSessions = getOverlappingSessions(session, allSessions);
   const { remove } = useSelectedGenElectivesActions();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { t } = useTranslation();
+
+  if (!position) {
+    return null;
+  }
+
+  const { startOffset, span } = position;
+  const durationHours =
+    (parseTime(session.end) - parseTime(session.start)) / 60;
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,8 +83,6 @@ export function SessionBlock({
     remove(session.id);
     setShowDeleteDialog(false);
   };
-
-  const { t } = useTranslation();
 
   return (
     <ContextMenu>
@@ -123,7 +134,7 @@ export function SessionBlock({
                   : "text-primary-foreground/80"
               }`}
             >
-              {session.start} - {session.end} ({span}h)
+              {session.start} - {session.end} ({durationHours}h)
             </div>
           </div>
         </CourseVaul>

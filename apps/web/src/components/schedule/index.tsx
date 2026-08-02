@@ -34,11 +34,14 @@ import {
   SCHEDULE_SIZE,
   SLOT_DURATION_MINUTES,
 } from "@/constants/schedule";
-import { DAYS, TIME_SLOTS } from "@/constants/times";
+import { DAYS, getScheduleTimeSlots } from "@/constants/times";
 import type { AcademicTerm } from "@/course/academic-term";
 import type { GenElectiveOption } from "@/course/schema";
 import { cn } from "@/lib/utils";
-import { useScheduleSize } from "@/stores/schedule-settings";
+import {
+  useScheduleSize,
+  useScheduleTimeRange,
+} from "@/stores/schedule-settings";
 import {
   type SelectedClassSession,
   useSelectedGenElectivesActions,
@@ -106,9 +109,11 @@ function DroppableCell({
 
 export function Schedule({ sessions, term, styles }: ScheduleProps) {
   const size = useScheduleSize();
+  const timeRange = useScheduleTimeRange();
+  const timeSlots = getScheduleTimeSlots(timeRange);
   const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
     SCHEDULE_SIZE[size];
-  const minWidth = dayColumnWidth + TIME_SLOTS.length * cellSize + 2;
+  const minWidth = dayColumnWidth + timeSlots.length * cellSize + 2;
   const { t } = useTranslation();
 
   const [openClassKey, setOpenClassKey] = useState<string | null>(null);
@@ -159,7 +164,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       const dayRowInfo = findDayRowFromMousePosition(
         e,
         cellSize,
-        dayColumnWidth
+        dayColumnWidth,
+        timeRange
       );
       if (!dayRowInfo || dayRowInfo.day !== resizeState.session.day) {
         return;
@@ -169,30 +175,30 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       const { slotIndex } = get30MinuteSlotFromPosition(
         cellX,
         cellSize,
-        timeColIndex
+        timeColIndex,
+        timeRange
       );
 
       const { newStart, newEnd } = calculateResizePreview(
         resizeState.session,
         resizeState.edge,
-        slotIndex
+        slotIndex,
+        timeRange
       );
 
-      const { startCol, startOffset, span } = getTimeSlotPosition(
-        newStart,
-        newEnd
-      );
+      const position = getTimeSlotPosition(newStart, newEnd, timeRange);
+      if (!position) {
+        return;
+      }
 
       setResizePreview({
         session: resizeState.session,
         start: newStart,
         end: newEnd,
-        startCol,
-        startOffset,
-        span,
+        ...position,
       });
     },
-    [resizeState, cellSize, dayColumnWidth]
+    [resizeState, cellSize, dayColumnWidth, timeRange]
   );
 
   const handleResizePointerUp = useCallback(() => {
@@ -236,18 +242,17 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       originalEnd: session.end,
     });
 
-    const { startCol, startOffset, span } = getTimeSlotPosition(
-      session.start,
-      session.end
-    );
+    const position = getTimeSlotPosition(session.start, session.end, timeRange);
+
+    if (!position) {
+      return;
+    }
 
     setResizePreview({
       session,
       start: session.start,
       end: session.end,
-      startCol,
-      startOffset,
-      span,
+      ...position,
     });
   };
 
@@ -260,7 +265,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       const dayRowInfo = findDayRowFromMousePosition(
         e,
         cellSize,
-        dayColumnWidth
+        dayColumnWidth,
+        timeRange
       );
 
       if (!dayRowInfo) {
@@ -273,27 +279,28 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       const { slotIndex } = get30MinuteSlotFromPosition(
         cellX,
         cellSize,
-        timeColIndex
+        timeColIndex,
+        timeRange
       );
 
       const { newStart, newEnd } = calculateSnappedPreview(
         activeSession,
         day as GenElectiveOption["class"][number]["day"],
-        slotIndex
+        slotIndex,
+        timeRange
       );
 
-      const { startCol, startOffset, span } = getTimeSlotPosition(
-        newStart,
-        newEnd
-      );
+      const position = getTimeSlotPosition(newStart, newEnd, timeRange);
+      if (!position) {
+        setSnappedPreview(null);
+        return;
+      }
 
       setSnappedPreview({
         day: day as GenElectiveOption["class"][number]["day"],
         start: newStart,
         end: newEnd,
-        startCol,
-        startOffset,
-        span,
+        ...position,
       });
       setDragOverPosition({ x: e.clientX, y: e.clientY });
     };
@@ -303,7 +310,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     return () => {
       document.removeEventListener("pointermove", handleGlobalPointerMove);
     };
-  }, [activeSession, cellSize, dayColumnWidth]);
+  }, [activeSession, cellSize, dayColumnWidth, timeRange]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -336,27 +343,28 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const { slotIndex } = get30MinuteSlotFromPosition(
       position.cellX,
       cellSize,
-      timeColIndex
+      timeColIndex,
+      timeRange
     );
 
     const { newStart, newEnd } = calculateSnappedPreview(
       sessionData,
       day as GenElectiveOption["class"][number]["day"],
-      slotIndex
+      slotIndex,
+      timeRange
     );
 
-    const { startCol, startOffset, span } = getTimeSlotPosition(
-      newStart,
-      newEnd
-    );
+    const positionPreview = getTimeSlotPosition(newStart, newEnd, timeRange);
+    if (!positionPreview) {
+      setSnappedPreview(null);
+      return;
+    }
 
     setSnappedPreview({
       day: day as GenElectiveOption["class"][number]["day"],
       start: newStart,
       end: newEnd,
-      startCol,
-      startOffset,
-      span,
+      ...positionPreview,
     });
   };
 
@@ -383,7 +391,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const { slotIndex } = get30MinuteSlotFromPosition(
       position.cellX,
       cellSize,
-      timeColIndex
+      timeColIndex,
+      timeRange
     );
 
     const startSlot = Math.min(dragState.startSlot, slotIndex);
@@ -461,13 +470,15 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const { slotIndex } = get30MinuteSlotFromPosition(
       position.cellX,
       cellSize,
-      timeColIndex
+      timeColIndex,
+      timeRange
     );
 
     const result = calculateSnappedPreview(
       sessionData,
       day as GenElectiveOption["class"][number]["day"],
-      slotIndex
+      slotIndex,
+      timeRange
     );
 
     return {
@@ -579,7 +590,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const { slotIndex } = get30MinuteSlotFromPosition(
       x,
       cellSize,
-      timeColIndex
+      timeColIndex,
+      timeRange
     );
 
     dragStartRef.current = { day, timeColIndex, x };
@@ -609,7 +621,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     }
 
     const timeColIndex = Math.floor(x / cellSize);
-    if (timeColIndex < 0 || timeColIndex >= TIME_SLOTS.length) {
+    if (timeColIndex < 0 || timeColIndex >= timeSlots.length) {
       return;
     }
 
@@ -617,7 +629,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const { slotIndex } = get30MinuteSlotFromPosition(
       cellX,
       cellSize,
-      timeColIndex
+      timeColIndex,
+      timeRange
     );
 
     const startSlot = Math.min(dragState.startSlot, slotIndex);
@@ -653,8 +666,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const duration = (endSlot - startSlot) * SLOT_DURATION_MINUTES;
 
     if (duration >= MIN_DRAG_DURATION) {
-      const startTime = getTimeFrom30MinuteSlot(startSlot);
-      const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
+      const startTime = getTimeFrom30MinuteSlot(startSlot, timeRange);
+      const endTime = getTimeFrom30MinuteSlot(endSlot + 1, timeRange);
       const createdSession = addCustom(term, dragState.day, startTime, endTime);
 
       if (createdSession) {
@@ -680,13 +693,13 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
         <div
           className={cn("grid border border-border", styles?.borderTop)}
           style={{
-            gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
+            gridTemplateColumns: `${dayColumnWidth}px repeat(${timeSlots.length}, ${cellSize}px)`,
           }}
         >
           <div className="sticky left-0 z-10 border-border border-r bg-muted p-2 text-center font-medium text-muted-foreground text-xs">
             {t("days_time.day")}
           </div>
-          {TIME_SLOTS.map((time) => (
+          {timeSlots.map((time) => (
             <div
               className="border-border border-r bg-muted/50 p-2 text-center font-medium text-muted-foreground text-xs last:border-r-0"
               key={time}
@@ -714,7 +727,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               style={{
-                gridTemplateColumns: `${dayColumnWidth}px repeat(${TIME_SLOTS.length}, ${cellSize}px)`,
+                gridTemplateColumns: `${dayColumnWidth}px repeat(${timeSlots.length}, ${cellSize}px)`,
               }}
             >
               <div
@@ -723,14 +736,15 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
               >
                 {t(`days_short.${day.toLowerCase()}`)}
               </div>
-              {TIME_SLOTS.map((time, timeColIndex) => {
+              {timeSlots.map((time, timeColIndex) => {
                 const cellClasses = getClassesForCell(
                   day,
                   timeColIndex,
-                  sessions
+                  sessions,
+                  timeRange
                 );
                 const firstColClasses = cellClasses.filter((session) =>
-                  isFirstCol(session, timeColIndex)
+                  isFirstCol(session, timeColIndex, timeRange)
                 );
                 const dropId = `${day}-${timeColIndex}`;
 
@@ -773,6 +787,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                             session={session}
                             subTextClass={subTextClass}
                             textClass={textClass}
+                            timeRange={timeRange}
                           />
                         ) : (
                           <SessionBlock
@@ -783,6 +798,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                             session={session}
                             subTextClass={subTextClass}
                             textClass={textClass}
+                            timeRange={timeRange}
                           />
                         );
                       })}
@@ -832,18 +848,27 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                             dragState.startSlot,
                             dragState.endSlot
                           );
-                          const startTime = getTimeFrom30MinuteSlot(startSlot);
-                          const endTime = getTimeFrom30MinuteSlot(endSlot + 1);
-                          const { startCol, startOffset, span } =
-                            getTimeSlotPosition(startTime, endTime);
+                          const startTime = getTimeFrom30MinuteSlot(
+                            startSlot,
+                            timeRange
+                          );
+                          const endTime = getTimeFrom30MinuteSlot(
+                            endSlot + 1,
+                            timeRange
+                          );
+                          const position = getTimeSlotPosition(
+                            startTime,
+                            endTime,
+                            timeRange
+                          );
 
-                          if (timeColIndex === startCol) {
+                          if (position && timeColIndex === position.startCol) {
                             return (
                               <div
                                 className={`absolute inset-y-0 z-30 m-0.5 select-none rounded border border-primary border-dashed bg-primary/20 p-1.5 ${textClass}`}
                                 style={{
-                                  left: `${startOffset * 100}%`,
-                                  width: `calc(${span * 100}% - 0.25rem)`,
+                                  left: `${position.startOffset * 100}%`,
+                                  width: `calc(${position.span * 100}% - 0.25rem)`,
                                 }}
                               >
                                 <div className="min-w-0">
