@@ -71,7 +71,7 @@ export function CourseVaulContent() {
           </div>
           {session.type === "custom" && (
             <Button
-              aria-label="Edit course information"
+              aria-label={t("course.edit")}
               onClick={() => {
                 setIsEditing(true);
               }}
@@ -141,7 +141,7 @@ export function CourseVaulContent() {
 
       {overlappingSessions.length > 0 && (
         <div className="space-y-2">
-          <div className="font-medium text-sm">Overlaps:</div>
+          <div className="font-medium text-sm">{t("course.overlaps")}</div>
           <div className="flex flex-wrap gap-2">
             {overlappingSessions.map((overlapSession) => {
               const overlapKey = `${overlapSession.courseCode}-${overlapSession.group}-${overlapSession.day}-${overlapSession.start}-${overlapSession.end}`;

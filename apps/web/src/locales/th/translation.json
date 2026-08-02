@@ -9,12 +9,32 @@
     "nav": {
       "courses": "รายวิชา",
       "schedule": "ตารางเรียน",
-      "selected_classes": "รายวิชาที่เลือก"
+      "selected_classes": "รายวิชาที่เลือก",
+      "menu": "เมนู",
+      "home": "ไปยังหน้าหลัก"
+    },
+    "theme": {
+      "label": "ธีม",
+      "system": "ธีมระบบ",
+      "light": "ธีมสว่าง",
+      "dark": "ธีมมืด"
+    },
+    "language": {
+      "english": "อังกฤษ",
+      "thai": "ไทย"
     },
     "form": {
       "save": "บันทึก",
       "saving": "กำลังบรรทึก...",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "validation": {
+        "course_code_required": "กรุณาระบุรหัสวิชา",
+        "course_name_required": "กรุณาระบุชื่อวิชา",
+        "end_time_required": "กรุณาระบุเวลาสิ้นสุด",
+        "group_required": "กรุณาระบุกลุ่ม",
+        "instructor_required": "กรุณาระบุผู้สอนอย่างน้อยหนึ่งคน",
+        "start_time_required": "กรุณาระบุเวลาเริ่มต้น"
+      }
     },
     "days_time": {
       "day": "วัน",
@@ -71,7 +91,10 @@
       "remove_from_schedule_description1": "คุณแน่ใจหรือไม่ว่าต้องการลบ",
       "remove_from_schedule_description2": "ออกจากตารางเรียนของคุณ? การดำเนินการนี้จะไม่สามารถย้อนกลับได้ในภายหลัง",
       "remove": "ลบ",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "resize_start": "ลากเพื่อเปลี่ยนเวลาเริ่มต้น",
+      "resize_end": "ลากเพื่อเปลี่ยนเวลาสิ้นสุด",
+      "duration": "({{duration}} ชม.)"
     },
     "not_found": {
       "title": "ขออภัย!",
@@ -102,7 +125,14 @@
       "course_code": "รหัสวิชา",
       "course_name": "ชื่อวิชา",
       "group": "กลุ่ม",
-      "instructor": "ผู้สอน"
+      "instructor": "ผู้สอน",
+      "edit": "แก้ไขข้อมูลรายวิชา",
+      "overlaps": "ตารางเรียนชนกัน:",
+      "add_instructor": "เพิ่มผู้สอน..."
+    },
+    "brand": {
+      "logo_alt": "โลโก้ Tarang Rian KMUTT",
+      "wwwk_logo_alt": "โลโก้ WWWK"
     },
     "settings": {
       "title": "ตั้งค่าตารางเรียน",
@@ -154,7 +184,25 @@
       "copy": "คัดลอก",
       "copyAriaLabel": "คัดลอก JSON",
       "copySuccess": "คัดลอก JSON ไปยังคลิปบอร์ดแล้ว",
-      "copyError": "ไม่สามารถคัดลอก JSON ไปยังคลิปบอร์ดได้"
+      "copyError": "ไม่สามารถคัดลอก JSON ไปยังคลิปบอร์ดได้",
+      "on": "เปิด",
+      "off": "ปิด",
+      "show": "แสดง",
+      "hide": "ซ่อน",
+      "color": "สี",
+      "custom_color": "สีที่กำหนดเอง",
+      "none": "ไม่มี",
+      "colors": {
+        "white": "ขาว",
+        "slate": "สเลต",
+        "blue": "น้ำเงิน",
+        "green": "เขียว",
+        "yellow": "เหลือง",
+        "orange": "ส้ม",
+        "red": "แดง",
+        "rose": "กุหลาบ",
+        "black": "ดำ"
+      }
     },
     "import": {
       "title": "นำเข้าตารางเรียน",

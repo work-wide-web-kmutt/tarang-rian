@@ -1,5 +1,6 @@
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
@@ -29,15 +30,13 @@ export interface WwwkProps
   alt?: string;
 }
 
-export function Wwwk({
-  alt = "WWWK logo",
-  className,
-  size,
-  ...props
-}: WwwkProps) {
+export function Wwwk({ alt, className, size, ...props }: WwwkProps) {
+  const { t } = useTranslation();
+  const imageAlt = alt ?? t("brand.wwwk_logo_alt");
+
   return (
     <img
-      alt={alt}
+      alt={imageAlt}
       className={cn(wwwkVariants({ className, size }))}
       src="/static/logos/wwwk-logo.svg"
       {...props}

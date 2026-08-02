@@ -9,12 +9,32 @@
     "nav": {
       "courses": "Courses",
       "schedule": "Schedule",
-      "selected_classes": "Selected Classes"
+      "selected_classes": "Selected Classes",
+      "menu": "Menu",
+      "home": "Go to home page"
+    },
+    "theme": {
+      "label": "Theme",
+      "system": "System theme",
+      "light": "Light theme",
+      "dark": "Dark theme"
+    },
+    "language": {
+      "english": "English",
+      "thai": "ไทย (Thai)"
     },
     "form": {
       "save": "Save",
       "saving": "Saving...",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "validation": {
+        "course_code_required": "Course code is required.",
+        "course_name_required": "Course name is required.",
+        "end_time_required": "End time is required.",
+        "group_required": "Group is required.",
+        "instructor_required": "At least one instructor is required.",
+        "start_time_required": "Start time is required."
+      }
     },
     "days_time": {
       "day": "Day",
@@ -71,7 +91,10 @@
       "remove_from_schedule_description1": "Are you sure you want to remove",
       "remove_from_schedule_description2": "from your schedule? This action cannot be undone.",
       "remove": "Remove",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "resize_start": "Drag to change start time",
+      "resize_end": "Drag to change end time",
+      "duration": "({{duration}}h)"
     },
     "not_found": {
       "title": "Sorry!",
@@ -102,7 +125,14 @@
       "course_code": "Course Code",
       "course_name": "Course Name",
       "group": "Group",
-      "instructor": "Instructor"
+      "instructor": "Instructor",
+      "edit": "Edit course information",
+      "overlaps": "Overlaps:",
+      "add_instructor": "Add instructor..."
+    },
+    "brand": {
+      "logo_alt": "Tarang Rian KMUTT logo",
+      "wwwk_logo_alt": "WWWK logo"
     },
     "settings": {
       "title": "Settings",
@@ -154,7 +184,25 @@
       "copy": "Copy",
       "copyAriaLabel": "Copy JSON",
       "copySuccess": "JSON copied to clipboard",
-      "copyError": "Failed to copy JSON to clipboard"
+      "copyError": "Failed to copy JSON to clipboard",
+      "on": "On",
+      "off": "Off",
+      "show": "Show",
+      "hide": "Hide",
+      "color": "Color",
+      "custom_color": "Custom Color",
+      "none": "None",
+      "colors": {
+        "white": "White",
+        "slate": "Slate",
+        "blue": "Blue",
+        "green": "Green",
+        "yellow": "Yellow",
+        "orange": "Orange",
+        "red": "Red",
+        "rose": "Rose",
+        "black": "Black"
+      }
     },
     "import": {
       "title": "Import Schedule",

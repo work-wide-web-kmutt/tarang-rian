@@ -1,6 +1,7 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
@@ -9,17 +10,17 @@ const themes = [
   {
     icon: Monitor,
     key: "system",
-    label: "System theme",
+    translationKey: "theme.system",
   },
   {
     icon: Sun,
     key: "light",
-    label: "Light theme",
+    translationKey: "theme.light",
   },
   {
     icon: Moon,
     key: "dark",
-    label: "Dark theme",
+    translationKey: "theme.dark",
   },
 ];
 
@@ -28,6 +29,7 @@ export interface ThemeSwitcherProps {
 }
 
 export function ThemeSwitcher({ className }: ThemeSwitcherProps) {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -50,12 +52,12 @@ export function ThemeSwitcher({ className }: ThemeSwitcherProps) {
         className
       )}
     >
-      {themes.map(({ key, icon: Icon, label }) => {
+      {themes.map(({ key, icon: Icon, translationKey }) => {
         const isActive = currentTheme === key;
 
         return (
           <button
-            aria-label={label}
+            aria-label={t(translationKey)}
             className="relative h-6 w-6 rounded-full"
             key={key}
             onClick={() => {

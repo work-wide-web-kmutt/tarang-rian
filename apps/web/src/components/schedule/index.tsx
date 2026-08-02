@@ -774,7 +774,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                 return (
                   <DroppableCell id={dropId} key={dropId}>
                     <div
-                      aria-label={`${day} ${time} - ${t("schedule.drag_to_create")}`}
+                      aria-label={`${t(`days_time.${day.toLowerCase()}`)} ${time} - ${t("schedule.drag_to_create")}`}
                       className="relative touch-none border-border border-r bg-background last:border-r-0"
                       onPointerDown={(e) => {
                         handlePointerDown(e, day, timeColIndex);

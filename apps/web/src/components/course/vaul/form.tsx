@@ -35,30 +35,39 @@ import { DAYS, getFullDayTimeSlots } from "@/constants/times";
 import { parseTime } from "@/lib/parser/time";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
-const editSchema = z.object({
-  courseCode: z.string().min(1, "Course code is required."),
-  courseName: z.string().min(1, "Course name is required."),
-  day: z.enum([
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ]),
-  endTime: z.string().min(1, "End time is required."),
-  group: z.string().min(1, "Group is required."),
-  instructor: z.array(z.string()).min(1, "At least one instructor is required"),
-  startTime: z.string().min(1, "Start time is required."),
-});
-
 export function CourseVaulForm() {
   const { t } = useTranslation();
   const { updateSession } = useSelectedGenElectivesActions();
   const { setIsEditing, session } = useCourseVaulContext();
 
   const timeSlots = useMemo(() => getFullDayTimeSlots(), []);
+  const editSchema = useMemo(
+    () =>
+      z.object({
+        courseCode: z
+          .string()
+          .min(1, t("form.validation.course_code_required")),
+        courseName: z
+          .string()
+          .min(1, t("form.validation.course_name_required")),
+        day: z.enum([
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ]),
+        endTime: z.string().min(1, t("form.validation.end_time_required")),
+        group: z.string().min(1, t("form.validation.group_required")),
+        instructor: z
+          .array(z.string())
+          .min(1, t("form.validation.instructor_required")),
+        startTime: z.string().min(1, t("form.validation.start_time_required")),
+      }),
+    [t]
+  );
 
   const form = useForm({
     defaultValues: {
@@ -375,7 +384,7 @@ export function CourseVaulForm() {
                       aria-invalid={isInvalid}
                       id={field.name}
                       onBlur={field.handleBlur}
-                      placeholder="Add instructor..."
+                      placeholder={t("course.add_instructor")}
                     />
                   </TagsInputList>
                 </TagsInput>

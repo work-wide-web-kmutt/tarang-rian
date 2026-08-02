@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, Calendar, Menu, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -20,17 +21,17 @@ const themes = [
   {
     icon: Monitor,
     key: "system",
-    label: "System theme",
+    translationKey: "theme.system",
   },
   {
     icon: Sun,
     key: "light",
-    label: "Light theme",
+    translationKey: "theme.light",
   },
   {
     icon: Moon,
     key: "dark",
-    label: "Dark theme",
+    translationKey: "theme.dark",
   },
 ];
 
@@ -39,6 +40,7 @@ function isTheme(value: unknown): value is "system" | "light" | "dark" {
 }
 
 export function ThemeDropdown() {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -57,7 +59,7 @@ export function ThemeDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Button
-          aria-label="Menu"
+          aria-label={t("nav.menu")}
           className="size-8 rounded-full p-0"
           size="icon"
           type="button"
@@ -71,19 +73,19 @@ export function ThemeDropdown() {
           <DropdownMenuItem>
             <Link className="flex w-full cursor-pointer gap-2.5" to="/courses">
               <BookOpen className="size-4" />
-              <span>Courses</span>
+              <span>{t("nav.courses")}</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link className="flex w-full cursor-pointer gap-2.5" to="/schedule">
               <Calendar className="size-4" />
-              <span>Schedule</span>
+              <span>{t("nav.schedule")}</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Theme</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("theme.label")}</DropdownMenuLabel>
           <DropdownMenuRadioGroup
             onValueChange={(value) => {
               if (isTheme(value)) {
@@ -92,10 +94,10 @@ export function ThemeDropdown() {
             }}
             value={currentTheme}
           >
-            {themes.map(({ key, icon: Icon, label }) => (
+            {themes.map(({ key, icon: Icon, translationKey }) => (
               <DropdownMenuRadioItem key={key} value={key}>
                 <Icon className="size-4" />
-                <span>{label}</span>
+                <span>{t(translationKey)}</span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
