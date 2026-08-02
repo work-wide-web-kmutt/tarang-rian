@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { SizeSelector } from "./size-selector";
+import { TimeRangeSelector } from "./time-range-selector";
 
 export interface SettingItem {
   id: string;
@@ -27,6 +28,18 @@ export function getSettingsRegistry(
           label: t("settings.size"),
           keywords: ["size", "scale", "dimension", "width", "height", "layout"],
           render: () => <SizeSelector />,
+        },
+      ],
+    },
+    {
+      id: "schedule",
+      header: "settings.group.schedule",
+      items: [
+        {
+          id: "time-range",
+          label: t("settings.time_range"),
+          keywords: ["time", "range", "hour", "hours", "schedule", "grid"],
+          render: () => <TimeRangeSelector />,
         },
       ],
     },

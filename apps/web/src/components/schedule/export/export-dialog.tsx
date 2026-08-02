@@ -32,6 +32,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
+import { useScheduleTimeRange } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 import { SchedulePreview } from "./schedule-preview";
 import {
@@ -53,6 +54,7 @@ export function ScheduleExportDialog({
   triggerClassName,
 }: ScheduleExportDialogProps) {
   const { t } = useTranslation();
+  const timeRange = useScheduleTimeRange();
 
   const [format, setFormat] = useState<ExportFormat>("png");
   const [darkMode, setDarkMode] = useState(false);
@@ -192,6 +194,7 @@ export function ScheduleExportDialog({
                       sessions={sessions}
                       shorthand={isShorthand}
                       term={term}
+                      timeRange={timeRange}
                     />
                   </div>
                 </div>
@@ -456,6 +459,7 @@ export function ScheduleExportDialog({
                 sessions={sessions}
                 shorthand={isShorthand}
                 term={term}
+                timeRange={timeRange}
               />
             </div>
           </div>

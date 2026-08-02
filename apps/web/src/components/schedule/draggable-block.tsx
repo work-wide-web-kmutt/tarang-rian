@@ -1,6 +1,7 @@
 import { useDraggable } from "@dnd-kit/core";
 import { GripVertical } from "lucide-react";
 import { getClassKey, getTimeSlotPosition } from "@/components/schedule/utils";
+import type { ScheduleTimeRange } from "@/constants/times";
 import type { SelectedClassSession } from "@/stores/selected";
 import { SessionBlock } from "./block";
 
@@ -17,6 +18,7 @@ interface DraggableBlockProps {
   textClass?: string;
   subTextClass?: string;
   defaultEditMode?: boolean;
+  timeRange: ScheduleTimeRange;
 }
 
 export function DraggableBlock({
@@ -29,11 +31,12 @@ export function DraggableBlock({
   textClass,
   subTextClass,
   defaultEditMode = false,
+  timeRange,
 }: DraggableBlockProps) {
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
-  const { startOffset, span } = getTimeSlotPosition(session.start, session.end);
-  const isSmallBlock = span < 1;
+  const position = getTimeSlotPosition(session.start, session.end, timeRange);
+  const isSmallBlock = position ? position.span < 1 : false;
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: classKey,
@@ -42,6 +45,12 @@ export function DraggableBlock({
       session,
     },
   });
+
+  if (!position) {
+    return null;
+  }
+
+  const { startOffset, span } = position;
 
   const handleResizePointerDown = (
     e: React.PointerEvent,
@@ -118,6 +127,7 @@ export function DraggableBlock({
         session={session}
         subTextClass={subTextClass}
         textClass={textClass}
+        timeRange={timeRange}
       />
     </div>
   );

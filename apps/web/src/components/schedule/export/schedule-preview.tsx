@@ -7,7 +7,11 @@ import {
   isFirstCol,
 } from "@/components/schedule/utils";
 import { SCHEDULE_SIZE } from "@/constants/schedule";
-import { DAYS, TIME_SLOTS } from "@/constants/times";
+import {
+  DAYS,
+  getScheduleTimeSlots,
+  type ScheduleTimeRange,
+} from "@/constants/times";
 import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import { useScheduleSize } from "@/stores/schedule-settings";
@@ -18,6 +22,7 @@ interface SchedulePreviewProps {
   term: AcademicTerm;
   darkMode: boolean;
   shorthand: boolean;
+  timeRange: ScheduleTimeRange;
 }
 
 export function SchedulePreview({
@@ -25,11 +30,13 @@ export function SchedulePreview({
   term,
   darkMode,
   shorthand,
+  timeRange,
 }: SchedulePreviewProps) {
   const { t } = useTranslation();
   const size = useScheduleSize();
   const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
     SCHEDULE_SIZE[size];
+  const timeSlots = getScheduleTimeSlots(timeRange);
 
   // Calculate scaled dimensions
   const scaledCellSize = cellSize;
@@ -56,7 +63,7 @@ export function SchedulePreview({
       <div
         className={cn("grid border", borderClass)}
         style={{
-          gridTemplateColumns: `${scaledDayColumnWidth}px repeat(${TIME_SLOTS.length}, ${scaledCellSize}px)`,
+          gridTemplateColumns: `${scaledDayColumnWidth}px repeat(${timeSlots.length}, ${scaledCellSize}px)`,
         }}
       >
         <div
@@ -69,7 +76,7 @@ export function SchedulePreview({
         >
           {t("days_time.day")}
         </div>
-        {TIME_SLOTS.map((time) => (
+        {timeSlots.map((time) => (
           <div
             className={cn(
               "flex items-center justify-center border-r p-2 text-center font-medium text-xs last:border-r-0",
@@ -99,14 +106,15 @@ export function SchedulePreview({
                 : t(`days_time.${day.toLowerCase()}`)}
             </div>
 
-            {TIME_SLOTS.map((_time, timeColIndex) => {
+            {timeSlots.map((_time, timeColIndex) => {
               const cellClasses = getClassesForCell(
                 day,
                 timeColIndex,
-                sessions
+                sessions,
+                timeRange
               );
               const firstColClasses = cellClasses.filter((session) =>
-                isFirstCol(session, timeColIndex)
+                isFirstCol(session, timeColIndex, timeRange)
               );
 
               return (
@@ -122,10 +130,17 @@ export function SchedulePreview({
                 >
                   {firstColClasses.map((session) => {
                     const classKey = getClassKey(session);
-                    const { startOffset, span } = getTimeSlotPosition(
+                    const position = getTimeSlotPosition(
                       session.start,
-                      session.end
+                      session.end,
+                      timeRange
                     );
+
+                    if (!position) {
+                      return null;
+                    }
+
+                    const { startOffset, span } = position;
 
                     const isOverlapping = hasOverlap(session, sessions);
                     // For basic export check we use global session check.

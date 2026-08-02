@@ -115,8 +115,14 @@
       "size_sm": "เล็ก",
       "size_md": "กลาง",
       "size_lg": "ใหญ่",
+      "time_range": "ช่วงเวลาที่แสดง",
+      "time_range_start": "เวลาเริ่มต้น",
+      "time_range_end": "เวลาสิ้นสุด",
+      "time_range_start_aria": "เวลาเริ่มต้นของช่วงที่แสดง",
+      "time_range_end_aria": "เวลาสิ้นสุดของช่วงที่แสดง",
       "group": {
-        "appearance": "รูปแบบตาราง"
+        "appearance": "รูปแบบตาราง",
+        "schedule": "ตารางเรียน"
       }
     },
     "footer": {

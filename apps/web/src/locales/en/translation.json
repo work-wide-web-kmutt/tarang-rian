@@ -115,8 +115,14 @@
       "size_sm": "Small",
       "size_md": "Medium",
       "size_lg": "Large",
+      "time_range": "Visible time range",
+      "time_range_start": "Start time",
+      "time_range_end": "End time",
+      "time_range_start_aria": "Visible range start time",
+      "time_range_end_aria": "Visible range end time",
       "group": {
-        "appearance": "Appearance"
+        "appearance": "Appearance",
+        "schedule": "Schedule"
       }
     },
     "footer": {
