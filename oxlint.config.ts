@@ -4,13 +4,14 @@ import ultraciteReact from "ultracite/oxlint/react";
 import ultraciteTanstack from "ultracite/oxlint/tanstack";
 import ultraciteVitest from "ultracite/oxlint/vitest";
 
-const ultraciteVitestForBun = {
+const ultraciteVitestForMigration = {
   ...ultraciteVitest,
   overrides: ultraciteVitest.overrides?.map((override) => ({
     ...override,
     rules: {
       ...override.rules,
-      "vitest/prefer-importing-vitest-globals": "off",
+      // Preserve existing assertions during runner migration.
+      "vitest/prefer-strict-equal": "off",
     },
   })),
 };
@@ -20,7 +21,7 @@ export default defineConfig({
     ultraciteCore,
     ultraciteReact,
     ultraciteTanstack,
-    ultraciteVitestForBun,
+    ultraciteVitestForMigration,
   ],
   ignorePatterns: [
     ...(ultraciteCore.ignorePatterns ?? []),

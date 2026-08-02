@@ -1,24 +1,8 @@
-import { unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import contentCollections from "@content-collections/vite";
-import { build, defineConfig } from "vite";
+import { createBuilder } from "@content-collections/core";
 
-const dummyEntry = path.join(process.cwd(), ".content-collections-dummy.ts");
-writeFileSync(dummyEntry, "export {};");
+const configPath = path.join(process.cwd(), "content-collections.ts");
+const builder = await createBuilder(configPath);
 
-try {
-  await build(
-    defineConfig({
-      build: {
-        rollupOptions: {
-          input: dummyEntry,
-        },
-        write: false,
-      },
-      plugins: [contentCollections()],
-    })
-  );
-} finally {
-  unlinkSync(dummyEntry);
-}
+await builder.build();
