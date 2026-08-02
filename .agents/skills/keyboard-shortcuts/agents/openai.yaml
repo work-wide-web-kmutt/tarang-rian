@@ -1,0 +1,4 @@
+interface:
+  display_name: "Keyboard Shortcuts"
+  short_description: "Add accessible, conflict-free web keyboard shortcuts"
+  default_prompt: "Use $keyboard-shortcuts to add or change a web keyboard shortcut."

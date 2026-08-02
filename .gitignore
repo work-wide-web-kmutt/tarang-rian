@@ -51,3 +51,8 @@ temp
 
 # Content Collections
 .content-collections
+
+# Repository-local Codex skills
+!.agents/
+!.agents/skills/
+!.agents/skills/**

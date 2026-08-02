@@ -1,0 +1,4 @@
+interface:
+  display_name: "dnd-kit Interactions"
+  short_description: "Build accessible dnd-kit drag interactions"
+  default_prompt: "Use $dnd-kit to add or change drag-and-drop behavior in apps/web."

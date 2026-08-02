@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zustand Stores"
+  short_description: "Design focused Zustand stores and persistence"
+  default_prompt: "Use $zustand to add or change Zustand state in apps/web."

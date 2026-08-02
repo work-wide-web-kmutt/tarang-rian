@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Forms"
+  short_description: "Build accessible TanStack Form and Zod forms"
+  default_prompt: "Use $forms to create or change a form in apps/web."

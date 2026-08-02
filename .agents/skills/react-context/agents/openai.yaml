@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Context"
+  short_description: "Design typed, performant React Context providers"
+  default_prompt: "Use $react-context to add or change React Context in apps/web."
