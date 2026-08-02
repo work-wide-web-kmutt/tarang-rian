@@ -1,7 +1,10 @@
 import type { CSSProperties, ReactNode } from "react";
+
 import { CourseVaulProvider } from "@/components/course/vaul/context";
 import { CourseVaulSheet } from "@/components/course/vaul/sheet";
 import type { SelectedClassSession } from "@/stores/selected";
+
+const EMPTY_OVERLAPPING_SESSIONS: SelectedClassSession[] = [];
 
 interface CourseVaulProps {
   children: ReactNode;
@@ -20,7 +23,7 @@ export default function CourseVaul({
   className,
   onOpenChange,
   session,
-  overlappingSessions = [],
+  overlappingSessions = EMPTY_OVERLAPPING_SESSIONS,
   shouldOpen = false,
   defaultEditMode = false,
 }: CourseVaulProps) {

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, Calendar, Menu, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,27 +18,32 @@ import {
 
 const themes = [
   {
-    key: "system",
     icon: Monitor,
+    key: "system",
     label: "System theme",
   },
   {
-    key: "light",
     icon: Sun,
+    key: "light",
     label: "Light theme",
   },
   {
-    key: "dark",
     icon: Moon,
+    key: "dark",
     label: "Dark theme",
   },
 ];
+
+function isTheme(value: unknown): value is "system" | "light" | "dark" {
+  return value === "system" || value === "light" || value === "dark";
+}
 
 export function ThemeDropdown() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler -- mount state prevents hydration mismatch
     setMounted(true);
   }, []);
 
@@ -80,7 +86,9 @@ export function ThemeDropdown() {
           <DropdownMenuLabel>Theme</DropdownMenuLabel>
           <DropdownMenuRadioGroup
             onValueChange={(value) => {
-              setTheme(value);
+              if (isTheme(value)) {
+                setTheme(value);
+              }
             }}
             value={currentTheme}
           >

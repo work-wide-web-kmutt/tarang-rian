@@ -1,5 +1,6 @@
 import { CheckCircleIcon, ClockIcon, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { SelectButton } from "@/components/class/select-button";
 import {
   AccordionContent,
@@ -39,7 +40,10 @@ export function AccordionItem({
         className={cn(
           "px-4 transition-all",
           isSelected && "border border-primary",
-          isSelected && openIndexs?.includes(index) && "border-b-0",
+          isSelected &&
+            openIndexs !== undefined &&
+            openIndexs.includes(index) &&
+            "border-b-0",
           "flex items-center justify-center gap-2 hover:cursor-pointer hover:no-underline"
         )}
       >

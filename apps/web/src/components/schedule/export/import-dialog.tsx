@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import z from "zod";
+
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,9 +22,9 @@ import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import {
   normalizeSelectedSession,
-  type SelectedClassSession,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
+import type { SelectedClassSession } from "@/stores/selected";
 
 type ImportMode = "replace" | "merge";
 
@@ -33,6 +34,22 @@ interface ScheduleImportDialogProps {
 }
 
 const importSchema = z.array(z.unknown());
+
+function parseImportedSessions(
+  value: unknown,
+  term: AcademicTerm
+): SelectedClassSession[] {
+  const parsed = importSchema.parse(value);
+  const normalized = parsed.map((session) =>
+    normalizeSelectedSession(session, term)
+  );
+  if (normalized.some((session) => session === null)) {
+    throw new Error("Invalid format");
+  }
+  return normalized.filter(
+    (session): session is SelectedClassSession => session !== null
+  );
+}
 
 export function ScheduleImportDialog({
   term,
@@ -50,7 +67,7 @@ export function ScheduleImportDialog({
   const [pastedJson, setPastedJson] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handlePasteChange = (value: string) => {
+  function handlePasteChange(value: string): void {
     setPastedJson(value);
     setError(null);
 
@@ -60,21 +77,17 @@ export function ScheduleImportDialog({
     }
 
     try {
-      const json = importSchema.parse(JSON.parse(value));
-      const normalized = json.map((session) =>
-        normalizeSelectedSession(session, term)
-      );
-      if (normalized.some((session) => session === null)) {
-        throw new Error("Invalid format");
-      }
-      setSessions(normalized as SelectedClassSession[]);
+      const json: unknown = JSON.parse(value);
+      setSessions(parseImportedSessions(json, term));
     } catch {
       setError(t("import.invalid_format", "Invalid JSON format"));
       setSessions([]);
     }
-  };
+  }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> {
     const file = e.target.files?.[0];
     if (!file) {
       return;
@@ -83,27 +96,16 @@ export function ScheduleImportDialog({
     setFileName(file.name);
     setError(null);
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const json = JSON.parse(event.target?.result as string);
-        const parsed = importSchema.parse(json);
-        const normalized = parsed.map((session) =>
-          normalizeSelectedSession(session, term)
-        );
-        if (normalized.some((session) => session === null)) {
-          throw new Error("Invalid format");
-        }
-        setSessions(normalized as SelectedClassSession[]);
-      } catch {
-        setError(t("import.invalid_format", "Invalid JSON format"));
-        setSessions([]);
-      }
-    };
-    reader.readAsText(file);
-  };
+    try {
+      const json: unknown = JSON.parse(await file.text());
+      setSessions(parseImportedSessions(json, term));
+    } catch {
+      setError(t("import.invalid_format", "Invalid JSON format"));
+      setSessions([]);
+    }
+  }
 
-  const handleImport = () => {
+  function handleImport(): void {
     if (sessions.length === 0) {
       return;
     }
@@ -116,9 +118,9 @@ export function ScheduleImportDialog({
     } catch {
       toast.error(t("import.error", "Failed to import schedule"));
     }
-  };
+  }
 
-  const resetState = () => {
+  function resetState(): void {
     setSessions([]);
     setFileName(null);
     setError(null);
@@ -127,7 +129,7 @@ export function ScheduleImportDialog({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  };
+  }
 
   return (
     <Dialog
@@ -142,7 +144,7 @@ export function ScheduleImportDialog({
       <DialogTrigger
         aria-label={t("import.button", "Import")}
         className={cn(
-          buttonVariants({ variant: "outline", size: "sm" }),
+          buttonVariants({ size: "sm", variant: "outline" }),
           triggerClassName
         )}
       >
@@ -161,7 +163,7 @@ export function ScheduleImportDialog({
         <Tabs
           defaultValue="paste"
           onValueChange={(value) => {
-            setActiveTab(value as "paste" | "file");
+            setActiveTab(value === "file" ? "file" : "paste");
             setError(null);
           }}
           value={activeTab}
@@ -176,13 +178,15 @@ export function ScheduleImportDialog({
               <Label>{t("import.tabPaste", "Paste")}</Label>
               <Textarea
                 className="max-h-64 min-h-32 overflow-y-auto font-mono text-sm"
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  handlePasteChange(e.target.value)
-                }
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                  handlePasteChange(e.target.value);
+                }}
                 placeholder={t("import.pastePlaceholder", "Paste JSON here...")}
                 value={pastedJson}
               />
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error !== null && error !== "" && (
+                <p className="text-destructive text-sm">{error}</p>
+              )}
             </TabsPanel>
 
             <TabsPanel className="space-y-2" value="file">
@@ -190,25 +194,30 @@ export function ScheduleImportDialog({
               <button
                 className={cn(
                   "flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-muted-foreground/25 border-dashed bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50",
-                  error && "border-destructive/50"
+                  error !== null && error !== "" && "border-destructive/50"
                 )}
                 onClick={() => fileInputRef.current?.click()}
                 type="button"
               >
                 <FileUp className="h-8 w-8 text-muted-foreground" />
                 <span className="text-muted-foreground text-sm">
-                  {fileName ||
-                    t("import.dropzone", "Click to select JSON file")}
+                  {fileName !== null && fileName !== ""
+                    ? fileName
+                    : t("import.dropzone", "Click to select JSON file")}
                 </span>
               </button>
               <input
                 accept=".json,application/json"
                 className="hidden"
-                onChange={handleFileChange}
+                onChange={(event) => {
+                  void handleFileChange(event);
+                }}
                 ref={fileInputRef}
                 type="file"
               />
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error !== null && error !== "" && (
+                <p className="text-destructive text-sm">{error}</p>
+              )}
             </TabsPanel>
 
             {sessions.length > 0 && (
@@ -226,7 +235,9 @@ export function ScheduleImportDialog({
                   <div className="grid grid-cols-2 gap-2">
                     <Button
                       className="w-full"
-                      onClick={() => setMode("replace")}
+                      onClick={() => {
+                        setMode("replace");
+                      }}
                       size="sm"
                       variant={mode === "replace" ? "default" : "outline"}
                     >
@@ -234,7 +245,9 @@ export function ScheduleImportDialog({
                     </Button>
                     <Button
                       className="w-full"
-                      onClick={() => setMode("merge")}
+                      onClick={() => {
+                        setMode("merge");
+                      }}
                       size="sm"
                       variant={mode === "merge" ? "default" : "outline"}
                     >

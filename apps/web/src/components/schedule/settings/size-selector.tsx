@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import {
   Select,
   SelectContent,
@@ -12,6 +13,10 @@ import {
   useScheduleSize,
 } from "@/stores/schedule-settings";
 
+function isScheduleSize(value: string): value is keyof typeof SCHEDULE_SIZE {
+  return value in SCHEDULE_SIZE;
+}
+
 export function SizeSelector() {
   const { t } = useTranslation();
   const size = useScheduleSize();
@@ -24,8 +29,8 @@ export function SizeSelector() {
       </span>
       <Select
         onValueChange={(val: string | null) => {
-          if (val) {
-            setSize(val as keyof typeof SCHEDULE_SIZE);
+          if (val !== null && val !== "" && isScheduleSize(val)) {
+            setSize(val);
           }
         }}
         value={size}

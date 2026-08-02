@@ -1,6 +1,11 @@
 import { Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import {
+  filterSettings,
+  getSettingsRegistry,
+} from "@/components/schedule/settings/settings-registry";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   InputGroup,
@@ -15,7 +20,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { filterSettings, getSettingsRegistry } from "./settings-registry";
 
 interface ScheduleSettingsProps {
   triggerClassName?: string;
@@ -30,13 +34,13 @@ export function ScheduleSettings({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleOpenChange = (newOpen: boolean) => {
+  function handleOpenChange(newOpen: boolean): void {
     setOpen(newOpen);
     if (!newOpen) {
       setSearchQuery("");
     }
     onOpenChange?.(newOpen);
-  };
+  }
 
   const settingsRegistry = useMemo(() => getSettingsRegistry(t), [t]);
 
@@ -53,7 +57,7 @@ export function ScheduleSettings({
       <SheetTrigger
         aria-label={t("settings.title")}
         className={cn(
-          buttonVariants({ variant: "outline", size: "sm" }),
+          buttonVariants({ size: "sm", variant: "outline" }),
           triggerClassName
         )}
       >
@@ -76,7 +80,9 @@ export function ScheduleSettings({
             </InputGroupAddon>
             <InputGroupInput
               aria-label={t("settings.search_placeholder")}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
               placeholder={t("settings.search_placeholder")}
               role="searchbox"
               type="search"
@@ -108,7 +114,12 @@ export function ScheduleSettings({
                   <p className="text-muted-foreground text-sm">
                     {t("settings.search_no_results")}
                   </p>
-                  <Button onClick={() => setSearchQuery("")} type="button">
+                  <Button
+                    onClick={() => {
+                      setSearchQuery("");
+                    }}
+                    type="button"
+                  >
                     {t("settings.search_clear")}
                   </Button>
                 </div>

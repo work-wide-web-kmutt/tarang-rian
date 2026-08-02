@@ -1,23 +1,24 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+
 import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 const themes = [
   {
-    key: "system",
     icon: Monitor,
+    key: "system",
     label: "System theme",
   },
   {
-    key: "light",
     icon: Sun,
+    key: "light",
     label: "Light theme",
   },
   {
-    key: "dark",
     icon: Moon,
+    key: "dark",
     label: "Dark theme",
   },
 ];
@@ -26,12 +27,13 @@ export interface ThemeSwitcherProps {
   className?: string;
 }
 
-export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
+export function ThemeSwitcher({ className }: ThemeSwitcherProps) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler -- mount state prevents hydration mismatch
     setMounted(true);
   }, []);
 
@@ -56,14 +58,16 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
             aria-label={label}
             className="relative h-6 w-6 rounded-full"
             key={key}
-            onClick={() => setTheme(key)}
+            onClick={() => {
+              setTheme(key);
+            }}
             type="button"
           >
             {isActive && (
               <motion.div
                 className="absolute inset-0 rounded-full bg-secondary"
                 layoutId="activeTheme"
-                transition={{ type: "spring", duration: 0.5 }}
+                transition={{ duration: 0.5, type: "spring" }}
               />
             )}
             <Icon
@@ -77,4 +81,4 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
       })}
     </div>
   );
-};
+}

@@ -3,6 +3,7 @@ import { allCourses } from "content-collections";
 import { ExternalLink, Eye, Pencil, Trash2, User } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import CourseVaul from "@/components/course/vaul";
 import {
   AlertDialog,
@@ -37,31 +38,31 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
   );
   const courseSlug = course?.slug;
 
-  const handleDeleteClick = () => {
+  function handleDeleteClick(): void {
     setShowDeleteDialog(true);
-  };
+  }
 
-  const handleConfirmDelete = () => {
+  function handleConfirmDelete(): void {
     remove(session.id);
     setShowDeleteDialog(false);
-  };
+  }
 
-  const handleEditClick = () => {
+  function handleEditClick(): void {
     setDefaultEditMode(true);
     setIsVaulOpen(true);
-  };
+  }
 
-  const handleViewClick = () => {
+  function handleViewClick(): void {
     setDefaultEditMode(false);
     setIsVaulOpen(true);
-  };
+  }
 
-  const handleVaulOpenChange = (open: boolean) => {
+  function handleVaulOpenChange(open: boolean): void {
     setIsVaulOpen(open);
     if (!open) {
       setDefaultEditMode(false);
     }
-  };
+  }
 
   return (
     <div className="flex rounded-lg border border-x-0">
@@ -93,7 +94,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
                     <span>{t("course.instructor")}</span>
                   </div>
                 </td>
-                <td className="py-1.5">
+                <td aria-label={t("course.instructor")} className="py-1.5">
                   <div className="flex flex-wrap gap-2">
                     <p>
                       {session.instructor.map((instructor, idx) =>
@@ -114,7 +115,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
       <div className="flex w-12 flex-col border-l">
         <button
           aria-label={t("schedule.delete")}
-          className={`flex items-center justify-center bg-destructive text-destructive-foreground transition-colors hover:bg-destructive/90 ${!isCustom && courseSlug ? "h-1/3" : "h-1/2"}`}
+          className={`flex items-center justify-center bg-destructive text-destructive-foreground transition-colors hover:bg-destructive/90 ${!isCustom && courseSlug !== undefined && courseSlug !== "" ? "h-1/3" : "h-1/2"}`}
           onClick={handleDeleteClick}
           type="button"
         >
@@ -123,7 +124,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
 
         <button
           aria-label={isCustom ? t("form.save") : t("courses.view")}
-          className={`flex items-center justify-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90 ${!isCustom && courseSlug ? "h-1/3" : "h-1/2"}`}
+          className={`flex items-center justify-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90 ${!isCustom && courseSlug !== undefined && courseSlug !== "" ? "h-1/3" : "h-1/2"}`}
           onClick={isCustom ? handleEditClick : handleViewClick}
           type="button"
         >
@@ -134,7 +135,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
           )}
         </button>
 
-        {!isCustom && courseSlug && (
+        {!isCustom && courseSlug !== undefined && courseSlug !== "" && (
           <Link
             aria-label={t("courses.view")}
             className="flex h-1/3 items-center justify-center bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/80"

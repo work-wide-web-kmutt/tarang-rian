@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface GitHubCommit {
   sha: string;
   commit: {
@@ -11,6 +13,19 @@ export interface GitHubCommit {
   html_url: string;
 }
 
+const githubCommitSchema = z.object({
+  commit: z.object({
+    author: z.object({
+      date: z.string(),
+      email: z.string(),
+      name: z.string(),
+    }),
+    message: z.string(),
+  }),
+  html_url: z.string(),
+  sha: z.string(),
+});
+
 export async function fetchLatestCommit(): Promise<GitHubCommit> {
   const response = await fetch(
     "https://api.github.com/repos/work-wide-web-kmutt/tarang-rian/commits/main"
@@ -20,5 +35,6 @@ export async function fetchLatestCommit(): Promise<GitHubCommit> {
     throw new Error(`Failed to fetch latest commit: ${response.statusText}`);
   }
 
-  return response.json() as Promise<GitHubCommit>;
+  const data: unknown = await response.json();
+  return githubCommitSchema.parse(data);
 }

@@ -1,5 +1,6 @@
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,9 +12,9 @@ import {
 export function LanguageSwitcher() {
   const { t, i18n } = useTranslation();
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
+  function changeLanguage(lng: string): void {
+    void i18n.changeLanguage(lng);
+  }
 
   return (
     <DropdownMenu>
@@ -24,10 +25,18 @@ export function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => changeLanguage("en")}>
+        <DropdownMenuItem
+          onClick={() => {
+            changeLanguage("en");
+          }}
+        >
           English
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => changeLanguage("th")}>
+        <DropdownMenuItem
+          onClick={() => {
+            changeLanguage("th");
+          }}
+        >
           ไทย (Thai)
         </DropdownMenuItem>
       </DropdownMenuContent>

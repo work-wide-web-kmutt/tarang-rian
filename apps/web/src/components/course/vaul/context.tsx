@@ -1,13 +1,13 @@
 import {
-  type CSSProperties,
   createContext,
-  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import type { CSSProperties, ReactNode } from "react";
+
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
@@ -25,6 +25,8 @@ interface CourseVaulContextValue {
 }
 
 const CourseVaulContext = createContext<CourseVaulContextValue | null>(null);
+
+const EMPTY_OVERLAPPING_SESSIONS: SelectedClassSession[] = [];
 
 interface CourseVaulProviderProps {
   children: ReactNode;
@@ -45,7 +47,7 @@ export function CourseVaulProvider({
   className,
   onOpenChange,
   session,
-  overlappingSessions = [],
+  overlappingSessions = EMPTY_OVERLAPPING_SESSIONS,
   shouldOpen = false,
   defaultEditMode = false,
 }: CourseVaulProviderProps) {
@@ -55,8 +57,10 @@ export function CourseVaulProvider({
 
   useEffect(() => {
     if (shouldOpen) {
+      // oxlint-disable-next-line react/react-compiler -- synchronize controlled open state from parent props
       setOpen(true);
       if (defaultEditMode) {
+        // oxlint-disable-next-line react/react-compiler -- synchronize controlled edit state from parent props
         setIsEditing(true);
       }
     } else if (!shouldOpen && open) {
@@ -66,6 +70,7 @@ export function CourseVaulProvider({
 
   useEffect(() => {
     if (!open) {
+      // oxlint-disable-next-line react/react-compiler -- reset edit state when controlled sheet closes
       setIsEditing(false);
     }
   }, [open]);
@@ -88,16 +93,16 @@ export function CourseVaulProvider({
 
   const contextValue = useMemo(
     () => ({
-      open,
-      setOpen: handleSetOpen,
-      isEditing,
-      setIsEditing,
       children: triggerChildren,
-      style,
       className,
-      session,
-      overlappingSessions,
       handleRemove,
+      isEditing,
+      open,
+      overlappingSessions,
+      session,
+      setIsEditing,
+      setOpen: handleSetOpen,
+      style,
     }),
     [
       open,

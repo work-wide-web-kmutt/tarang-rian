@@ -1,5 +1,6 @@
 import { CheckCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import type { GenElectiveOption } from "@/course/schema";
 import { useSelection } from "@/hooks/use-selection";
@@ -22,15 +23,15 @@ export function SelectButton({
   const { t } = useTranslation();
   const { isSelected, label, toggle } = useSelection(course, cls);
 
-  const getButtonText = () => {
+  function getButtonText(): string {
     if (isSelected) {
       return deselectLabel ?? label;
     }
-    if (selectLabel) {
+    if (selectLabel !== undefined && selectLabel !== "") {
       return selectLabel;
     }
     return showSelectPrefix ? `${t("courses.select_class")} ${label}` : label;
-  };
+  }
 
   return (
     <Button

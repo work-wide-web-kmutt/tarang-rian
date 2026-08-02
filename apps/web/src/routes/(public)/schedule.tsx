@@ -2,6 +2,7 @@ import NumberFlow from "@number-flow/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
 import { CourseFilters } from "@/components/course/course-filters";
 import { NotFound } from "@/components/not-found";
 import { Schedule } from "@/components/schedule";
@@ -24,15 +25,15 @@ function SelectedCoursesPage() {
     useSelectedCourseFilters();
   const { t } = useTranslation();
 
-  const totalHours = useMemo(
-    () =>
-      selected.reduce((acc, session) => {
-        const [startH, startM] = session.start.split(":").map(Number);
-        const [endH, endM] = session.end.split(":").map(Number);
-        return acc + endH - startH + (endM - startM) / 60;
-      }, 0),
-    [selected]
-  );
+  const totalHours = useMemo(() => {
+    let total = 0;
+    for (const session of selected) {
+      const [startH, startM] = session.start.split(":").map(Number);
+      const [endH, endM] = session.end.split(":").map(Number);
+      total += endH - startH + (endM - startM) / 60;
+    }
+    return total;
+  }, [selected]);
 
   return (
     <div className="container mx-auto px-2 pb-20 md:px-12">
@@ -62,8 +63,8 @@ function SelectedCoursesPage() {
             key={`${activeTerm.year}-${activeTerm.semester}`}
             sessions={selected}
             styles={{
-              borderTop: "border-t-0",
               borderBottom: "border-b-0",
+              borderTop: "border-t-0",
             }}
             term={activeTerm}
           />

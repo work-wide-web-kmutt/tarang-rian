@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+
 import {
   getClassesForCell,
   getClassKey,
@@ -7,11 +8,8 @@ import {
   isFirstCol,
 } from "@/components/schedule/utils";
 import { SCHEDULE_SIZE } from "@/constants/schedule";
-import {
-  DAYS,
-  getScheduleTimeSlots,
-  type ScheduleTimeRange,
-} from "@/constants/times";
+import { DAYS, getScheduleTimeSlots } from "@/constants/times";
+import type { ScheduleTimeRange } from "@/constants/times";
 import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
 import { useScheduleSize } from "@/stores/schedule-settings";

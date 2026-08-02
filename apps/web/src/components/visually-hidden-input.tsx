@@ -1,14 +1,7 @@
-"use client";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties, InputHTMLAttributes } from "react";
 
-import {
-  type CSSProperties,
-  type InputHTMLAttributes,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+// oxlint-disable react/react-compiler -- this low-level bridge intentionally reads refs and measures DOM synchronously
 
 type InputValue = string[] | string;
 
@@ -38,6 +31,7 @@ function dispatchInputEvent(
 ): void {
   const inputProto = window.HTMLInputElement.prototype;
   const descriptor = Object.getOwnPropertyDescriptor(inputProto, propertyKey);
+  // oxlint-disable-next-line typescript/unbound-method -- setter invoked with explicit input receiver
   const setter = descriptor?.set;
 
   if (!setter) {
@@ -45,15 +39,14 @@ function dispatchInputEvent(
   }
 
   const event = new Event(eventType, { bubbles });
-  setter.call(input, serializedValue);
+  Reflect.apply(setter, input, [serializedValue]);
   input.dispatchEvent(event);
 }
 
-interface VisuallyHiddenInputProps<T = InputValue>
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    "value" | "checked" | "onReset"
-  > {
+interface VisuallyHiddenInputProps<T = InputValue> extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "value" | "checked" | "onReset"
+> {
   value?: T;
   checked?: boolean;
   control: HTMLElement | null;
@@ -83,8 +76,8 @@ function VisuallyHiddenInput<T = InputValue>(
     value: T | boolean | undefined;
     previous: T | boolean | undefined;
   }>({
-    value: isCheckInput ? checked : value,
     previous: isCheckInput ? checked : value,
+    value: isCheckInput ? checked : value,
   });
 
   const prevValue = useMemo(() => {
@@ -108,8 +101,8 @@ function VisuallyHiddenInput<T = InputValue>(
     }
 
     setControlSize({
-      width: control.offsetWidth,
       height: control.offsetHeight,
+      width: control.offsetWidth,
     });
 
     if (typeof window === "undefined") {
@@ -117,34 +110,29 @@ function VisuallyHiddenInput<T = InputValue>(
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
-      if (!(Array.isArray(entries) && entries.length)) {
+      if (entries.length === 0) {
         return;
       }
 
-      const entry = entries[0];
-      if (!entry) {
-        return;
-      }
+      const [entry] = entries;
 
       let width: number;
       let height: number;
 
-      if ("borderBoxSize" in entry) {
-        const borderSizeEntry = entry.borderBoxSize;
-        const borderSize = Array.isArray(borderSizeEntry)
-          ? borderSizeEntry[0]
-          : borderSizeEntry;
-        width = borderSize.inlineSize;
-        height = borderSize.blockSize;
-      } else {
+      const [borderSize] = entry.borderBoxSize;
+      if (borderSize === undefined) {
         width = control.offsetWidth;
         height = control.offsetHeight;
+      } else {
+        width = borderSize.inlineSize;
+        height = borderSize.blockSize;
       }
 
-      setControlSize({ width, height });
+      setControlSize({ height, width });
     });
 
     resizeObserver.observe(control, { box: "border-box" });
+    // oxlint-disable-next-line typescript/consistent-return -- effect cleanup is returned only after observer setup
     return () => {
       resizeObserver.disconnect();
     };
@@ -174,14 +162,13 @@ function VisuallyHiddenInput<T = InputValue>(
     );
   }, [prevValue, value, checked, bubbles, isCheckInput]);
 
-  const composedStyle = useMemo<CSSProperties>(() => {
-    return {
+  const composedStyle = useMemo<CSSProperties>(
+    () => ({
       ...style,
       ...(controlSize.width !== undefined && controlSize.height !== undefined
         ? controlSize
         : {}),
       border: 0,
-      clip: "rect(0 0 0 0)",
       clipPath: "inset(50%)",
       height: "1px",
       margin: "-1px",
@@ -190,8 +177,9 @@ function VisuallyHiddenInput<T = InputValue>(
       position: "absolute",
       whiteSpace: "nowrap",
       width: "1px",
-    };
-  }, [style, controlSize]);
+    }),
+    [style, controlSize]
+  );
 
   return (
     <input
@@ -207,3 +195,5 @@ function VisuallyHiddenInput<T = InputValue>(
 }
 
 export { VisuallyHiddenInput };
+
+// oxlint-enable react/react-compiler

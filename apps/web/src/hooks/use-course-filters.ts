@@ -1,12 +1,12 @@
-import { allCourses, type Course } from "content-collections";
+import { allCourses } from "content-collections";
+import type { Course } from "content-collections";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
+
 import { sameAcademicTerm } from "@/course/academic-term";
 import { useActiveAcademicTerm } from "@/stores/academic-context";
-import {
-  type SelectedClassSession,
-  useSelectedGenElectives,
-} from "@/stores/selected";
+import { useSelectedGenElectives } from "@/stores/selected";
+import type { SelectedClassSession } from "@/stores/selected";
 
 export interface CourseFilters {
   searchQuery: string;
@@ -61,7 +61,7 @@ function matchesTimeSlot(timeSlotFilter: string, start: string): boolean {
     return true;
   }
 
-  const startHour = Number.parseInt(start.split(":")[0], 10);
+  const startHour = Math.trunc(Number(start.split(":")[0]));
   return timeSlotFilter === "morning" ? startHour < 12 : startHour >= 12;
 }
 
@@ -82,11 +82,21 @@ function useCommonFilters(): CommonFilters {
 
   return {
     activeTerm,
-    searchQuery,
     dayFilter,
+    filters: { dayFilter, searchQuery, timeSlotFilter },
+    searchQuery,
+    setters: {
+      setDayFilter: (value) => {
+        void setDayFilter(value);
+      },
+      setSearchQuery: (value) => {
+        void setSearchQuery(value);
+      },
+      setTimeSlotFilter: (value) => {
+        void setTimeSlotFilter(value);
+      },
+    },
     timeSlotFilter,
-    filters: { searchQuery, dayFilter, timeSlotFilter },
-    setters: { setSearchQuery, setDayFilter, setTimeSlotFilter },
   };
 }
 
@@ -128,9 +138,9 @@ export function useCourseFilters(): UseCourseFiltersReturn {
   );
 
   return {
+    filteredCourses,
     filters,
     setters,
-    filteredCourses,
     totalCourses: activeCourses.length,
   };
 }
@@ -168,9 +178,9 @@ export function useSelectedCourseFilters(): UseSelectedFiltersReturn {
   );
 
   return {
+    filteredSessions,
     filters,
     setters,
-    filteredSessions,
     totalSessions: activeSessions.length,
   };
 }

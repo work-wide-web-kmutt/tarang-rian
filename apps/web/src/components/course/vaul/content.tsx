@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { useCourseVaulContext } from "@/components/course/vaul/context";
 import { DisclaimerAlert } from "@/components/disclaimer-alert";
 import {
@@ -44,11 +45,11 @@ export function CourseVaulContent() {
   );
   const courseSlug = course?.slug;
 
-  const handleConfirmRemove = (e?: React.MouseEvent<HTMLButtonElement>) => {
+  function handleConfirmRemove(e?: React.MouseEvent<HTMLButtonElement>): void {
     e?.stopPropagation();
     handleRemove();
     setShowRemoveDialog(false);
-  };
+  }
 
   return (
     <>
@@ -71,7 +72,9 @@ export function CourseVaulContent() {
           {session.type === "custom" && (
             <Button
               aria-label="Edit course information"
-              onClick={() => setIsEditing(true)}
+              onClick={() => {
+                setIsEditing(true);
+              }}
               size="icon"
               type="button"
               variant="outline"
@@ -152,20 +155,27 @@ export function CourseVaulContent() {
         </div>
       )}
       <div className="flex gap-2">
-        <Button onClick={() => setShowRemoveDialog(true)} variant="destructive">
+        <Button
+          onClick={() => {
+            setShowRemoveDialog(true);
+          }}
+          variant="destructive"
+        >
           <Trash2Icon />
           {t("schedule.remove_from_select")}
         </Button>
-        {session.type !== "custom" && courseSlug && (
-          <Link
-            className={buttonVariants({ variant: "outline" })}
-            params={{ id: courseSlug }}
-            to="/courses/$id"
-          >
-            <ExternalLinkIcon />
-            {t("courses.view")}
-          </Link>
-        )}
+        {session.type !== "custom" &&
+          courseSlug !== undefined &&
+          courseSlug !== "" && (
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              params={{ id: courseSlug }}
+              to="/courses/$id"
+            >
+              <ExternalLinkIcon />
+              {t("courses.view")}
+            </Link>
+          )}
         <AlertDialog onOpenChange={setShowRemoveDialog} open={showRemoveDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>

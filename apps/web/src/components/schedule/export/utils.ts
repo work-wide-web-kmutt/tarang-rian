@@ -3,12 +3,12 @@ import { jsPDF } from "jspdf";
 
 export type ExportFormat = "png" | "jpg" | "pdf" | "json";
 
-export const exportAsImage = (
+export async function exportAsImage(
   elementId: string,
   format: "png" | "jpg",
   scale = 2
-) => {
-  const element = document.getElementById(elementId);
+): Promise<string> {
+  const element = document.querySelector<HTMLElement>(`#${elementId}`);
   if (!element) {
     throw new Error("Element not found");
   }
@@ -18,26 +18,27 @@ export const exportAsImage = (
   const height = element.scrollHeight;
 
   const options = {
-    quality: 0.95,
-    pixelRatio: scale,
-    width,
     height,
+    pixelRatio: scale,
+    quality: 0.95,
     style: {
-      transform: "none", // Prevent any potential transform inheritance issues
       margin: "0",
+      // Prevent any potential transform inheritance issues.
+      transform: "none",
     },
+    width,
   };
 
   if (format === "png") {
-    return toPng(element, { ...options, backgroundColor: "transparent" });
+    return await toPng(element, { ...options, backgroundColor: "transparent" });
   }
   // JPG doesn't support transparency, so force white background.
   // This will appear behind the element if the element is transparent.
-  return toJpeg(element, { ...options, backgroundColor: "#ffffff" });
-};
+  return await toJpeg(element, { ...options, backgroundColor: "#ffffff" });
+}
 
-export const exportAsPdf = async (elementId: string) => {
-  const element = document.getElementById(elementId);
+export async function exportAsPdf(elementId: string): Promise<jsPDF> {
+  const element = document.querySelector<HTMLElement>(`#${elementId}`);
   if (!element) {
     throw new Error("Element not found");
   }
@@ -46,13 +47,14 @@ export const exportAsPdf = async (elementId: string) => {
   const imgData = await toPng(element, { pixelRatio: 2 });
 
   // A4 size in mm
-  const pdfWidth = 297; // Landscape A4
+  // Landscape A4.
+  const pdfWidth = 297;
   const pdfHeight = 210;
 
   const pdf = new jsPDF({
+    format: "a4",
     orientation: "landscape",
     unit: "mm",
-    format: "a4",
   });
 
   const imgProps = pdf.getImageProperties(imgData);
@@ -72,11 +74,11 @@ export const exportAsPdf = async (elementId: string) => {
 
   pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight);
   return pdf;
-};
+}
 
-export const downloadFile = (dataUrl: string, filename: string) => {
+export function downloadFile(dataUrl: string, filename: string): void {
   const link = document.createElement("a");
   link.download = filename;
   link.href = dataUrl;
   link.click();
-};
+}

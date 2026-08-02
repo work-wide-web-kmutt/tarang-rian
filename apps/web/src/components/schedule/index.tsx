@@ -1,17 +1,20 @@
 import {
   DndContext,
-  type DragEndEvent,
-  type DragOverEvent,
   DragOverlay,
-  type DragStartEvent,
   PointerSensor,
   TouchSensor,
   useDroppable,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import type {
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { SessionBlock } from "@/components/schedule/block";
 import { DraggableBlock } from "@/components/schedule/draggable-block";
 import {
@@ -43,9 +46,10 @@ import {
   useScheduleTimeRange,
 } from "@/stores/schedule-settings";
 import {
-  type SelectedClassSession,
+  normalizeSelectedSession,
   useSelectedGenElectivesActions,
 } from "@/stores/selected";
+import type { SelectedClassSession } from "@/stores/selected";
 
 interface ScheduleStyles {
   borderTop?: string;
@@ -87,6 +91,21 @@ interface ResizePreview {
   startCol: number;
   startOffset: number;
   span: number;
+}
+
+type MousePosition = Pick<MouseEvent, "clientX" | "clientY">;
+
+function hasClientPosition(value: unknown): value is MousePosition {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+
+  return (
+    "clientX" in value &&
+    typeof value.clientX === "number" &&
+    "clientY" in value &&
+    typeof value.clientY === "number"
+  );
 }
 
 function DroppableCell({
@@ -192,9 +211,9 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       }
 
       setResizePreview({
+        end: newEnd,
         session: resizeState.session,
         start: newStart,
-        end: newEnd,
         ...position,
       });
     },
@@ -224,6 +243,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     document.addEventListener("pointerup", handleResizePointerUp);
     document.addEventListener("pointercancel", handleResizePointerUp);
 
+    // oxlint-disable-next-line typescript/consistent-return -- effect cleanup is returned only while resize listeners are active
     return () => {
       document.removeEventListener("pointermove", handleResizePointerMove);
       document.removeEventListener("pointerup", handleResizePointerUp);
@@ -231,15 +251,15 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     };
   }, [resizeState, handleResizePointerMove, handleResizePointerUp]);
 
-  const handleResizeStart = (
+  function handleResizeStart(
     session: SelectedClassSession,
     edge: "left" | "right"
-  ) => {
+  ): void {
     setResizeState({
-      session,
       edge,
-      originalStart: session.start,
       originalEnd: session.end,
+      originalStart: session.start,
+      session,
     });
 
     const position = getTimeSlotPosition(session.start, session.end, timeRange);
@@ -249,19 +269,20 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     }
 
     setResizePreview({
+      end: session.end,
       session,
       start: session.start,
-      end: session.end,
       ...position,
     });
-  };
+  }
 
   useEffect(() => {
     if (!activeSession) {
       return;
     }
+    const session = activeSession;
 
-    const handleGlobalPointerMove = (e: PointerEvent) => {
+    function handleGlobalPointerMove(e: PointerEvent): void {
       const dayRowInfo = findDayRowFromMousePosition(
         e,
         cellSize,
@@ -284,8 +305,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       );
 
       const { newStart, newEnd } = calculateSnappedPreview(
-        activeSession,
-        day as GenElectiveOption["class"][number]["day"],
+        session,
+        day,
         slotIndex,
         timeRange
       );
@@ -297,38 +318,37 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       }
 
       setSnappedPreview({
-        day: day as GenElectiveOption["class"][number]["day"],
-        start: newStart,
+        day,
         end: newEnd,
+        start: newStart,
         ...position,
       });
       setDragOverPosition({ x: e.clientX, y: e.clientY });
-    };
+    }
 
     document.addEventListener("pointermove", handleGlobalPointerMove);
 
+    // oxlint-disable-next-line typescript/consistent-return -- effect cleanup is returned only while drag listeners are active
     return () => {
       document.removeEventListener("pointermove", handleGlobalPointerMove);
     };
   }, [activeSession, cellSize, dayColumnWidth, timeRange]);
 
-  const handleDragStart = (event: DragStartEvent) => {
+  function handleDragStart(event: DragStartEvent): void {
     const { active } = event;
-    const sessionData = active.data.current?.session as
-      | SelectedClassSession
-      | undefined;
+    const sessionData = normalizeSelectedSession(active.data.current?.session);
 
-    if (sessionData) {
+    if (sessionData !== null) {
       setActiveSession(sessionData);
     }
-  };
+  }
 
-  const handleSessionDragOver = (
+  function handleSessionDragOver(
     sessionData: SelectedClassSession,
-    day: string,
+    day: (typeof DAYS)[number],
     timeColIndex: number,
-    mouseEvent: MouseEvent
-  ) => {
+    mouseEvent: MousePosition
+  ): void {
     const position = getMousePositionInDayRow(
       day,
       mouseEvent,
@@ -349,7 +369,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
 
     const { newStart, newEnd } = calculateSnappedPreview(
       sessionData,
-      day as GenElectiveOption["class"][number]["day"],
+      day,
       slotIndex,
       timeRange
     );
@@ -361,18 +381,18 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     }
 
     setSnappedPreview({
-      day: day as GenElectiveOption["class"][number]["day"],
-      start: newStart,
+      day,
       end: newEnd,
+      start: newStart,
       ...positionPreview,
     });
-  };
+  }
 
-  const handleCreateDragOver = (
-    day: string,
+  function handleCreateDragOver(
+    day: (typeof DAYS)[number],
     timeColIndex: number,
-    mouseEvent: MouseEvent
-  ) => {
+    mouseEvent: MousePosition
+  ): void {
     if (!dragState) {
       return;
     }
@@ -398,31 +418,33 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const startSlot = Math.min(dragState.startSlot, slotIndex);
     const endSlot = Math.max(dragState.startSlot, slotIndex);
 
-    setDragState({ ...dragState, startSlot, endSlot });
-  };
+    setDragState({ ...dragState, endSlot, startSlot });
+  }
 
-  const handleDragOver = (event: DragOverEvent) => {
+  function handleDragOver(event: DragOverEvent): void {
     const { active, over } = event;
 
-    if (!(over && event.activatorEvent)) {
+    if (
+      over === null ||
+      over === undefined ||
+      !hasClientPosition(event.activatorEvent)
+    ) {
       setSnappedPreview(null);
       return;
     }
 
-    const parsed = parseOverId(over.id as string);
+    const parsed = parseOverId(String(over.id));
     if (!parsed) {
       setSnappedPreview(null);
       return;
     }
 
     const { day, timeColIndex } = parsed;
-    const mouseEvent = event.activatorEvent as MouseEvent;
+    const mouseEvent = event.activatorEvent;
 
-    const sessionData = active.data.current?.session as
-      | SelectedClassSession
-      | undefined;
+    const sessionData = normalizeSelectedSession(active.data.current?.session);
 
-    if (sessionData) {
+    if (sessionData !== null) {
       handleSessionDragOver(sessionData, day, timeColIndex, mouseEvent);
     } else if (dragState) {
       handleCreateDragOver(day, timeColIndex, mouseEvent);
@@ -432,23 +454,23 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       x: mouseEvent.clientX,
       y: mouseEvent.clientY,
     });
-  };
+  }
 
-  const calculateFinalPosition = (
+  function calculateFinalPosition(
     sessionData: SelectedClassSession,
-    day: string,
+    day: (typeof DAYS)[number],
     timeColIndex: number,
-    mouseEvent: MouseEvent | null
+    mouseEvent: MousePosition | null
   ): {
     start: string;
     end: string;
     day: GenElectiveOption["class"][number]["day"];
-  } | null => {
+  } | null {
     if (snappedPreview) {
       return {
-        start: snappedPreview.start,
-        end: snappedPreview.end,
         day: snappedPreview.day,
+        end: snappedPreview.end,
+        start: snappedPreview.start,
       };
     }
 
@@ -476,25 +498,25 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
 
     const result = calculateSnappedPreview(
       sessionData,
-      day as GenElectiveOption["class"][number]["day"],
+      day,
       slotIndex,
       timeRange
     );
 
     return {
-      start: result.newStart,
+      day,
       end: result.newEnd,
-      day: day as GenElectiveOption["class"][number]["day"],
+      start: result.newStart,
     };
-  };
+  }
 
-  const resetDragState = () => {
+  function resetDragState(): void {
     setActiveSession(null);
     setSnappedPreview(null);
     setDragOverPosition(null);
-  };
+  }
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  function handleDragEnd(event: DragEndEvent): void {
     const { active, over } = event;
 
     if (!over) {
@@ -502,28 +524,29 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       return;
     }
 
-    const sessionData = active.data.current?.session as
-      | SelectedClassSession
-      | undefined;
+    const sessionData = normalizeSelectedSession(active.data.current?.session);
 
-    if (!sessionData) {
+    if (sessionData === null) {
       resetDragState();
       return;
     }
 
-    const parsed = parseOverId(over.id as string);
+    const parsed = parseOverId(String(over.id));
     if (!parsed) {
       resetDragState();
       return;
     }
 
     const { day, timeColIndex } = parsed;
-    const mouseEvent = dragOverPosition
-      ? ({
-          clientX: dragOverPosition.x,
-          clientY: dragOverPosition.y,
-        } as MouseEvent)
-      : (event.activatorEvent as MouseEvent | null);
+    let mouseEvent: MousePosition | null = null;
+    if (dragOverPosition !== null) {
+      mouseEvent = {
+        clientX: dragOverPosition.x,
+        clientY: dragOverPosition.y,
+      };
+    } else if (hasClientPosition(event.activatorEvent)) {
+      mouseEvent = event.activatorEvent;
+    }
 
     const finalPosition = calculateFinalPosition(
       sessionData,
@@ -544,21 +567,21 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       finalPosition.end
     );
     resetDragState();
-  };
+  }
 
-  const handleDragCancel = () => {
+  function handleDragCancel(): void {
     setActiveSession(null);
     setSnappedPreview(null);
     setDragOverPosition(null);
     dragStartRef.current = null;
     setDragState(null);
-  };
+  }
 
-  const handlePointerDown = (
+  function handlePointerDown(
     e: React.PointerEvent<HTMLDivElement>,
     day: GenElectiveOption["class"][number]["day"],
     timeColIndex: number
-  ) => {
+  ): void {
     // Only allow left mouse button (0) or touch
     if (e.pointerType === "mouse" && e.button !== 0) {
       return;
@@ -595,10 +618,10 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     );
 
     dragStartRef.current = { day, timeColIndex, x };
-    setDragState({ day, startSlot: slotIndex, endSlot: slotIndex });
-  };
+    setDragState({ day, endSlot: slotIndex, startSlot: slotIndex });
+  }
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>): void {
     if (!(dragStartRef.current && dragState)) {
       return;
     }
@@ -608,8 +631,8 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
       return;
     }
 
-    const dayRow = e.currentTarget.closest("[data-day-row]") as HTMLElement;
-    if (!dayRow) {
+    const dayRow = e.currentTarget.closest<HTMLElement>("[data-day-row]");
+    if (dayRow === null) {
       return;
     }
 
@@ -636,10 +659,10 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
     const startSlot = Math.min(dragState.startSlot, slotIndex);
     const endSlot = Math.max(dragState.startSlot, slotIndex);
 
-    setDragState({ ...dragState, startSlot, endSlot });
-  };
+    setDragState({ ...dragState, endSlot, startSlot });
+  }
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+  function handlePointerUp(e: React.PointerEvent<HTMLDivElement>): void {
     // Release pointer capture if it was set
     if (
       e.pointerType === "touch" &&
@@ -679,7 +702,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
 
     dragStartRef.current = null;
     setDragState(null);
-  };
+  }
 
   return (
     <DndContext
@@ -753,9 +776,9 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                     <div
                       aria-label={`${day} ${time} - ${t("schedule.drag_to_create")}`}
                       className="relative touch-none border-border border-r bg-background last:border-r-0"
-                      onPointerDown={(e) =>
-                        handlePointerDown(e, day, timeColIndex)
-                      }
+                      onPointerDown={(e) => {
+                        handlePointerDown(e, day, timeColIndex);
+                      }}
                       style={{ height: `${rowHeight}px` }}
                     >
                       {firstColClasses.map((session) => {
@@ -768,12 +791,12 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                           return null;
                         }
 
-                        const handleOpenChange = (key: string | null) => {
+                        function handleOpenChange(key: string | null): void {
                           setOpenClassKey(key);
                           if (key === null) {
                             setNewClassKey(null);
                           }
-                        };
+                        }
 
                         return session.type === "custom" ? (
                           <DraggableBlock
@@ -899,7 +922,7 @@ export function Schedule({ sessions, term, styles }: ScheduleProps) {
                           >
                             <div className="min-w-0">
                               <div className="truncate font-medium text-primary-foreground">
-                                {activeSession?.courseCode ||
+                                {activeSession?.courseCode ??
                                   t("schedule.unassigned_class")}
                               </div>
                               <div

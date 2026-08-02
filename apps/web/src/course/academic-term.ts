@@ -1,4 +1,4 @@
-import type { GenElectiveOption } from "./schema";
+import type { GenElectiveOption } from "@/course/schema";
 
 export type Semester = GenElectiveOption["semester"];
 
@@ -16,8 +16,8 @@ const SEMESTER_ORDER: Record<Semester, number> = {
 };
 
 export const DEFAULT_ACADEMIC_TERM: AcademicTerm = {
-  year: "2025",
   semester: "2",
+  year: "2025",
 };
 
 export const PREFILLED_ACADEMIC_YEAR_COUNT = 5;
@@ -27,7 +27,7 @@ export function academicTermKey(term: AcademicTerm): string {
 }
 
 export function isAcademicTerm(value: unknown): value is AcademicTerm {
-  if (!value || typeof value !== "object") {
+  if (value === null || typeof value !== "object") {
     return false;
   }
 
@@ -36,7 +36,7 @@ export function isAcademicTerm(value: unknown): value is AcademicTerm {
     typeof candidate.year === "string" &&
     candidate.year.length > 0 &&
     typeof candidate.semester === "string" &&
-    SEMESTERS.includes(candidate.semester as Semester)
+    SEMESTERS.includes(candidate.semester)
   );
 }
 
@@ -74,7 +74,7 @@ export function uniqueAcademicTerms(
     }
   }
 
-  return [...unique.values()].sort(compareAcademicTerms);
+  return [...unique.values()].toSorted(compareAcademicTerms);
 }
 
 export function availableAcademicTerms(
@@ -96,8 +96,8 @@ export function prefilledAcademicTerms(
 
   return Array.from({ length: yearCount }, (_, offset) =>
     SEMESTERS.map((semester) => ({
-      year: String(numericStartYear + offset),
       semester,
+      year: String(numericStartYear + offset),
     }))
   ).flat();
 }
@@ -113,5 +113,5 @@ export function termFromSession(session: {
   year: string;
   semester: Semester;
 }): AcademicTerm {
-  return { year: session.year, semester: session.semester };
+  return { semester: session.semester, year: session.year };
 }

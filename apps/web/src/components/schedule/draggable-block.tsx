@@ -1,9 +1,10 @@
 import { useDraggable } from "@dnd-kit/core";
 import { GripVertical } from "lucide-react";
+
+import { SessionBlock } from "@/components/schedule/block";
 import { getClassKey, getTimeSlotPosition } from "@/components/schedule/utils";
 import type { ScheduleTimeRange } from "@/constants/times";
 import type { SelectedClassSession } from "@/stores/selected";
-import { SessionBlock } from "./block";
 
 interface DraggableBlockProps {
   session: SelectedClassSession;
@@ -39,11 +40,11 @@ export function DraggableBlock({
   const isSmallBlock = position ? position.span < 1 : false;
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: classKey,
-    disabled: !isCustom || isResizing,
     data: {
       session,
     },
+    disabled: !isCustom || isResizing === true,
+    id: classKey,
   });
 
   if (!position) {
@@ -52,17 +53,17 @@ export function DraggableBlock({
 
   const { startOffset, span } = position;
 
-  const handleResizePointerDown = (
+  function handleResizePointerDown(
     e: React.PointerEvent,
     edge: "left" | "right"
-  ) => {
+  ): void {
     if (!isCustom) {
       return;
     }
     e.stopPropagation();
     e.preventDefault();
     onResizeStart?.(session, edge);
-  };
+  }
 
   return (
     <div
@@ -76,7 +77,9 @@ export function DraggableBlock({
       {isCustom && (
         <div
           className="absolute top-0 z-40 h-full w-2 cursor-ew-resize touch-none"
-          onPointerDown={(e) => handleResizePointerDown(e, "left")}
+          onPointerDown={(e) => {
+            handleResizePointerDown(e, "left");
+          }}
           style={{
             left: `${startOffset * 100}%`,
           }}
@@ -86,12 +89,12 @@ export function DraggableBlock({
 
       {/* Drag handle */}
       <div
-        {...(isCustom && !isResizing ? attributes : {})}
-        {...(isCustom && !isResizing ? listeners : {})}
+        {...(isCustom && isResizing !== true ? attributes : {})}
+        {...(isCustom && isResizing !== true ? listeners : {})}
         className={`absolute top-0 z-30 flex h-full items-center justify-center rounded-l bg-primary/20 ${
           isSmallBlock ? "w-4" : "w-6"
         } ${
-          isCustom && !isResizing
+          isCustom && isResizing !== true
             ? "cursor-grab active:cursor-grabbing"
             : "cursor-default opacity-50"
         }`}
@@ -109,7 +112,9 @@ export function DraggableBlock({
       {isCustom && (
         <div
           className="absolute top-0 z-40 h-full w-2 cursor-ew-resize touch-none"
-          onPointerDown={(e) => handleResizePointerDown(e, "right")}
+          onPointerDown={(e) => {
+            handleResizePointerDown(e, "right");
+          }}
           style={{
             right: `calc(${(1 - startOffset - span) * 100}%)`,
           }}
