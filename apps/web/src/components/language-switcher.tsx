@@ -30,14 +30,14 @@ export function LanguageSwitcher() {
             changeLanguage("en");
           }}
         >
-          English
+          {t("language.english")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
             changeLanguage("th");
           }}
         >
-          ไทย (Thai)
+          {t("language.thai")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

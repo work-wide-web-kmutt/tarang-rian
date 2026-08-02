@@ -68,15 +68,15 @@ export function ScheduleExportDialog({
 
   // Background Color Presets
   const BG_PRESETS = [
-    { name: "White", value: "#ffffff" },
-    { name: "Slate", value: "#e2e8f0" },
-    { name: "Blue", value: "#bfdbfe" },
-    { name: "Green", value: "#bbf7d0" },
-    { name: "Yellow", value: "#fef08a" },
-    { name: "Orange", value: "#fed7aa" },
-    { name: "Red", value: "#fecaca" },
-    { name: "Rose", value: "#fecdd3" },
-    { name: "Black", value: "#000000" },
+    { key: "white", value: "#ffffff" },
+    { key: "slate", value: "#e2e8f0" },
+    { key: "blue", value: "#bfdbfe" },
+    { key: "green", value: "#bbf7d0" },
+    { key: "yellow", value: "#fef08a" },
+    { key: "orange", value: "#fed7aa" },
+    { key: "red", value: "#fecaca" },
+    { key: "rose", value: "#fecdd3" },
+    { key: "black", value: "#000000" },
   ];
 
   async function handleExport(): Promise<void> {
@@ -113,10 +113,10 @@ export function ScheduleExportDialog({
           }
         }
       }
-      toast.success(t("export.success", "Schedule exported successfully!"));
+      toast.success(t("export.success"));
     } catch (error) {
       console.error(error);
-      toast.error(t("export.error", "Failed to export schedule"));
+      toast.error(t("export.error"));
     } finally {
       setIsExporting(false);
     }
@@ -126,17 +126,17 @@ export function ScheduleExportDialog({
     try {
       const jsonData = JSON.stringify(sessions, null, 2);
       await navigator.clipboard.writeText(jsonData);
-      toast.success(t("export.copySuccess", "JSON copied to clipboard"));
+      toast.success(t("export.copySuccess"));
     } catch (error) {
       console.error(error);
-      toast.error(t("export.copyError", "Failed to copy JSON to clipboard"));
+      toast.error(t("export.copyError"));
     }
   }
 
   return (
     <Dialog>
       <DialogTrigger
-        aria-label={t("export.button", "Export")}
+        aria-label={t("export.button")}
         className={cn(
           buttonVariants({ size: "sm", variant: "outline" }),
           triggerClassName
@@ -144,15 +144,13 @@ export function ScheduleExportDialog({
         disabled={sessions.length === 0}
       >
         <Download className="size-5 sm:size-4" />
-        <span className="hidden sm:inline">{t("export.button", "Export")}</span>
+        <span className="hidden sm:inline">{t("export.button")}</span>
       </DialogTrigger>
 
       <DialogContent className="flex max-h-[95vh] w-full max-w-[95vw] flex-col gap-0 overflow-hidden p-0 sm:rounded-lg lg:max-w-300">
         <DialogHeader className="shrink-0 border-b p-6 pb-2">
-          <DialogTitle>{t("export.title", "Export Schedule")}</DialogTitle>
-          <DialogDescription>
-            {t("export.description", "Customize and download your schedule.")}
-          </DialogDescription>
+          <DialogTitle>{t("export.title")}</DialogTitle>
+          <DialogDescription>{t("export.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
@@ -161,7 +159,7 @@ export function ScheduleExportDialog({
               <div className="relative flex h-full flex-col">
                 <div className="absolute top-4 right-4 z-10">
                   <Button
-                    aria-label={t("export.copyAriaLabel", "Copy JSON")}
+                    aria-label={t("export.copyAriaLabel")}
                     onClick={() => {
                       void handleCopyToClipboard();
                     }}
@@ -169,7 +167,7 @@ export function ScheduleExportDialog({
                     variant="outline"
                   >
                     <Copy className="mr-2 h-4 w-4" />
-                    {t("export.copy", "Copy")}
+                    {t("export.copy")}
                   </Button>
                 </div>
                 <pre className="h-full overflow-auto rounded-md border bg-background p-4 font-mono text-sm">
@@ -211,7 +209,7 @@ export function ScheduleExportDialog({
           <div className="flex w-full shrink-0 flex-col border-t bg-background lg:w-[320px] lg:border-t-0 lg:border-l">
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
               <div className="space-y-3">
-                <Label>{t("export.format", "Format")}</Label>
+                <Label>{t("export.format")}</Label>
                 <div className="grid grid-cols-4 gap-2">
                   <Button
                     className="w-full"
@@ -259,7 +257,7 @@ export function ScheduleExportDialog({
               <Separator />
 
               <div className="space-y-3">
-                <Label>{t("export.appearance", "Appearance")}</Label>
+                <Label>{t("export.appearance")}</Label>
                 <div className="flex flex-col gap-2">
                   <Button
                     className="justify-between"
@@ -274,7 +272,7 @@ export function ScheduleExportDialog({
                       ) : (
                         <CalendarPlus2 className="h-4 w-4" />
                       )}
-                      {t("export.shorthand", "Short day name")}
+                      {t("export.shorthand")}
                     </span>
                     <span
                       className={
@@ -283,7 +281,7 @@ export function ScheduleExportDialog({
                           : "text-muted-foreground"
                       }
                     >
-                      {isShorthand ? "On" : "Off"}
+                      {isShorthand ? t("export.on") : t("export.off")}
                     </span>
                   </Button>
                   <Button
@@ -299,7 +297,7 @@ export function ScheduleExportDialog({
                       ) : (
                         <Sun className="h-4 w-4" />
                       )}
-                      {t("export.darkMode", "Dark Mode")}
+                      {t("export.darkMode")}
                     </span>
                     <span
                       className={
@@ -308,7 +306,7 @@ export function ScheduleExportDialog({
                           : "text-muted-foreground"
                       }
                     >
-                      {darkMode ? "On" : "Off"}
+                      {darkMode ? t("export.on") : t("export.off")}
                     </span>
                   </Button>
                   <Button
@@ -320,7 +318,7 @@ export function ScheduleExportDialog({
                   >
                     <span className="flex items-center gap-2">
                       <Grid className="h-4 w-4" />
-                      {t("export.background", "Background")}
+                      {t("export.background")}
                     </span>
                     <span
                       className={
@@ -329,7 +327,7 @@ export function ScheduleExportDialog({
                           : "text-muted-foreground"
                       }
                     >
-                      {showBackground ? "Show" : "Hide"}
+                      {showBackground ? t("export.show") : t("export.hide")}
                     </span>
                   </Button>
 
@@ -337,7 +335,7 @@ export function ScheduleExportDialog({
                     <div className="flex flex-col gap-2 rounded-md border p-3">
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-muted-foreground text-xs">
-                          Color
+                          {t("export.color")}
                         </span>
                         <div className="group relative h-8 w-8 cursor-pointer overflow-hidden rounded-full border bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 ring-primary hover:ring-2">
                           <Palette className="pointer-events-none absolute top-1/2 left-1/2 z-10 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-foreground" />
@@ -346,30 +344,34 @@ export function ScheduleExportDialog({
                             onChange={(e) => {
                               setBgColor(e.target.value);
                             }}
-                            title="Custom Color"
+                            title={t("export.custom_color")}
                             type="color"
                             value={bgColor}
                           />
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {BG_PRESETS.map((preset) => (
-                          <button
-                            aria-label={preset.name}
-                            className={cn(
-                              "h-6 w-6 rounded-full border transition-all hover:scale-110",
-                              bgColor === preset.value &&
-                                "ring-2 ring-primary ring-offset-1"
-                            )}
-                            key={preset.value}
-                            onClick={() => {
-                              setBgColor(preset.value);
-                            }}
-                            style={{ backgroundColor: preset.value }}
-                            title={preset.name}
-                            type="button"
-                          />
-                        ))}
+                        {BG_PRESETS.map((preset) => {
+                          const presetName = t(`export.colors.${preset.key}`);
+
+                          return (
+                            <button
+                              aria-label={presetName}
+                              className={cn(
+                                "h-6 w-6 rounded-full border transition-all hover:scale-110",
+                                bgColor === preset.value &&
+                                  "ring-2 ring-primary ring-offset-1"
+                              )}
+                              key={preset.value}
+                              onClick={() => {
+                                setBgColor(preset.value);
+                              }}
+                              style={{ backgroundColor: preset.value }}
+                              title={presetName}
+                              type="button"
+                            />
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -379,11 +381,11 @@ export function ScheduleExportDialog({
               <Separator />
 
               <div className="space-y-3">
-                <Label>{t("export.settings", "Settings")}</Label>
+                <Label>{t("export.settings")}</Label>
                 <div className="grid gap-3">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground text-sm">
-                      {t("export.padding", "Padding")}
+                      {t("export.padding")}
                     </span>
                     <Select
                       onValueChange={(val: string | null) => {
@@ -397,7 +399,7 @@ export function ScheduleExportDialog({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="0">None</SelectItem>
+                        <SelectItem value="0">{t("export.none")}</SelectItem>
                         <SelectItem value="16">16px</SelectItem>
                         <SelectItem value="32">32px</SelectItem>
                         <SelectItem value="64">64px</SelectItem>
@@ -407,7 +409,7 @@ export function ScheduleExportDialog({
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground text-sm">
-                      {t("export.scale", "Quality")}
+                      {t("export.scale")}
                     </span>
                     <Select
                       disabled={format === "pdf"}

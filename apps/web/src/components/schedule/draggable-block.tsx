@@ -1,5 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 import { GripVertical } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { SessionBlock } from "@/components/schedule/block";
 import { getClassKey, getTimeSlotPosition } from "@/components/schedule/utils";
@@ -34,6 +35,7 @@ export function DraggableBlock({
   defaultEditMode = false,
   timeRange,
 }: DraggableBlockProps) {
+  const { t } = useTranslation();
   const classKey = getClassKey(session);
   const isCustom = session.type === "custom";
   const position = getTimeSlotPosition(session.start, session.end, timeRange);
@@ -83,7 +85,7 @@ export function DraggableBlock({
           style={{
             left: `${startOffset * 100}%`,
           }}
-          title="Drag to change start time"
+          title={t("schedule.resize_start")}
         />
       )}
 
@@ -118,7 +120,7 @@ export function DraggableBlock({
           style={{
             right: `calc(${(1 - startOffset - span) * 100}%)`,
           }}
-          title="Drag to change end time"
+          title={t("schedule.resize_end")}
         />
       )}
 

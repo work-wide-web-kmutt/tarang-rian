@@ -20,11 +20,7 @@ import type {
   CourseFilters as CourseFiltersType,
 } from "@/hooks/use-course-filters";
 
-const TIME_SLOTS = [
-  { label: "All Times", value: "all" },
-  { label: "Morning (before 12:00)", value: "morning" },
-  { label: "Afternoon (12:00+)", value: "afternoon" },
-] as const;
+const TIME_SLOTS = ["all", "morning", "afternoon"] as const;
 
 interface CourseFiltersProps {
   filters: CourseFiltersType;
@@ -96,10 +92,10 @@ export function CourseFilters({ filters, setters }: CourseFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             {TIME_SLOTS.map((slot) => (
-              <SelectItem key={slot.value} value={slot.value}>
-                {slot.value === "all"
+              <SelectItem key={slot} value={slot}>
+                {slot === "all"
                   ? t("filter.times.all")
-                  : t(`filter.times.${slot.value}`)}
+                  : t(`filter.times.${slot}`)}
               </SelectItem>
             ))}
           </SelectContent>

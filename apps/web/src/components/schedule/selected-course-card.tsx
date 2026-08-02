@@ -123,7 +123,7 @@ export function SelectedCourseCard({ session }: SelectedCourseCardProps) {
         </button>
 
         <button
-          aria-label={isCustom ? t("form.save") : t("courses.view")}
+          aria-label={isCustom ? t("course.edit") : t("courses.view")}
           className={`flex items-center justify-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90 ${!isCustom && courseSlug !== undefined && courseSlug !== "" ? "h-1/3" : "h-1/2"}`}
           onClick={isCustom ? handleEditClick : handleViewClick}
           type="button"

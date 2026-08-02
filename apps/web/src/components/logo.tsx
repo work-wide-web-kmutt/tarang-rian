@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
@@ -32,12 +33,8 @@ export interface LogoProps
   alt?: string;
 }
 
-export function Logo({
-  alt = "Tarang Rian KMUTT logo",
-  className,
-  size,
-  ...props
-}: LogoProps) {
+export function Logo({ alt, className, size, ...props }: LogoProps) {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -50,11 +47,12 @@ export function Logo({
     mounted && resolvedTheme === "dark"
       ? "/static/logos/logo-full-dark.svg"
       : "/static/logos/logo-full-light.svg";
+  const imageAlt = alt ?? t("brand.logo_alt");
 
   return (
-    <Link aria-label="Go to home page" to="/">
+    <Link aria-label={t("nav.home")} to="/">
       <img
-        alt={alt}
+        alt={imageAlt}
         className={cn(logoVariants({ className, size }))}
         src={logoSrc}
         {...props}

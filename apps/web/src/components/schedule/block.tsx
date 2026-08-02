@@ -135,7 +135,8 @@ export function SessionBlock({
                   : "text-primary-foreground/80"
               }`}
             >
-              {session.start} - {session.end} ({durationHours}h)
+              {session.start} - {session.end}{" "}
+              {t("schedule.duration", { duration: durationHours })}
             </div>
           </div>
         </CourseVaul>
