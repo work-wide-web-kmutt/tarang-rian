@@ -24,8 +24,7 @@
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
-    "deploy:web": "turbo run deploy -F web",
-    "ruler:init": "ruler apply -v"
+    "deploy:web": "turbo run deploy -F web"
   },
   "dependencies": {
     "dotenv": "catalog:",
@@ -36,7 +35,6 @@
     "@biomejs/biome": "2.3.11",
     "@commitlint/cli": "^20.3.0",
     "@commitlint/config-conventional": "^20.3.0",
-    "@intellectronica/ruler": "^0.3.23",
     "@tarang-rian/config": "workspace:*",
     "eslint": "^9.39.2",
     "eslint-plugin-tailwind-canonical-classes": "^1.1.0",
