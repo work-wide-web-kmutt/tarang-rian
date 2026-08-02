@@ -29,6 +29,17 @@ bun run build        # workspace builds
 
 CI runs `bun run fix`, `bun run check-types`, `bun run test`, then `bun run build`. Run relevant checks before handoff; run full CI checks when changes affect shared configuration, dependencies, or build behavior.
 
+## Testing with framework
+
+- Use Vitest for web tests; import test APIs from `vitest`, never `bun:test`.
+- Keep tests in domain-adjacent `__test__` directories; name files `*.test.ts` or `*.test.tsx`.
+- Run `bun run test` from repository root or `bun run --cwd apps/web test` for web-only tests.
+- Generate Content Collections before direct web tests when generated output is absent: `bun run --cwd apps/web generate-content-collections`.
+- Test public behavior at agreed seams; mock external boundaries, not internal collaborators or implementation details.
+- Use Node environment by default; use a browser environment only when tests require DOM APIs.
+- Follow red-green-refactor: one failing behavior test, smallest implementation, then refactor after green.
+- Validate test-related changes with `bun run check`, `bun run check-types`, `bun run test`, and `bun run build`.
+
 ## TypeScript and React
 
 - Keep TypeScript strict and prefer `unknown` plus narrowing over `any`.
