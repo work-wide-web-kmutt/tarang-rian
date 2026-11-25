@@ -1,4 +1,4 @@
-import { SLOT_DURATION_MINUTES } from "@/constants/schedule";
+import { COURSE_COLORS, SLOT_DURATION_MINUTES } from "@/constants/schedule";
 import {
   DAYS,
   DEFAULT_SCHEDULE_TIME_RANGE,
@@ -7,7 +7,8 @@ import {
 } from "@/constants/times";
 import type { ScheduleTimeRange } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
-import { parseTime } from "@/lib/parser/time";
+import { formatTime, parseTime } from "@/lib/parser/time";
+import type { ScheduleColorMode } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 
 export interface TimeSlotPosition {
@@ -24,12 +25,6 @@ interface VisibleSessionInterval {
 
 function isScheduleDay(value: string): value is (typeof DAYS)[number] {
   return DAYS.some((day) => day === value);
-}
-
-function formatMinutes(totalMinutes: number): string {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
 export function getVisibleSessionInterval(
@@ -155,7 +150,7 @@ export function getTimeFrom30MinuteSlot(
   const normalizedRange = normalizeScheduleTimeRange(range);
   const totalMinutes =
     normalizedRange.startHour * 60 + slotIndex * SLOT_DURATION_MINUTES;
-  return formatMinutes(totalMinutes);
+  return formatTime(totalMinutes);
 }
 
 export function formatTimeRange(start: string, end: string): string {
@@ -176,8 +171,8 @@ export function calculateSnappedPreview(
     normalizedRange.startHour * 60 + targetSlotIndex * SLOT_DURATION_MINUTES;
 
   return {
-    newEnd: formatMinutes(newStartMinutes + duration),
-    newStart: formatMinutes(newStartMinutes),
+    newEnd: formatTime(newStartMinutes + duration),
+    newStart: formatTime(newStartMinutes),
   };
 }
 
@@ -336,7 +331,41 @@ export function calculateResizePreview(
       Number.isFinite(newStartMinutes) &&
       Number.isFinite(newEndMinutes) &&
       newStartMinutes < newEndMinutes,
-    newEnd: formatMinutes(newEndMinutes),
-    newStart: formatMinutes(newStartMinutes),
+    newEnd: formatTime(newEndMinutes),
+    newStart: formatTime(newStartMinutes),
+  };
+}
+
+export interface SessionColorClasses {
+  block: string;
+  text: string;
+}
+
+// Colors follow the order courses first appear, so nothing extra is persisted;
+// removing a course shifts the colors of courses added after it.
+export function getSessionColorClasses(
+  session: SelectedClassSession,
+  sessions: readonly SelectedClassSession[],
+  colorMode: ScheduleColorMode,
+  isOverlapping: boolean
+): SessionColorClasses {
+  if (colorMode === "single") {
+    return isOverlapping
+      ? {
+          block: "border-destructive bg-destructive/40",
+          text: "text-destructive-foreground",
+        }
+      : { block: "border-primary bg-primary", text: "text-primary-foreground" };
+  }
+
+  const courseCodes = [...new Set(sessions.map((s) => s.courseCode))];
+  const index = Math.max(courseCodes.indexOf(session.courseCode), 0);
+  const color = COURSE_COLORS[index % COURSE_COLORS.length] ?? COURSE_COLORS[0];
+
+  return {
+    block: isOverlapping
+      ? `${color} ring-2 ring-destructive ring-inset`
+      : color,
+    text: "text-black",
   };
 }

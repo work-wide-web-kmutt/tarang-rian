@@ -13,6 +13,7 @@ import {
 } from "@/course/academic-term";
 import type { AcademicTerm } from "@/course/academic-term";
 import type { GenElectiveOption } from "@/course/schema";
+import { formatTime, parseTime } from "@/lib/parser/time";
 import { useActiveAcademicTerm } from "@/stores/academic-context";
 
 export interface SelectedClassSession {
@@ -48,6 +49,7 @@ interface SelectedGenElectivesState {
       end: string
     ) => SelectedClassSession | null;
     remove: (id: string) => void;
+    duplicate: (id: string, day: SelectedClassSession["day"]) => void;
     update: (
       id: string,
       newDay: GenElectiveOption["class"][number]["day"],
@@ -144,6 +146,40 @@ export function selectedSessionKey(session: SelectedClassSession): string {
     session.start,
     session.end,
   ].join("|");
+}
+
+const MINUTES_PER_DAY = 24 * 60;
+
+// Same-day copies go right after the original (or before, if after passes midnight).
+// The copy is custom so it can be dragged and resized into place.
+export function createDuplicateSession(
+  session: SelectedClassSession,
+  day: SelectedClassSession["day"]
+): SelectedClassSession | null {
+  let start = parseTime(session.start);
+  let end = parseTime(session.end);
+
+  if (day === session.day) {
+    const duration = end - start;
+    if (end + duration <= MINUTES_PER_DAY) {
+      start = end;
+      end += duration;
+    } else if (start - duration >= 0) {
+      end = start;
+      start -= duration;
+    } else {
+      return null;
+    }
+  }
+
+  return {
+    ...session,
+    day,
+    end: formatTime(end),
+    id: v7(),
+    start: formatTime(start),
+    type: "custom",
+  };
 }
 
 export function normalizeSelectedSession(
@@ -391,6 +427,27 @@ const useSelectedGenElectivesStore = create<SelectedGenElectivesState>()(
               (session) => !sameAcademicTerm(session, term)
             ),
           }));
+        },
+        duplicate: (id, day) => {
+          set((state) => {
+            const original = state.selected.find(
+              (session) => session.id === id
+            );
+            const copy =
+              original === undefined
+                ? null
+                : createDuplicateSession(original, day);
+            if (
+              copy === null ||
+              state.selected.some(
+                (current) =>
+                  selectedSessionKey(current) === selectedSessionKey(copy)
+              )
+            ) {
+              return state;
+            }
+            return { selected: [...state.selected, copy] };
+          });
         },
         importSchedule: (term, sessions, mode) => {
           set((state) => ({
