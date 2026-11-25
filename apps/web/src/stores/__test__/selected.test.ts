@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import type { AcademicTerm } from "@/course/academic-term";
 import {
+  createDuplicateSession,
   importSessionsForTerm,
   migrateSelectedStorageValue,
   normalizeSelectedSession,
@@ -131,5 +132,38 @@ describe("selected schedule migration and term isolation", () => {
     expect(
       replacement.find((item) => item.year === term2025.year)?.courseCode
     ).toBe("GEN202");
+  });
+});
+
+describe(createDuplicateSession, () => {
+  test("copies a session to another day at the same time as a movable block", () => {
+    const copy = createDuplicateSession(session(), "Wednesday");
+
+    expect(copy).toMatchObject({
+      courseCode: "GEN101",
+      day: "Wednesday",
+      end: "10:00",
+      start: "09:00",
+      type: "custom",
+    });
+    expect(copy?.id).not.toBe("session-1");
+  });
+
+  test("places a same-day copy right after the original", () => {
+    expect(
+      createDuplicateSession(
+        session({ end: "12:30", start: "09:30" }),
+        "Monday"
+      )
+    ).toMatchObject({ day: "Monday", end: "15:30", start: "12:30" });
+  });
+
+  test("places a same-day copy before the original when after would pass midnight", () => {
+    expect(
+      createDuplicateSession(
+        session({ end: "23:00", start: "21:00" }),
+        "Monday"
+      )
+    ).toMatchObject({ end: "21:00", start: "19:00" });
   });
 });

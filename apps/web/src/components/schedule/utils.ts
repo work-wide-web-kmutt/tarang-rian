@@ -7,7 +7,7 @@ import {
 } from "@/constants/times";
 import type { ScheduleTimeRange } from "@/constants/times";
 import type { GenElectiveOption } from "@/course/schema";
-import { parseTime } from "@/lib/parser/time";
+import { formatTime, parseTime } from "@/lib/parser/time";
 import type { ScheduleColorMode } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 
@@ -25,12 +25,6 @@ interface VisibleSessionInterval {
 
 function isScheduleDay(value: string): value is (typeof DAYS)[number] {
   return DAYS.some((day) => day === value);
-}
-
-function formatMinutes(totalMinutes: number): string {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
 export function getVisibleSessionInterval(
@@ -156,7 +150,7 @@ export function getTimeFrom30MinuteSlot(
   const normalizedRange = normalizeScheduleTimeRange(range);
   const totalMinutes =
     normalizedRange.startHour * 60 + slotIndex * SLOT_DURATION_MINUTES;
-  return formatMinutes(totalMinutes);
+  return formatTime(totalMinutes);
 }
 
 export function formatTimeRange(start: string, end: string): string {
@@ -177,8 +171,8 @@ export function calculateSnappedPreview(
     normalizedRange.startHour * 60 + targetSlotIndex * SLOT_DURATION_MINUTES;
 
   return {
-    newEnd: formatMinutes(newStartMinutes + duration),
-    newStart: formatMinutes(newStartMinutes),
+    newEnd: formatTime(newStartMinutes + duration),
+    newStart: formatTime(newStartMinutes),
   };
 }
 
@@ -337,8 +331,8 @@ export function calculateResizePreview(
       Number.isFinite(newStartMinutes) &&
       Number.isFinite(newEndMinutes) &&
       newStartMinutes < newEndMinutes,
-    newEnd: formatMinutes(newEndMinutes),
-    newStart: formatMinutes(newStartMinutes),
+    newEnd: formatTime(newEndMinutes),
+    newStart: formatTime(newStartMinutes),
   };
 }
 

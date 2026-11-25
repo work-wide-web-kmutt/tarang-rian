@@ -86,6 +86,8 @@
       "unassigned_class": "Unassigned Class",
       "unassigned_code": "Unassigned ({{number}})",
       "delete": "Delete",
+      "duplicate_to": "Duplicate to",
+      "duplicate_same_day": "{{day}} (same day)",
       "remove_from_select": "Remove from select",
       "remove_from_schedule": "Remove from schedule?",
       "remove_from_schedule_description1": "Are you sure you want to remove",

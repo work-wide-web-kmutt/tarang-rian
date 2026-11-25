@@ -1,4 +1,4 @@
-import { Trash2Icon } from "lucide-react";
+import { CopyIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -27,8 +27,12 @@ import {
   ContextMenuItem,
   ContextMenuLabel,
   ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { DAYS } from "@/constants/times";
 import type { ScheduleTimeRange } from "@/constants/times";
 import { parseTime } from "@/lib/parser/time";
 import { cn } from "@/lib/utils";
@@ -64,7 +68,7 @@ export function SessionBlock({
   const classKey = getClassKey(session);
   const hasOverlapping = hasOverlap(session, allSessions);
   const overlappingSessions = getOverlappingSessions(session, allSessions);
-  const { remove } = useSelectedGenElectivesActions();
+  const { duplicate, remove } = useSelectedGenElectivesActions();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { t } = useTranslation();
   const colorMode = useScheduleColorMode();
@@ -140,6 +144,29 @@ export function SessionBlock({
           </ContextMenuLabel>
         </ContextMenuGroup>
         <ContextMenuSeparator />
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>
+            <CopyIcon />
+            {t("schedule.duplicate_to")}
+          </ContextMenuSubTrigger>
+          <ContextMenuSubContent>
+            {DAYS.map((day) => {
+              const dayLabel = t(`days_time.${day.toLowerCase()}`);
+              return (
+                <ContextMenuItem
+                  key={day}
+                  onClick={() => {
+                    duplicate(session.id, day);
+                  }}
+                >
+                  {day === session.day
+                    ? t("schedule.duplicate_same_day", { day: dayLabel })
+                    : dayLabel}
+                </ContextMenuItem>
+              );
+            })}
+          </ContextMenuSubContent>
+        </ContextMenuSub>
         <ContextMenuItem onClick={handleDelete} variant="destructive">
           <Trash2Icon />
           {t("schedule.delete")}

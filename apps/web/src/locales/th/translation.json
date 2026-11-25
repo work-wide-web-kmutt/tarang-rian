@@ -86,6 +86,8 @@
       "unassigned_class": "คาบเรียนที่ยังไม่ได้กำหนด",
       "unassigned_code": "ยังไม่ได้กำหนด ({{number}})",
       "delete": "ลบ",
+      "duplicate_to": "ทำสำเนาไปยัง",
+      "duplicate_same_day": "{{day}} (วันเดียวกัน)",
       "remove_from_select": "ลบออกจากรายการ",
       "remove_from_schedule": "ลบออกจากตารางเรียน?",
       "remove_from_schedule_description1": "คุณแน่ใจหรือไม่ว่าต้องการลบ",
