@@ -6,6 +6,7 @@ import CourseVaul from "@/components/course/vaul";
 import {
   getClassKey,
   getOverlappingSessions,
+  getSessionColorClasses,
   getTimeSlotPosition,
   hasOverlap,
 } from "@/components/schedule/utils";
@@ -30,6 +31,8 @@ import {
 } from "@/components/ui/context-menu";
 import type { ScheduleTimeRange } from "@/constants/times";
 import { parseTime } from "@/lib/parser/time";
+import { cn } from "@/lib/utils";
+import { useScheduleColorMode } from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 import { useSelectedGenElectivesActions } from "@/stores/selected";
 
@@ -64,6 +67,13 @@ export function SessionBlock({
   const { remove } = useSelectedGenElectivesActions();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { t } = useTranslation();
+  const colorMode = useScheduleColorMode();
+  const colors = getSessionColorClasses(
+    session,
+    allSessions,
+    colorMode,
+    hasOverlapping
+  );
 
   if (!position) {
     return null;
@@ -89,11 +99,11 @@ export function SessionBlock({
     <ContextMenu>
       <ContextMenuTrigger>
         <CourseVaul
-          className={`absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5 ${textClass} ${
-            hasOverlapping
-              ? "border-destructive bg-destructive/40"
-              : "border-primary bg-primary"
-          }`}
+          className={cn(
+            "absolute inset-y-0 z-20 m-0.5 cursor-pointer rounded border p-1.5",
+            textClass,
+            colors.block
+          )}
           data-session-block
           defaultEditMode={defaultEditMode}
           key={classKey}
@@ -109,32 +119,14 @@ export function SessionBlock({
             width: `calc(${span * 100}% - 0.25rem)`,
           }}
         >
-          <div className="min-w-0">
-            <div
-              className={`truncate ${
-                hasOverlapping
-                  ? "text-destructive-foreground"
-                  : "text-primary-foreground"
-              }`}
-            >
+          <div className={cn("min-w-0", colors.text)}>
+            <div className="truncate">
               <span>{session.courseCode}</span>{" "}
             </div>
-            <div
-              className={`truncate ${
-                hasOverlapping
-                  ? "text-destructive-foreground"
-                  : "text-primary-foreground"
-              }`}
-            >
+            <div className="truncate">
               <span className="font-bold">{session.courseName}</span>
             </div>
-            <div
-              className={`truncate ${subTextClass} ${
-                hasOverlapping
-                  ? "text-destructive-foreground/80"
-                  : "text-primary-foreground/80"
-              }`}
-            >
+            <div className={cn("truncate opacity-80", subTextClass)}>
               {session.start} - {session.end}{" "}
               {t("schedule.duration", { duration: durationHours })}
             </div>

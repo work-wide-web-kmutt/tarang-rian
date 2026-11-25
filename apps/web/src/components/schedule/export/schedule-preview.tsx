@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   getClassesForCell,
   getClassKey,
+  getSessionColorClasses,
   getTimeSlotPosition,
   hasOverlap,
   isFirstCol,
@@ -12,7 +13,10 @@ import { DAYS, getScheduleTimeSlots } from "@/constants/times";
 import type { ScheduleTimeRange } from "@/constants/times";
 import type { AcademicTerm } from "@/course/academic-term";
 import { cn } from "@/lib/utils";
-import { useScheduleSize } from "@/stores/schedule-settings";
+import {
+  useScheduleColorMode,
+  useScheduleSize,
+} from "@/stores/schedule-settings";
 import type { SelectedClassSession } from "@/stores/selected";
 
 interface SchedulePreviewProps {
@@ -32,6 +36,7 @@ export function SchedulePreview({
 }: SchedulePreviewProps) {
   const { t } = useTranslation();
   const size = useScheduleSize();
+  const colorMode = useScheduleColorMode();
   const { cellSize, dayColumnWidth, rowHeight, textClass, subTextClass } =
     SCHEDULE_SIZE[size];
   const timeSlots = getScheduleTimeSlots(timeRange);
@@ -140,17 +145,13 @@ export function SchedulePreview({
 
                     const { startOffset, span } = position;
 
-                    const isOverlapping = hasOverlap(session, sessions);
-                    // For basic export check we use global session check.
-                    // Ideally we should match exact overlap logic if we want "red" for conflict.
-
-                    // Styles matching SessionBlock roughly
-                    const blockBg = isOverlapping
-                      ? "bg-destructive/40 border-destructive"
-                      : "bg-primary border-primary";
-                    const blockText = isOverlapping
-                      ? "text-destructive-foreground"
-                      : "text-primary-foreground";
+                    const { block: blockBg, text: blockText } =
+                      getSessionColorClasses(
+                        session,
+                        sessions,
+                        colorMode,
+                        hasOverlap(session, sessions)
+                      );
 
                     return (
                       <div

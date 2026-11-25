@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { ColorModeSelector } from "@/components/schedule/settings/color-mode-selector";
 import { SizeSelector } from "@/components/schedule/settings/size-selector";
 import { TimeRangeSelector } from "@/components/schedule/settings/time-range-selector";
 
@@ -29,6 +30,12 @@ export function getSettingsRegistry(
           keywords: ["size", "scale", "dimension", "width", "height", "layout"],
           label: t("settings.size"),
           render: () => <SizeSelector />,
+        },
+        {
+          id: "color-mode",
+          keywords: ["color", "colour", "course", "palette", "theme"],
+          label: t("settings.color_mode"),
+          render: () => <ColorModeSelector />,
         },
       ],
     },
